@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'onboarding_page.dart';
 import 'package:two/core/themes/app_colors.dart';
+import 'package:two/presentation/widgets/custom_button.dart';
+import 'package:two/presentation/widgets/custom_scaffold.dart';
 
 const _animationDuration = Duration(milliseconds: 300);
 const _indicatorMargin = EdgeInsets.symmetric(horizontal: 4);
@@ -65,27 +67,25 @@ class OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   void _skipOnboarding() {
-    Navigator.pushReplacementNamed(context, '/login');
+    Navigator.pushReplacementNamed(context, '/pre-login');
   }
 
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
 
-    return Scaffold(
+    return CustomScaffold(
       appBar: AppBar(
-        leading:
-            _currentPage > 0
-                ? IconButton(
-                  icon: Icon(
-                    Icons.arrow_back_ios_new_rounded,
-                    color: AppColors.icons,
-                  ),
-                  onPressed: _goToPreviousPage,
-                  tooltip: 'Voltar',
-                )
-                : SizedBox.shrink(),
+        leading: _currentPage > 0
+            ? IconButton(
+                icon: Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: AppColors.icons,
+                ),
+                onPressed: _goToPreviousPage,
+                tooltip: 'Voltar',
+              )
+            : SizedBox.shrink(),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
@@ -97,10 +97,9 @@ class OnboardingScreenState extends State<OnboardingScreen> {
               width: _currentPage == index ? 20 : 8,
               height: 8,
               decoration: BoxDecoration(
-                color:
-                    _currentPage == index
-                        ? AppColors.primary
-                        : AppColors.indicatorBackground,
+                color: _currentPage == index
+                    ? AppColors.primary
+                    : AppColors.indicatorBackground,
                 borderRadius: BorderRadius.circular(4),
               ),
             ),
@@ -110,95 +109,47 @@ class OnboardingScreenState extends State<OnboardingScreen> {
         backgroundColor: AppColors.background,
         elevation: 0,
       ),
-      body: Container(
-        color: AppColors.background,
-        child: Column(
-          children: [
-            Expanded(
-              child: PageView.builder(
-                controller: _pageController,
-                onPageChanged: _onPageChanged,
-                itemCount: onboardingData.length,
-                itemBuilder:
-                    (context, index) => OnboardingPage(
-                      key: ValueKey('onboarding_page_$index'),
-                      title: onboardingData[index]["title"]!,
-                      subtitle: onboardingData[index]["subtitle"]!,
-                      image: onboardingData[index]["image"]!,
-                    ),
+      backgroundColor: AppColors.background,
+      body: Column(
+        children: [
+          Expanded(
+            child: PageView.builder(
+              controller: _pageController,
+              onPageChanged: _onPageChanged,
+              itemCount: onboardingData.length,
+              itemBuilder: (context, index) => OnboardingPage(
+                key: ValueKey('onboarding_page_$index'),
+                title: onboardingData[index]["title"]!,
+                subtitle: onboardingData[index]["subtitle"]!,
+                image: onboardingData[index]["image"]!,
               ),
             ),
-            Padding(
-              padding: EdgeInsets.only(
-                left: screenWidth * 0.05,
-                right: screenWidth * 0.05,
-                bottom: screenHeight * 0.05,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  CustomButton(
-                    text: _currentPage == onboardingData.length - 1 ? "Entrar" : "Próximo",
-                    onPressed: _goToNextPage,
-                    backgroundColor: AppColors.primary,
-                    textColor: AppColors.neutral,
-                  ),
-                  if (_currentPage < onboardingData.length - 1) ...[
-                    SizedBox(height: screenHeight * 0.015),
-                    CustomButton(
-                      text: "Pular",
-                      onPressed: _skipOnboarding,
-                      backgroundColor: AppColors.background,
-                      textColor: AppColors.titlePrimary,
-                      borderSide: BorderSide(color: AppColors.inputBorder),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class CustomButton extends StatelessWidget {
-  final String text;
-  final VoidCallback onPressed;
-  final Color backgroundColor;
-  final Color? textColor;
-  final BorderSide? borderSide;
-
-  const CustomButton({
-    super.key,
-    required this.text,
-    required this.onPressed,
-    required this.backgroundColor,
-    this.textColor,
-    this.borderSide,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-
-    return SizedBox(
-      height: screenHeight * 0.055,
-      child: TextButton(
-        style: TextButton.styleFrom(
-          textStyle: TextStyle(
-            fontSize: screenHeight * 0.02, 
-            fontWeight: FontWeight.w500,
           ),
-          backgroundColor: backgroundColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-            side: borderSide ?? BorderSide.none,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              CustomButton(
+                text: _currentPage == onboardingData.length - 1
+                    ? "Entrar"
+                    : "Próximo",
+                onPressed: _goToNextPage,
+                backgroundColor: AppColors.primary,
+                textColor: AppColors.neutral,
+              ),
+              if (_currentPage < onboardingData.length - 1) ...[
+                SizedBox(height: screenHeight * 0.015),
+                CustomButton(
+                  text: "Pular",
+                  onPressed: _skipOnboarding,
+                  backgroundColor: AppColors.background,
+                  textColor: AppColors.titlePrimary,
+                  borderSide: BorderSide(color: AppColors.inputBorder),
+                ),
+              ],
+                SizedBox(height: screenHeight * 0.03),
+            ],
           ),
-        ),
-        onPressed: onPressed,
-        child: Text(text, style: TextStyle(color: textColor)),
+        ],
       ),
     );
   }

@@ -18,7 +18,7 @@ class OnboardingPage extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Padding(
-      padding: const EdgeInsets.all(20.0),
+      padding: const EdgeInsets.all(05.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

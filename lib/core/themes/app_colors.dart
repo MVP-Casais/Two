@@ -7,7 +7,7 @@ class AppColors {
   static const Color terciary = Color(0xFFFF9797);
 
   // Cores de fundo
-  static const Color background = Color(0xF5F5F5F5);
+  static const Color background = Color(0xFFF5F5F5);
   static const Color neutral = Color(0xFFFFFFFF);
   static const Color icons = Color(0xFF2D2D2D);
   static const Color indicatorBackground = Color(0xFF2D2D2D);
