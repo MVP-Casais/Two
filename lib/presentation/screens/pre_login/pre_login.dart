@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:two/core/themes/app_colors.dart';
 import 'package:two/presentation/widgets/custom_button.dart';
 import 'package:two/presentation/widgets/custom_scaffold.dart';
+import 'package:two/presentation/screens/register/register_screen.dart';
 
 class PreLoginPage extends StatelessWidget {
   const PreLoginPage({super.key});
@@ -89,7 +90,12 @@ class PreLoginPage extends StatelessWidget {
           SizedBox(height: screenHeight * 0.02),
           TextButton(
             onPressed: () {
-              Navigator.pushNamed(context, '/register');
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const RegisterPage(),
+                ),
+              );
             },
             child: Text(
               "Não tem conta? Crie sua conta",

@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:two/core/themes/app_colors.dart';
-import 'email_step.dart';
-import 'password_step.dart';
-import 'verification_step.dart';
+import 'package:two/presentation/screens/register/email_step.dart';
+import 'package:two/presentation/screens/register/password_step.dart';
+import 'package:two/presentation/screens/register/user_complete.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
@@ -39,7 +39,7 @@ class _LoginPageState extends State<LoginPage> {
     final List<IconData> icons = [
       Icons.email_outlined,
       Icons.lock,
-      Icons.verified_user_rounded,
+      Icons.person_outline_sharp,
     ];
 
     return Row(
@@ -87,7 +87,7 @@ class _LoginPageState extends State<LoginPage> {
           IconButton(
             icon: const Icon(Icons.help_outline, color: AppColors.icons),
             onPressed: () {
-              Navigator.pushNamed(context, '/help-login'); 
+              Navigator.pushNamed(context, '/help-register'); 
             },
           ),
         ],
@@ -107,7 +107,7 @@ class _LoginPageState extends State<LoginPage> {
           children: [
             EmailStep(onNext: _goToNextPage),
             PasswordStep(onNext: _goToNextPage),
-            VerificationStep(onComplete: () {
+            UserComplete(onComplete: () {
               Navigator.pushReplacementNamed(context, '/home');
             }),
           ],

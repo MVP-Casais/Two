@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:two/core/themes/app_colors.dart';
+import 'package:two/presentation/screens/register/register_screen.dart';
 import 'package:two/presentation/widgets/custom_button.dart';
 
 class EmailStep extends StatelessWidget {
@@ -47,7 +48,12 @@ class EmailStep extends StatelessWidget {
             SizedBox(height: screenHeight * 0.02),
             GestureDetector(
               onTap: () {
-                Navigator.pushNamed(context, '/register');
+                Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const RegisterPage(),
+                ),
+              );
               },
               child: Text(
                 "Criar uma conta",

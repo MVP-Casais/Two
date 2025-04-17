@@ -11,6 +11,9 @@ class VerificationStep extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
 
+    final List<TextEditingController> controllers = List.generate(4, (_) => TextEditingController());
+    final List<FocusNode> focusNodes = List.generate(4, (_) => FocusNode());
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Padding(
@@ -48,15 +51,28 @@ class VerificationStep extends StatelessWidget {
                     border: Border.all(color: AppColors.inputBorder),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Center(
+                  child: Center(
                     child: TextField(
+                      controller: controllers[index],
+                      focusNode: focusNodes[index],
                       textAlign: TextAlign.center,
                       keyboardType: TextInputType.number,
                       maxLength: 1,
-                      decoration: InputDecoration(
+                      style: TextStyle(
+                        fontSize: 45,
+                        color: AppColors.titlePrimary,
+                      ),
+                      decoration: const InputDecoration(
                         border: InputBorder.none,
                         counterText: "",
                       ),
+                      onChanged: (value) {
+                        if (value.isNotEmpty && index < 3) {
+                          FocusScope.of(context).requestFocus(focusNodes[index + 1]);
+                        } else if (value.isEmpty && index > 0) {
+                          FocusScope.of(context).requestFocus(focusNodes[index - 1]);
+                        }
+                      },
                     ),
                   ),
                 ),
@@ -79,7 +95,9 @@ class VerificationStep extends StatelessWidget {
             SizedBox(height: screenHeight * 0.03),
             CustomButton(
               text: "Entrar",
-              onPressed: onComplete,
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, '/home');
+              },
               backgroundColor: AppColors.primary,
               textColor: AppColors.neutral,
             ),
