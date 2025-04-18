@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:intl/intl.dart';
 import 'package:two/core/themes/app_colors.dart';
+import 'package:two/presentation/screens/memories/memories_screen.dart';
 
 class HomeScreen extends StatelessWidget {
-const HomeScreen({super.key});
+  const HomeScreen({super.key});
 
   List<DateTime> getCurrentWeekDates() {
     final now = DateTime.now();
@@ -19,285 +19,309 @@ const HomeScreen({super.key});
     final today = DateTime.now();
 
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.menu),
-          onPressed: () {},
-        ),
-        title: SvgPicture.asset(
-          'assets/images/TWO.svg',
-          height: 25,
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () {},
-          ),
-        ],
-        backgroundColor: const Color.fromARGB(0, 255, 255, 255),
-        elevation: 0, 
-      ),
-      
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start, 
-          children: [
-            Padding(
-              padding: EdgeInsets.only(top: 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  GestureDetector(
-                    onTap: () {},
-                    child: SvgPicture.asset('assets/images/memorias.svg', height: 80),
-                  ),
-                  GestureDetector(
-                    onTap: () {},
-                    child: SvgPicture.asset('assets/images/atividades.svg', height: 80),
-                  ),
-                  GestureDetector(
-                    onTap: () {},
-                    child: SvgPicture.asset('assets/images/planner.svg', height: 80),
-                  ),
-                  GestureDetector(
-                    onTap: () {},
-                    child: SvgPicture.asset('assets/images/config.svg', height: 80),
-                  ),
-                ],
-              ),
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            floating: false,
+            snap: false,
+            expandedHeight: 60.0,
+            backgroundColor: AppColors.background,
+            flexibleSpace: FlexibleSpaceBar(
+              centerTitle: true,
+              title: SvgPicture.asset('assets/images/TWO.svg', height: 16),
             ),
-            Container(
-              margin: EdgeInsets.all(15),
-              height: 130,
-              width: double.infinity,
-              child: Stack(
-                children: [
-                  Positioned.fill(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(13),
-                      child: SvgPicture.asset(
-                        'assets/images/calendario.svg',
-                        fit: BoxFit.cover,
+            leading: IconButton(icon: Icon(Icons.menu), onPressed: () {}),
+            actions: [IconButton(icon: Icon(Icons.add), onPressed: () {})],
+          ),
+          SliverList(
+            delegate: SliverChildListDelegate([
+              Padding(
+                padding: EdgeInsets.only(top: 40),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildIconWithLabel(
+                      Icons.remove_red_eye_outlined,
+                      "Memórias",
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MemoriesScreen(),
+                        ),
                       ),
                     ),
+                    _buildIconWithLabel(
+                      Icons.widgets_outlined,
+                      "Atividades",
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MemoriesScreen(),
+                        ),
+                      ),
+                    ),
+                    _buildIconWithLabel(
+                      Icons.edit_calendar_rounded,
+                      "Planner do Casal",
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MemoriesScreen(),
+                        ),
+                      ),
+                    ),
+                    _buildIconWithLabel(
+                      Icons.settings_outlined,
+                      "Configurações",
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MemoriesScreen(),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 20),
+              Container(
+                margin: EdgeInsets.all(20),
+                height: 130,
+                width: double.infinity,
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(13),
+                        child: SvgPicture.asset(
+                          'assets/images/calendario.svg',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(15),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Sem eventos',
+                            style: TextStyle(
+                              color: AppColors.titleSecondary,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: List.generate(weekDays.length, (index) {
+                              final date = dates[index];
+                              final isToday =
+                                  date.day == today.day &&
+                                  date.month == today.month &&
+                                  date.year == today.year;
+
+                              return Expanded(
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(vertical: 8),
+                                  decoration:
+                                      isToday
+                                          ? BoxDecoration(
+                                            color: AppColors.neutral,
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
+                                          )
+                                          : null,
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        weekDays[index],
+                                        style: TextStyle(
+                                          color: AppColors.titleSecondary,
+                                          fontWeight:
+                                              isToday
+                                                  ? FontWeight.bold
+                                                  : FontWeight.w400,
+                                          fontSize: 15,
+                                        ),
+                                      ),
+                                      SizedBox(height: 5),
+                                      Text(
+                                        '${date.day}',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          color: AppColors.titleSecondary,
+                                          fontWeight:
+                                              isToday
+                                                  ? FontWeight.bold
+                                                  : FontWeight.normal,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              _buildSectionHeader("Recordações do Amor"),
+              _buildBigContainer(),
+              SizedBox(height: 20),
+              _buildSectionHeader("Vamos nos conectar mais?"),
+              _buildCarousel(),
+            ]),
+          ),
+        ],
+      ),
+      backgroundColor: AppColors.background,
+    );
+  }
+
+  Widget _buildIconWithLabel(IconData icon, String label, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Icon(icon, size: 28, color: AppColors.icons),
+          SizedBox(height: 5),
+          Text(
+            label,
+            style: TextStyle(
+              color: AppColors.titlePrimary,
+              fontSize: 13,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(String title) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.alphabetic,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              color: AppColors.titlePrimary,
+              fontSize: 22,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          GestureDetector(
+            onTap: () {},
+            child: Text(
+              "Ver todos",
+              style: TextStyle(
+                color: AppColors.titlePrimary,
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBigContainer() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      child: Container(
+        height: 380,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: AppColors.background,
+          borderRadius: BorderRadius.circular(13),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.shadow.withAlpha((0.2 * 255).toInt()),
+              blurRadius: 10,
+              offset: Offset(0, 2),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCarousel() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 0),
+      child: SizedBox(
+        height: 130,
+        child: PageView.builder(
+          controller: PageController(viewportFraction: 0.90),
+          itemCount: 4,
+          itemBuilder: (context, index) {
+            final titles = [
+              "Pergunta do dia",
+              "Exemplo 1",
+              "Dica da Semana",
+              "Motivação",
+            ];
+            final subtitles = [
+              "Descrição para o card 1",
+              "Descrição para o card 1",
+              "Aqui vai uma dica interessante!",
+              "Se inspire para começar o dia!",
+            ];
+
+            return Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8),
+              child: Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(13),
+                    child: SvgPicture.asset(
+                      'assets/images/fundo_carrosel.svg',
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                    ),
                   ),
-                  Padding(
-                    padding: EdgeInsets.all(16),
+                  Positioned(
+                    bottom: 40,
+                    left: 16,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Sem eventos',
+                          titles[index],
                           style: TextStyle(
-                            color: Colors.brown[800],
-                            fontSize: 18,
+                            color: AppColors.titleSecondary,
+                            fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: List.generate(weekDays.length, (index) {
-                            final date = dates[index];
-                            final isToday = date.day == today.day &&
-                                date.month == today.month &&
-                                date.year == today.year;
-
-                            return Expanded(
-                              child: Container(
-                                padding: EdgeInsets.symmetric(vertical: 8),
-                                margin: EdgeInsets.symmetric(horizontal: 0),
-                                decoration: isToday
-                                    ? BoxDecoration(
-                                        color: Colors.pink.shade50,
-                                        borderRadius: BorderRadius.circular(10),
-                                      )
-                                    : null,
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      weekDays[index],
-                                      style: TextStyle(
-                                        color: isToday ? Colors.brown[800] : Colors.brown[800],
-                                        fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
-                                        fontSize: 15,
-                                      ),
-                                    ),
-                                    SizedBox(height: 4),
-                                    Text(
-                                      '${date.day}',
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        color: isToday ? Colors.black87 : Colors.white,
-                                        fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          }),
+                        SizedBox(height: 6),
+                        Text(
+                          subtitles[index],
+                          style: TextStyle(
+                            color: AppColors.titleSecondary,
+                            fontSize: 15,
+                          ),
                         ),
                       ],
                     ),
                   ),
                 ],
               ),
-            ),
-           
-           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 30), 
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.baseline, 
-              textBaseline: TextBaseline.alphabetic,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween, 
-              children: [
-                Text(
-                  "Recordações do Amor",
-                  style: TextStyle(
-                    color: AppColors.titlePrimary,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                Text(
-                  "Ver todos",
-                  style: TextStyle(
-                    color: AppColors.titlePrimary,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          
-
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Container(
-                height: 380,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: AppColors.background,
-                  borderRadius: BorderRadius.circular(13),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 5,
-                      offset: Offset(0, 3),
-                    ),
-                  ],
-                ),
-    
-
-
-              ),
-            ),
-
-            Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20), 
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.baseline, 
-              textBaseline: TextBaseline.alphabetic,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween, 
-              children: [
-                Text(
-                  "Vamos nos conectar mais?",
-                  style: TextStyle(
-                    color: AppColors.titlePrimary,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                Text(
-                  "Ver todos",
-                  style: TextStyle(
-                    color: AppColors.titlePrimary,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13,
-                  ),
-                ),
-              ],
-            ),
-          ),
-         
-    Padding(
-  padding: EdgeInsets.symmetric(horizontal: 0), // Margem externa do carrossel
-  child: Container(
-    height: 130, // Altura do carrossel
-    child: PageView.builder(
-      controller: PageController(viewportFraction: 0.9), // Define quanto espaço cada card ocupa
-      itemCount: 4, // Número de cards no carrossel
-      itemBuilder: (context, index) {
-        return Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8), // Espaçamento interno entre os cards
-          child: Stack(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(13),
-                child: SvgPicture.asset(
-                  'assets/images/fundo_carrosel.svg',
-                  fit: BoxFit.cover,
-                  width: double.infinity, // Garante que o card preencha toda a largura alocada
-                ),
-              ),
-              Positioned(
-                bottom: 40, // Posiciona os textos na parte inferior
-                left: 16,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      // Títulos dinâmicos para cada card
-                      index == 0
-                          ? "Pergunta do dia"
-                          : index == 1
-                              ? "Exemplo 1"
-                              : index == 2
-                                  ? "Dica da Semana"
-                                  : "Motivação",
-                      style: TextStyle(
-                        color: AppColors.titleSecondary,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 6),
-                    Text(
-                      // Descrições dinâmicas para cada card
-                      index == 0
-                          ? "Descrição para o card 1"
-                          : index == 1
-                              ? "Descrição para o card 1"
-                              : index == 2
-                                  ? "Aqui vai uma dica interessante!"
-                                  : "Se inspire para começar o dia!",
-                      style: TextStyle(
-                        color: AppColors.titleSecondary,
-                        fontSize: 15,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    ),
-  ),
-),
-
-
-
-   
-
-          ],
+            );
+          },
         ),
       ),
-      backgroundColor: AppColors.neutral,
     );
   }
 }

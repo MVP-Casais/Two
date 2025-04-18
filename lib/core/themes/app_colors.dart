@@ -26,4 +26,7 @@ class AppColors {
   // Cores de erro e sucesso
   static const Color error = Color(0xFFFF0505);
   static const Color success = Color(0xFF4CAF50);
+
+  // Cores de sombra
+  static const Color shadow = Color(0xFF2D2D2D);
 }

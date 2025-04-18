@@ -7,73 +7,96 @@ class MemoriesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final int currentIndex = 0;
+
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () {},
-        ),
-        title: SvgPicture.asset(
-          'assets/images/TWO.svg',
-          height: 25,
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {},
+      backgroundColor: AppColors.background,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            floating: false,
+            snap: false,
+            expandedHeight: 60.0,
+            backgroundColor: AppColors.background,
+            elevation: 0,
+            flexibleSpace: FlexibleSpaceBar(
+              centerTitle: true,
+              title: SvgPicture.asset('assets/images/TWO.svg', height: 16),
+            ),
+            leading: IconButton(icon: Icon(Icons.menu), onPressed: () {}),
+            actions: [IconButton(icon: Icon(Icons.add), onPressed: () {})],
+          ),
+          SliverList(
+            delegate: SliverChildListDelegate([
+              Padding(
+                padding: EdgeInsets.only(top: 40),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildIconWithLabel(
+                      icon: Icons.remove_red_eye_outlined,
+                      label: "Memórias",
+                      isSelected: currentIndex == 0,
+                    ),
+                    _buildIconWithLabel(
+                      icon: Icons.widgets_outlined,
+                      label: "Atividades",
+                      isSelected: currentIndex == 1,
+                    ),
+                    _buildIconWithLabel(
+                      icon: Icons.edit_calendar_rounded,
+                      label: "Planner do Casal",
+                      isSelected: currentIndex == 2,
+                    ),
+                    _buildIconWithLabel(
+                      icon: Icons.settings_outlined,
+                      label: "Configurações",
+                      isSelected: currentIndex == 3,
+                    ),
+                  ],
+                ),
+              ),
+            ]),
           ),
         ],
-        backgroundColor: const Color.fromARGB(0, 255, 255, 255),
-        elevation: 0,
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Padding(
-              padding: EdgeInsets.only(top: 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _HomeIconButton(
-                    assetPath: 'assets/images/memoriasTraco.svg',
-                  ),
-                  _HomeIconButton(
-                    assetPath: 'assets/images/atividades.svg',
-                  ),
-                  _HomeIconButton(
-                    assetPath: 'assets/images/planner.svg',
-                  ),
-                  _HomeIconButton(
-                    assetPath: 'assets/images/config.svg',
-                  ),
-                ],
-              ),
-            ),
-            // Aqui você pode adicionar mais widgets para o corpo da tela
-          ],
-        ),
       ),
     );
   }
-}
 
-// Widget separado para reutilização e limpeza do código
-class _HomeIconButton extends StatelessWidget {
-  final String assetPath;
-
-  const _HomeIconButton({required this.assetPath});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildIconWithLabel({
+    required IconData icon,
+    required String label,
+    required bool isSelected,
+  }) {
     return GestureDetector(
-      onTap: () {
-        // ação ao tocar
-      },
-      child: SvgPicture.asset(
-        assetPath,
-        height: 80,
+      onTap: () {},
+      child: Column(
+        children: [
+          Icon(icon, size: 28, color: AppColors.icons),
+          SizedBox(height: 5),
+          Container(
+            decoration:
+                isSelected
+                    ? BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: AppColors.titleSecondary,
+                          width: 2.0,
+                        ),
+                      ),
+                    )
+                    : null,
+            padding: EdgeInsets.only(bottom: 4),
+            child: Text(
+              label,
+              style: TextStyle(
+                color: AppColors.titlePrimary,
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
