@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:two/presentation/screens/memories/memories_screen.dart';
 import 'package:two/presentation/screens/register/help_register.dart';
 import 'presentation/screens/onboarding/onboarding_screen.dart';
 import 'presentation/screens/login/login.dart';
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: '/home',
+      initialRoute: '/memories',
       routes: {
         '/onboarding': (context) => const OnboardingScreen(),
         '/pre-login': (context) => const PreLoginPage(),
@@ -25,6 +26,8 @@ class MyApp extends StatelessWidget {
         '/help-login': (context) => const HelpPage(),
         '/help-register': (context) => const HelpPageRegister(),
         '/home': (context) => const HomeScreen(),
+        '/memories': (context) => const MemoriesScreen(),
+        
       },
     );
   }
