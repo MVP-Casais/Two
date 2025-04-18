@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:two/core/themes/app_colors.dart';
+import 'package:two/presentation/screens/reset/reset_password.dart';
 import 'package:two/presentation/widgets/custom_button.dart';
 
 class PasswordStep extends StatefulWidget {
@@ -82,7 +83,12 @@ class _PasswordStepState extends State<PasswordStep> {
                 ),
                 TextButton(
                   onPressed: () {
-                    // Implementar lógica de esqueci a senha
+                    Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ResetPassword(),
+                ),
+              );
                   },
                   child: Text(
                     "Esqueci a senha",

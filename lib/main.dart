@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: '/memories',
+      initialRoute: '/onboarding',
       routes: {
         '/onboarding': (context) => const OnboardingScreen(),
         '/pre-login': (context) => const PreLoginPage(),
@@ -27,7 +27,6 @@ class MyApp extends StatelessWidget {
         '/help-register': (context) => const HelpPageRegister(),
         '/home': (context) => const HomeScreen(),
         '/memories': (context) => const MemoriesScreen(),
-        
       },
     );
   }
