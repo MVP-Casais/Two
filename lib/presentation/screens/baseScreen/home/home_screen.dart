@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:two/core/themes/app_colors.dart';
-import 'package:two/presentation/screens/memories/memories_screen.dart';
+import 'package:two/presentation/widgets/top_header.dart';
+import 'package:two/presentation/widgets/top_menu.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -21,68 +22,11 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          SliverAppBar(
-            floating: false,
-            snap: false,
-            expandedHeight: 60.0,
-            backgroundColor: AppColors.background,
-            flexibleSpace: FlexibleSpaceBar(
-              centerTitle: true,
-              title: SvgPicture.asset('assets/images/TWO.svg', height: 16),
-            ),
-            leading: IconButton(icon: Icon(Icons.menu), onPressed: () {}),
-            actions: [IconButton(icon: Icon(Icons.add), onPressed: () {})],
-          ),
+          const TopHeader(useSliver: true),
+
           SliverList(
             delegate: SliverChildListDelegate([
-              Padding(
-                padding: EdgeInsets.only(top: 40),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    _buildIconWithLabel(
-                      Icons.remove_red_eye_outlined,
-                      "Memórias",
-                      () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MemoriesScreen(),
-                        ),
-                      ),
-                    ),
-                    _buildIconWithLabel(
-                      Icons.widgets_outlined,
-                      "Atividades",
-                      () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MemoriesScreen(),
-                        ),
-                      ),
-                    ),
-                    _buildIconWithLabel(
-                      Icons.edit_calendar_rounded,
-                      "Planner do Casal",
-                      () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MemoriesScreen(),
-                        ),
-                      ),
-                    ),
-                    _buildIconWithLabel(
-                      Icons.settings_outlined,
-                      "Configurações",
-                      () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MemoriesScreen(),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              TopMenu(),
               SizedBox(height: 20),
               Container(
                 margin: EdgeInsets.all(20),
@@ -122,8 +66,9 @@ class HomeScreen extends StatelessWidget {
                                   date.month == today.month &&
                                   date.year == today.year;
 
-                              return Expanded(
+                              return Flexible(
                                 child: Container(
+                                  width: isToday ? 50 : 40,
                                   padding: EdgeInsets.symmetric(vertical: 8),
                                   decoration:
                                       isToday
@@ -184,26 +129,6 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildIconWithLabel(IconData icon, String label, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        children: [
-          Icon(icon, size: 28, color: AppColors.icons),
-          SizedBox(height: 5),
-          Text(
-            label,
-            style: TextStyle(
-              color: AppColors.titlePrimary,
-              fontSize: 13,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildSectionHeader(String title) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
@@ -259,11 +184,11 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildCarousel() {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 0),
+      padding: EdgeInsets.symmetric(horizontal: 8),
       child: SizedBox(
         height: 130,
         child: PageView.builder(
-          controller: PageController(viewportFraction: 0.90),
+          controller: PageController(viewportFraction: 0.95),
           itemCount: 4,
           itemBuilder: (context, index) {
             final titles = [
