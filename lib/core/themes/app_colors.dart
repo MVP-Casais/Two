@@ -29,4 +29,9 @@ class AppColors {
 
   // Cores de sombra
   static const Color shadow = Color(0xFF2D2D2D);
+
+  
+  static const Color borderNavigation = Color(0xFFCCCCCC);
+
+
 }

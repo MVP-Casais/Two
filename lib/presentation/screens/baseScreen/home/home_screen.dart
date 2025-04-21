@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:two/core/themes/app_colors.dart';
+import 'package:two/presentation/widgets/graph.dart';
+import 'package:two/presentation/widgets/navegation.dart';
 import 'package:two/presentation/widgets/top_header.dart';
 import 'package:two/presentation/widgets/top_menu.dart';
 
@@ -20,108 +22,122 @@ class HomeScreen extends StatelessWidget {
     final today = DateTime.now();
 
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          const TopHeader(useSliver: true),
+      body: Stack(
+        children: [
+          CustomScrollView(
+            slivers: [
+              const TopHeader(useSliver: true),
 
-          SliverList(
-            delegate: SliverChildListDelegate([
-              TopMenu(),
-              SizedBox(height: 20),
-              Container(
-                margin: EdgeInsets.all(20),
-                height: 130,
-                width: double.infinity,
-                child: Stack(
-                  children: [
-                    Positioned.fill(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(13),
-                        child: SvgPicture.asset(
-                          'assets/images/calendario.svg',
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(15),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Sem eventos',
-                            style: TextStyle(
-                              color: AppColors.titleSecondary,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+              SliverList(
+                delegate: SliverChildListDelegate([
+                  TopMenu(),
+                  SizedBox(height: 20),
+                  Container(
+                    margin: EdgeInsets.all(20),
+                    height: 130,
+                    width: double.infinity,
+                    child: Stack(
+                      children: [
+                        Positioned.fill(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(13),
+                            child: SvgPicture.asset(
+                              'assets/images/calendario.svg',
+                              fit: BoxFit.cover,
                             ),
                           ),
-                          SizedBox(height: 10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: List.generate(weekDays.length, (index) {
-                              final date = dates[index];
-                              final isToday =
-                                  date.day == today.day &&
-                                  date.month == today.month &&
-                                  date.year == today.year;
-
-                              return Flexible(
-                                child: Container(
-                                  width: isToday ? 50 : 40,
-                                  padding: EdgeInsets.symmetric(vertical: 8),
-                                  decoration:
-                                      isToday
-                                          ? BoxDecoration(
-                                            color: AppColors.neutral,
-                                            borderRadius: BorderRadius.circular(
-                                              10,
-                                            ),
-                                          )
-                                          : null,
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        weekDays[index],
-                                        style: TextStyle(
-                                          color: AppColors.titleSecondary,
-                                          fontWeight:
-                                              isToday
-                                                  ? FontWeight.bold
-                                                  : FontWeight.w400,
-                                          fontSize: 15,
-                                        ),
-                                      ),
-                                      SizedBox(height: 5),
-                                      Text(
-                                        '${date.day}',
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          color: AppColors.titleSecondary,
-                                          fontWeight:
-                                              isToday
-                                                  ? FontWeight.bold
-                                                  : FontWeight.normal,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(15),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Sem eventos',
+                                style: TextStyle(
+                                  color: AppColors.titleSecondary,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                              );
-                            }),
+                              ),
+                              SizedBox(height: 10),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: List.generate(weekDays.length, (
+                                  index,
+                                ) {
+                                  final date = dates[index];
+                                  final isToday =
+                                      date.day == today.day &&
+                                      date.month == today.month &&
+                                      date.year == today.year;
+
+                                  return Flexible(
+                                    child: Container(
+                                      width: isToday ? 50 : 40,
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 8,
+                                      ),
+                                      decoration:
+                                          isToday
+                                              ? BoxDecoration(
+                                                color: AppColors.neutral,
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              )
+                                              : null,
+                                      child: Column(
+                                        children: [
+                                          Text(
+                                            weekDays[index],
+                                            style: TextStyle(
+                                              color: AppColors.titleSecondary,
+                                              fontWeight:
+                                                  isToday
+                                                      ? FontWeight.bold
+                                                      : FontWeight.w400,
+                                              fontSize: 15,
+                                            ),
+                                          ),
+                                          SizedBox(height: 5),
+                                          Text(
+                                            '${date.day}',
+                                            style: TextStyle(
+                                              fontSize: 15,
+                                              color: AppColors.titleSecondary,
+                                              fontWeight:
+                                                  isToday
+                                                      ? FontWeight.bold
+                                                      : FontWeight.normal,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  _buildSectionHeader("Recordações do Amor"),
+                  _buildBigContainer(),
+                  SizedBox(height: 20),
+                  _buildSectionHeader("Vamos nos conectar mais?"),
+                  _buildCarousel(),
+                  _buildSectionHeader("Relatório Semanal", showButton: false),
+                  WeeklyReport(),
+                  SizedBox(height: 120),
+                ]),
               ),
-              _buildSectionHeader("Recordações do Amor"),
-              _buildBigContainer(),
-              SizedBox(height: 20),
-              _buildSectionHeader("Vamos nos conectar mais?"),
-              _buildCarousel(),
-            ]),
+            ],
+          ),
+          Positioned(
+            child: FloatingBottomNav(currentIndex: 0, onTap: (index) {}),
           ),
         ],
       ),
@@ -129,7 +145,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionHeader(String title) {
+  Widget _buildSectionHeader(String title, {bool showButton = true}) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
       child: Row(
@@ -145,17 +161,18 @@ class HomeScreen extends StatelessWidget {
               fontWeight: FontWeight.w500,
             ),
           ),
-          GestureDetector(
-            onTap: () {},
-            child: Text(
-              "Ver todos",
-              style: TextStyle(
-                color: AppColors.titlePrimary,
-                fontWeight: FontWeight.bold,
-                fontSize: 13,
+          if (showButton)
+            GestureDetector(
+              onTap: () {},
+              child: Text(
+                "Ver todos",
+                style: TextStyle(
+                  color: AppColors.titlePrimary,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
               ),
             ),
-          ),
         ],
       ),
     );

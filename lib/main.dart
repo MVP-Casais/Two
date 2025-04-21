@@ -4,6 +4,8 @@ import 'package:two/presentation/screens/baseScreen/base_screen.dart';
 import 'package:two/presentation/screens/baseScreen/memories/memories_screen.dart';
 import 'package:two/presentation/screens/baseScreen/planner/planner_screen.dart';
 import 'package:two/presentation/screens/baseScreen/settings/settings_screen.dart';
+import 'package:two/presentation/screens/profile/profile_screen.dart';
+import 'package:two/presentation/screens/ranking/ranking_screen.dart';
 import 'package:two/presentation/screens/register/help_register.dart';
 import 'presentation/screens/onboarding/onboarding_screen.dart';
 import 'presentation/screens/login/login.dart';
@@ -35,6 +37,8 @@ class MyApp extends StatelessWidget {
         '/planner': (context) => const PlannerScreen(),
         '/settings': (context) => const SettingsScreen(),
         '/base': (context) => const BaseScreen(),
+        '/ranking': (context) => const RankingScreen(),
+        '/profile': (context) => const ProfileScreen(),
       },
     );
   }

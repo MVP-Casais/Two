@@ -5,6 +5,7 @@ import 'package:two/presentation/screens/baseScreen/memories/memories_screen.dar
 import 'package:two/presentation/screens/baseScreen/planner/planner_screen.dart';
 import 'package:two/presentation/screens/baseScreen/settings/settings_screen.dart';
 import 'package:two/presentation/widgets/top_header.dart';
+import 'package:two/presentation/widgets/navegation.dart';
 
 class BaseScreen extends StatefulWidget {
   final int initialPage;
@@ -17,18 +18,27 @@ class BaseScreen extends StatefulWidget {
 
 class _BaseScreenState extends State<BaseScreen> {
   late PageController _pageController;
-  int currentIndex = 0;
+  int currentIndexTop = 0;
+  int currentIndexBottom = -1;
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: widget.initialPage);
-    currentIndex = widget.initialPage;
+    currentIndexTop = widget.initialPage;
   }
 
-  void onTabTapped(int index) {
+  void onTabTappedNavigationTop(int indexTop) {
     _pageController.animateToPage(
-      index,
+      indexTop,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  void onTabTappedNavigationBottom(int indexBottom) {
+    _pageController.animateToPage(
+      indexBottom,
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
@@ -44,59 +54,75 @@ class _BaseScreenState extends State<BaseScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: CustomScrollView(
-        slivers: [
-          const TopHeader(
-            useSliver: true,
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 20, bottom: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildIconWithLabel(
-                    icon: Icons.remove_red_eye_outlined,
-                    label: "Memórias",
-                    isSelected: currentIndex == 0,
-                    onTap: () => onTabTapped(0),
-                  ),
-                  _buildIconWithLabel(
-                    icon: Icons.widgets_outlined,
-                    label: "Atividades",
-                    isSelected: currentIndex == 1,
-                    onTap: () => onTabTapped(1),
-                  ),
-                  _buildIconWithLabel(
-                    icon: Icons.edit_calendar_rounded,
-                    label: "Planner do Casal",
-                    isSelected: currentIndex == 2,
-                    onTap: () => onTabTapped(2),
-                  ),
-                  _buildIconWithLabel(
-                    icon: Icons.settings_outlined,
-                    label: "Configurações",
-                    isSelected: currentIndex == 3,
-                    onTap: () => onTabTapped(3),
-                  ),
-                ],
+      body: Stack(
+        children: [
+          CustomScrollView(
+            slivers: [
+              const TopHeader(
+                useSliver: true,
               ),
-            ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 20, bottom: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _buildIconWithLabel(
+                        icon: Icons.remove_red_eye_outlined,
+                        label: "Memórias",
+                        isSelected: currentIndexTop == 0,
+                        onTap: () => onTabTappedNavigationTop(0),
+                      ),
+                      _buildIconWithLabel(
+                        icon: Icons.widgets_outlined,
+                        label: "Atividades",
+                        isSelected: currentIndexTop == 1,
+                        onTap: () => onTabTappedNavigationTop(1),
+                      ),
+                      _buildIconWithLabel(
+                        icon: Icons.edit_calendar_rounded,
+                        label: "Planner do Casal",
+                        isSelected: currentIndexTop == 2,
+                        onTap: () => onTabTappedNavigationTop(2),
+                      ),
+                      _buildIconWithLabel(
+                        icon: Icons.settings_outlined,
+                        label: "Configurações",
+                        isSelected: currentIndexTop == 3,
+                        onTap: () => onTabTappedNavigationTop(3),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SliverFillRemaining(
+                child: PageView(
+                  controller: _pageController,
+                  onPageChanged: (indexTop) {
+                    setState(() {
+                      currentIndexTop = indexTop;
+                      currentIndexBottom = -1;
+                    });
+                  },
+                  children: const [
+                    MemoriesScreen(),
+                    ActivitiesScreen(),
+                    PlannerScreen(),
+                    SettingsScreen(),
+                  ],
+                ),
+              ),
+            ],
           ),
-          SliverFillRemaining(
-            child: PageView(
-              controller: _pageController,
-              onPageChanged: (index) {
+          Positioned(
+            child: FloatingBottomNav(
+              currentIndex: currentIndexBottom,
+              onTap: (indexBottom) {
                 setState(() {
-                  currentIndex = index;
+                  currentIndexBottom = indexBottom;
                 });
+                onTabTappedNavigationBottom(indexBottom);
               },
-              children: const [
-                MemoriesScreen(),
-                ActivitiesScreen(),
-                PlannerScreen(),
-                SettingsScreen(),
-              ],
             ),
           ),
         ],
