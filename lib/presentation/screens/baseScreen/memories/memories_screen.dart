@@ -12,54 +12,60 @@ class MemoriesScreen extends StatelessWidget {
       body: Column(
         children: [
           SizedBox(height: 20), 
-          _buildMemoryContainer(),
+          _buildMemoryContainer(imageWidth: 320), // 🔼 Defina a largura manualmente
         ],
       ),
     );
   }
 
-  Widget _buildMemoryContainer() {
+  Widget _buildMemoryContainer({required double imageWidth}) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16), 
         child: Container(
-          height: 350, 
+          height: 450, 
           width: double.infinity,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(13),
           ),
           child: Stack(
+            clipBehavior: Clip.antiAlias, 
             children: [
-             
-              Positioned(
-                top: -30, 
-                left: 0,
-                right: 0,
-                child: SvgPicture.asset(
-                  'assets/images/fundoMemorias.svg', 
-                  fit: BoxFit.cover,
+              // 🔼 **Imagem de fundo com bordas corretas**
+              Positioned.fill(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(30), 
+                  child: SvgPicture.asset(
+                    'assets/images/fundoMemorias.svg',
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
-             
+              
+              // 🖼 **Imagem interna com bordas corretas e largura ajustável**
               Positioned(
-                top: 50, 
-                left: 0,
-                right: 0,
+                top: 40, 
+                left: 10, // 🔼 Pequeno espaçamento para evitar corte brusco
+                right: 10, 
                 child: Center(
-                  child: SizedBox(
-                    height: 200,
-                    width: 200,
-                    child: SvgPicture.asset(
-                      'assets/images/casalMaos.svg', 
-                      fit: BoxFit.contain, 
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(13), // 🔼 Garantindo bordas arredondadas
+                    child: SizedBox(
+                      height: 250,
+                      width: imageWidth, // 🔼 Agora você pode definir a largura manualmente!
+                      child: SvgPicture.asset(
+                        'assets/images/casalMaos.svg',
+                        fit: BoxFit.cover, // 🔼 Expandindo sem cortar ou distorcer
+                      ),
                     ),
                   ),
                 ),
               ),
               
+              // ✍ **Texto ajustado para melhor alinhamento**
               Positioned(
-                bottom: 30,
+                bottom: 25, 
                 left: 0,
                 right: 0,
                 child: Padding(
@@ -68,7 +74,7 @@ class MemoriesScreen extends StatelessWidget {
                     'Um símbolo eterno de amor e compromisso.', 
                     style: TextStyle(
                       color: AppColors.titleSecondary,
-                      fontSize: 24, 
+                      fontSize: 26, 
                       fontWeight: FontWeight.bold,
                     ),
                     textAlign: TextAlign.center,
