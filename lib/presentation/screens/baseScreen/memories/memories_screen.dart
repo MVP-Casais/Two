@@ -11,7 +11,7 @@ class MemoriesScreen extends StatelessWidget {
       backgroundColor: AppColors.background,
       body: Column(
         children: [
-          SizedBox(height: 20), // 🔼 Espaço para elevar o layout mais perto do topo
+          SizedBox(height: 20), 
           _buildMemoryContainer(),
         ],
       ),
@@ -22,53 +22,53 @@ class MemoriesScreen extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(16), // Mantendo bordas arredondadas
+        borderRadius: BorderRadius.circular(16), 
         child: Container(
-          height: 350, // 🔼 Ajustando altura para subir o contêiner
+          height: 350, 
           width: double.infinity,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(13),
           ),
           child: Stack(
             children: [
-              // 🔼 **Subindo a imagem de fundo**
+             
               Positioned(
-                top: -30, // 🔼 Movendo o fundo para cima
+                top: -30, 
                 left: 0,
                 right: 0,
                 child: SvgPicture.asset(
-                  'assets/images/fundoMemorias.svg', // Caminho correto do fundo
+                  'assets/images/fundoMemorias.svg', 
                   fit: BoxFit.cover,
                 ),
               ),
-              // 🖼 **Imagem das mãos - agora bem centralizada**
+             
               Positioned(
-                top: 50, // 🔼 Ajustando altura correta
+                top: 50, 
                 left: 0,
                 right: 0,
                 child: Center(
                   child: SizedBox(
-                    height: 200, // 🔼 Mantendo proporção correta
+                    height: 200,
                     width: 200,
                     child: SvgPicture.asset(
-                      'assets/images/maosDadasCasal.svg', // Caminho correto da imagem interna
-                      fit: BoxFit.contain, // Garantindo encaixe correto
+                      'assets/images/casalMaos.svg', 
+                      fit: BoxFit.contain, 
                     ),
                   ),
                 ),
               ),
-              // ✍ **Texto ajustado para melhor alinhamento**
+              
               Positioned(
-                bottom: 30, // 🔼 Subindo o texto um pouco mais
+                bottom: 30,
                 left: 0,
                 right: 0,
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16),
                   child: Text(
-                    'Um símbolo eterno de amor e compromisso.', // Texto ajustável
+                    'Um símbolo eterno de amor e compromisso.', 
                     style: TextStyle(
                       color: AppColors.titleSecondary,
-                      fontSize: 24, // 🔼 Ajuste da fonte para melhor encaixe
+                      fontSize: 24, 
                       fontWeight: FontWeight.bold,
                     ),
                     textAlign: TextAlign.center,
