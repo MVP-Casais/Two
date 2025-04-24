@@ -10,7 +10,7 @@ import 'package:two/presentation/widgets/navegation.dart';
 class BaseScreen extends StatefulWidget {
   final int initialPage;
 
-  const BaseScreen({super.key, this.initialPage = 0});
+  const BaseScreen({super.key, this.initialPage = 0}); // 🔼 Adicionado "const"
 
   @override
   State<BaseScreen> createState() => _BaseScreenState();
@@ -31,7 +31,7 @@ class _BaseScreenState extends State<BaseScreen> {
   void onTabTappedNavigationTop(int indexTop) {
     _pageController.animateToPage(
       indexTop,
-      duration: const Duration(milliseconds: 300),
+      duration: Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
   }
@@ -39,7 +39,7 @@ class _BaseScreenState extends State<BaseScreen> {
   void onTabTappedNavigationBottom(int indexBottom) {
     _pageController.animateToPage(
       indexBottom,
-      duration: const Duration(milliseconds: 300),
+      duration: Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
   }
@@ -58,12 +58,10 @@ class _BaseScreenState extends State<BaseScreen> {
         children: [
           CustomScrollView(
             slivers: [
-              const TopHeader(
-                useSliver: true,
-              ),
+              TopHeader(useSliver: true),
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 20, bottom: 10),
+                  padding: EdgeInsets.only(top: 20, bottom: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -104,7 +102,7 @@ class _BaseScreenState extends State<BaseScreen> {
                       currentIndexBottom = -1;
                     });
                   },
-                  children: const [
+                  children: [
                     MemoriesScreen(),
                     ActivitiesScreen(),
                     PlannerScreen(),
@@ -141,10 +139,10 @@ class _BaseScreenState extends State<BaseScreen> {
       child: Column(
         children: [
           Icon(icon, size: 28, color: AppColors.icons),
-          const SizedBox(height: 5),
+          SizedBox(height: 5),
           Container(
             decoration: isSelected
-                ? const BoxDecoration(
+                ? BoxDecoration(
                     border: Border(
                       bottom: BorderSide(
                         color: AppColors.titleSecondary,
@@ -153,7 +151,7 @@ class _BaseScreenState extends State<BaseScreen> {
                     ),
                   )
                 : null,
-            padding: const EdgeInsets.only(bottom: 4),
+            padding: EdgeInsets.only(bottom: 4),
             child: Text(
               label,
               style: TextStyle(
