@@ -12,7 +12,7 @@ class MemoriesScreen extends StatelessWidget {
       body: Column(
         children: [
           SizedBox(height: 20), 
-          _buildMemoryContainer(imageWidth: 320), // 🔼 Defina a largura manualmente
+          _buildMemoryContainer(imageWidth: 320), 
         ],
       ),
     );
@@ -21,21 +21,28 @@ class MemoriesScreen extends StatelessWidget {
   Widget _buildMemoryContainer({required double imageWidth}) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16), 
-        child: Container(
-          height: 450, 
-          width: double.infinity,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(13),
-          ),
+      child: Container(
+        height: 450, 
+        width: double.infinity,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withAlpha(90), // 🔼 Sombra mais escura para maior destaque
+              blurRadius: 4, 
+              offset: Offset(0, 4), 
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(30), 
           child: Stack(
             clipBehavior: Clip.antiAlias, 
             children: [
-              // 🔼 **Imagem de fundo com bordas corretas**
+              // 🔼 **Imagem de fundo com bordas corrigidas e sombra sutil**
               Positioned.fill(
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(30), 
+                  borderRadius: BorderRadius.circular(25), 
                   child: SvgPicture.asset(
                     'assets/images/fundoMemorias.svg',
                     fit: BoxFit.cover,
@@ -43,20 +50,32 @@ class MemoriesScreen extends StatelessWidget {
                 ),
               ),
               
-              // 🖼 **Imagem interna com bordas corretas e largura ajustável**
+              // 🖼 **Imagem interna com sombra mais escura**
               Positioned(
-                top: 40, 
-                left: 10, // 🔼 Pequeno espaçamento para evitar corte brusco
+                top: 16, 
+                left: 10, 
                 right: 10, 
                 child: Center(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(13), // 🔼 Garantindo bordas arredondadas
-                    child: SizedBox(
-                      height: 250,
-                      width: imageWidth, // 🔼 Agora você pode definir a largura manualmente!
-                      child: SvgPicture.asset(
-                        'assets/images/casalMaos.svg',
-                        fit: BoxFit.cover, // 🔼 Expandindo sem cortar ou distorcer
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(18), 
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withAlpha(160), // 🔼 Agora a sombra está mais intensa!
+                          blurRadius: 4, // 🔼 Mantendo suavidade sem espalhar demais
+                          offset: Offset(0, 4), // 🔼 Reforçando efeito elevado
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(18), 
+                      child: SizedBox(
+                        height: 250,
+                        width: imageWidth, 
+                        child: SvgPicture.asset(
+                          'assets/images/casalMaos.svg',
+                          fit: BoxFit.cover, 
+                        ),
                       ),
                     ),
                   ),
@@ -65,16 +84,16 @@ class MemoriesScreen extends StatelessWidget {
               
               // ✍ **Texto ajustado para melhor alinhamento**
               Positioned(
-                bottom: 25, 
+                bottom: 19, 
                 left: 0,
                 right: 0,
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  padding: EdgeInsets.symmetric(horizontal: 50),
                   child: Text(
                     'Um símbolo eterno de amor e compromisso.', 
                     style: TextStyle(
                       color: AppColors.titleSecondary,
-                      fontSize: 26, 
+                      fontSize: 35, 
                       fontWeight: FontWeight.bold,
                     ),
                     textAlign: TextAlign.center,
