@@ -13,13 +13,8 @@ class ActivitiesScreen extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 16),
         child: ListView(
           children: [
-            SizedBox(height: 20),
-
-            // 🎯 Primeiro card atualizado conforme solicitado
             GestureDetector(
-              onTap: () {
-                // 🔼 Ação ao clicar
-              },
+              onTap: () {},
               child: Container(
                 height: 200,
                 width: double.infinity,
@@ -37,7 +32,7 @@ class ActivitiesScreen extends StatelessWidget {
                         ),
                       ),
                       Positioned(
-                        top: 18, // 🔼 Movido um pouco para baixo
+                        top: 18,
                         left: 20,
                         child: Text(
                           'Ótimo progresso!',
@@ -54,9 +49,12 @@ class ActivitiesScreen extends StatelessWidget {
                         child: Row(
                           children: [
                             Container(
-                              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
-                                color: Color(0xFFFF9797), // 🔼 Mini card atualizado
+                                color: AppColors.terciary,
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Text(
@@ -69,59 +67,52 @@ class ActivitiesScreen extends StatelessWidget {
                               ),
                             ),
                             SizedBox(width: 6),
-                            Icon(Icons.arrow_forward_ios, size: 16, color: Colors.black54),
+                            Icon(
+                              Icons.arrow_forward_ios,
+                              size: 16,
+                              color: AppColors.icons,
+                            ),
                           ],
                         ),
                       ),
                       Positioned(
-                        top: 70, // 🔼 Movido um pouco mais para cima
+                        top: 70,
                         left: 20,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Faltam 200 pontos para',
-                              style: TextStyle(
-                                color: Color(0xFF920A0A), // 🔼 Cor do texto corrigida
-                                fontSize: 17,
-                                fontWeight: FontWeight.w600,
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(maxWidth: 220),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Faltam 200 pontos para subir de nível!',
+                                style: TextStyle(
+                                  color: AppColors.titleTerciary,
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
-                            ),
-                            Text(
-                              'subir de nível!',
-                              style: TextStyle(
-                                color: Color(0xFF920A0A), // 🔼 Cor do texto corrigida
-                                fontSize: 17,
-                                fontWeight: FontWeight.w600,
-                                height: 1.2,
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                       Positioned(
                         bottom: 12,
                         left: 20,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '+3 desafios concluídos esta',
-                              style: TextStyle(
-                                color: Color(0xFF920A0A), // 🔼 Cor do texto corrigida
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(maxWidth: 220),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '+3 desafios concluídos esta semana!',
+                                style: TextStyle(
+                                  color: AppColors.titleTerciary,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
-                            ),
-                            Text(
-                              'semana!',
-                              style: TextStyle(
-                                color: Color(0xFF920A0A), // 🔼 Cor do texto corrigida
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -137,7 +128,7 @@ class ActivitiesScreen extends StatelessWidget {
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: AppColors.titleSecondary,
+                color: AppColors.titlePrimary,
               ),
             ),
 
@@ -168,6 +159,7 @@ class ActivitiesScreen extends StatelessWidget {
               title: 'Conversas que Conectam',
               subtitle: 'Descubra mais sobre o outro',
             ),
+            SizedBox(height: 60),
           ],
         ),
       ),
@@ -180,9 +172,7 @@ class ActivitiesScreen extends StatelessWidget {
     required String subtitle,
   }) {
     return GestureDetector(
-      onTap: () {
-        // 🔼 Defina a ação ao clicar no card
-      },
+      onTap: () {},
       child: Container(
         margin: EdgeInsets.only(bottom: 16),
         padding: EdgeInsets.all(16),
@@ -201,18 +191,26 @@ class ActivitiesScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: AppColors.titlePrimary,
                     ),
                   ),
+
                   SizedBox(height: 8),
                   Text(
                     subtitle,
-                    style: TextStyle(fontSize: 14, color: Colors.black),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: AppColors.titlePrimary,
+                    ),
                   ),
                 ],
               ),
             ),
-            Icon(Icons.arrow_forward_ios, size: 20, color: Colors.black54),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 20,
+              color: AppColors.titlePrimary,
+            ),
           ],
         ),
       ),

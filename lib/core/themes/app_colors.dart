@@ -15,6 +15,7 @@ class AppColors {
   // Cores de texto
   static const Color titlePrimary = Color(0xFF2D2D2D);
   static const Color titleSecondary = Color(0xFF4F0000);
+  static const Color titleTerciary = Color(0xFF920A0A);
   static const Color textSecondarydark = Color(0xFF5D5D5D);
   static const Color textSecondarylight = Color(0xFF888888);
 
