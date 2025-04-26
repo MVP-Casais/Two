@@ -91,7 +91,7 @@ class ActivitiesScreen extends StatelessWidget {
                               'subir de nível!',
                               style: TextStyle(
                                 color: Color(0xFF920A0A), // 🔼 Cor do texto corrigida
-                                fontSize: 18,
+                                fontSize: 17,
                                 fontWeight: FontWeight.w600,
                                 height: 1.2,
                               ),
