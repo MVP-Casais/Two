@@ -5,6 +5,7 @@ import 'package:two/presentation/screens/baseScreen/memories/memories_screen.dar
 import 'package:two/presentation/screens/baseScreen/settings/settings_screen.dart';
 import 'package:two/presentation/screens/baseScreen/planner/planner_screen.dart'; // ✅ Corrigi a importação
 import 'package:two/presentation/widgets/top_header.dart';
+import 'package:two/presentation/widgets/top_menu.dart';
 import 'package:two/presentation/widgets/navegation.dart';
 
 class BaseScreen extends StatefulWidget {
@@ -21,6 +22,8 @@ class _BaseScreenState extends State<BaseScreen> {
   int currentIndexTop = 0;
   int currentIndexBottom = -1;
 
+  final ScrollController _scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -28,10 +31,17 @@ class _BaseScreenState extends State<BaseScreen> {
     currentIndexTop = widget.initialPage;
   }
 
+  @override
+  void dispose() {
+    _pageController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   void onTabTappedNavigationTop(int indexTop) {
     _pageController.animateToPage(
       indexTop,
-      duration: Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
   }
@@ -39,15 +49,9 @@ class _BaseScreenState extends State<BaseScreen> {
   void onTabTappedNavigationBottom(int indexBottom) {
     _pageController.animateToPage(
       indexBottom,
-      duration: Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
   }
 
   @override
@@ -105,7 +109,7 @@ class _BaseScreenState extends State<BaseScreen> {
                   children: [
                     MemoriesScreen(),
                     ActivitiesScreen(),
-                    PlannerScreen(), // ✅ Agora, PlannerScreen está referenciada corretamente
+                    PlannerScreen(),
                     SettingsScreen(),
                   ],
                 ),

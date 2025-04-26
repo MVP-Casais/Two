@@ -3,42 +3,93 @@ import 'package:two/core/themes/app_colors.dart';
 import 'package:two/presentation/screens/baseScreen/base_screen.dart';
 
 class TopMenu extends StatelessWidget {
-  const TopMenu({super.key});
+  final int? currentIndex;
+  final Function(int)? onTap;
+  final bool navigateToBaseScreen;
+
+  const TopMenu({
+    super.key,
+    this.currentIndex,
+    this.onTap,
+    this.navigateToBaseScreen = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(top: 40, bottom: 20),
+      padding: const EdgeInsets.only(top: 8, bottom: 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _buildIcon(context, Icons.remove_red_eye_outlined, "Memórias", 0),
-          _buildIcon(context, Icons.widgets_outlined, "Atividades", 1),
-          _buildIcon(context, Icons.edit_calendar_rounded, "Planner do Casal", 2),
-          _buildIcon(context, Icons.settings_outlined, "Configurações", 3),
+          _buildIcon(context, 0, Icons.remove_red_eye_outlined, "Memórias"),
+          _buildIcon(context, 1, Icons.widgets_outlined, "Atividades"),
+          _buildIcon(
+            context,
+            2,
+            Icons.calendar_month_outlined,
+            "Planner do Casal",
+          ),
+          _buildIcon(context, 3, Icons.settings_outlined, "Configurações"),
         ],
       ),
     );
   }
 
-  Widget _buildIcon(BuildContext context, IconData icon, String label, int page) {
+  Widget _buildIcon(
+    BuildContext context,
+    int index,
+    IconData icon,
+    String label,
+  ) {
+    final isSelected = index == currentIndex;
+
+    final selectedIcons = {
+      0: Icons.visibility, 
+      1: Icons.widgets, 
+      2: Icons.calendar_month, 
+      3: Icons.settings, 
+    };
+
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => BaseScreen(initialPage: page)),
-        );
+        if (navigateToBaseScreen) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => BaseScreen(initialPage: index)),
+          );
+        } else {
+          onTap?.call(index);
+        }
       },
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 28, color: AppColors.icons),
-          SizedBox(height: 5),
-          Text(
-            label,
-            style: TextStyle(
-              color: AppColors.titlePrimary,
-              fontSize: 13,
-              fontWeight: FontWeight.w400,
+          Icon(
+            isSelected ? selectedIcons[index] ?? icon : icon, 
+            size: 28,
+            color: AppColors.icons,
+          ),
+          const SizedBox(height: 5),
+          Container(
+            decoration:
+                isSelected
+                    ? BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: AppColors.titleSecondary,
+                          width: 2,
+                        ),
+                      ),
+                    )
+                    : null,
+            padding: const EdgeInsets.only(bottom: 4),
+            child: Text(
+              label,
+              style: TextStyle(
+                color: AppColors.titlePrimary,
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+              ),
             ),
           ),
         ],

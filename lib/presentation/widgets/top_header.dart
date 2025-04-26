@@ -11,9 +11,10 @@ class TopHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final content = Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         IconButton(icon: const Icon(Icons.menu), onPressed: () {}),
-        SvgPicture.asset('assets/images/TWO.svg', height: 16),
+        SvgPicture.asset('assets/images/TWO.svg', height: 24),
         IconButton(icon: const Icon(Icons.add), onPressed: () {}),
       ],
     );
@@ -24,17 +25,23 @@ class TopHeader extends StatelessWidget {
         snap: false,
         expandedHeight: 60.0,
         backgroundColor: AppColors.background,
-        flexibleSpace: FlexibleSpaceBar(
-          centerTitle: true,
-          title: SvgPicture.asset('assets/images/TWO.svg', height: 16),
+        flexibleSpace: Padding(
+          padding: const EdgeInsets.only(top: 40, left: 5, right: 5),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              IconButton(icon: const Icon(Icons.menu), onPressed: () {}),
+              SvgPicture.asset('assets/images/TWO.svg', height: 24),
+              IconButton(icon: const Icon(Icons.add), onPressed: () {}),
+            ],
+          ),
         ),
-        leading: IconButton(icon: const Icon(Icons.menu), onPressed: () {}),
-        actions: [IconButton(icon: const Icon(Icons.add), onPressed: () {})],
       );
     } else {
       return SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+          padding: const EdgeInsets.only(bottom: 6, left: 5, right: 5),
           child: content,
         ),
       );

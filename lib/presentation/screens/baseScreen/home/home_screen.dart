@@ -30,8 +30,9 @@ class HomeScreen extends StatelessWidget {
 
               SliverList(
                 delegate: SliverChildListDelegate([
-                  TopMenu(),
-                  SizedBox(height: 20),
+                  SizedBox(height: 10),
+                  TopMenu(navigateToBaseScreen: true),
+                  SizedBox(height: 10),
                   Container(
                     margin: EdgeInsets.all(20),
                     height: 130,
