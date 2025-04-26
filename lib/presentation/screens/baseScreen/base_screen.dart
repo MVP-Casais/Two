@@ -58,114 +58,67 @@ class _BaseScreenState extends State<BaseScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: Stack(
-        children: [
-          CustomScrollView(
-            slivers: [
-              TopHeader(useSliver: true),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.only(top: 20, bottom: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _buildIconWithLabel(
-                        icon: Icons.remove_red_eye_outlined,
-                        label: "Memórias",
-                        isSelected: currentIndexTop == 0,
-                        onTap: () => onTabTappedNavigationTop(0),
-                      ),
-                      _buildIconWithLabel(
-                        icon: Icons.widgets_outlined,
-                        label: "Atividades",
-                        isSelected: currentIndexTop == 1,
-                        onTap: () => onTabTappedNavigationTop(1),
-                      ),
-                      _buildIconWithLabel(
-                        icon: Icons.edit_calendar_rounded,
-                        label: "Planner do Casal",
-                        isSelected: currentIndexTop == 2,
-                        onTap: () => onTabTappedNavigationTop(2),
-                      ),
-                      _buildIconWithLabel(
-                        icon: Icons.settings_outlined,
-                        label: "Configurações",
-                        isSelected: currentIndexTop == 3,
-                        onTap: () => onTabTappedNavigationTop(3),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              SliverFillRemaining(
-                child: PageView(
-                  controller: _pageController,
-                  onPageChanged: (indexTop) {
-                    setState(() {
-                      currentIndexTop = indexTop;
-                      currentIndexBottom = -1;
-                    });
-                  },
+      body: NestedScrollView(
+        controller: _scrollController,
+        headerSliverBuilder: (context, innerBoxIsScrolled) {
+          return [
+            SliverAppBar(
+              backgroundColor: AppColors.background,
+              expandedHeight: 146,
+              floating: true,
+              snap: false, 
+              pinned: false,
+              elevation: 0,
+              automaticallyImplyLeading: false,
+              flexibleSpace: FlexibleSpaceBar(
+                collapseMode: CollapseMode.none, 
+                background: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    MemoriesScreen(),
-                    ActivitiesScreen(),
-                    PlannerScreen(),
-                    SettingsScreen(),
+                    TopHeader(useSliver: false),
+                    TopMenu(
+                      currentIndex: currentIndexTop,
+                      onTap: (index) => onTabTappedNavigationTop(index),
+                    ),
                   ],
                 ),
               ),
-            ],
-          ),
-          Positioned(
-            child: FloatingBottomNav(
-              currentIndex: currentIndexBottom,
-              onTap: (indexBottom) {
-                setState(() {
-                  currentIndexBottom = indexBottom;
-                });
-                onTabTappedNavigationBottom(indexBottom);
-              },
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildIconWithLabel({
-    required IconData icon,
-    required String label,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        children: [
-          Icon(icon, size: 28, color: AppColors.icons),
-          SizedBox(height: 5),
-          Container(
-            decoration: isSelected
-                ? BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: AppColors.titleSecondary,
-                        width: 2.0,
-                      ),
-                    ),
-                  )
-                : null,
-            padding: EdgeInsets.only(bottom: 4),
-            child: Text(
-              label,
-              style: TextStyle(
-                color: AppColors.titlePrimary,
-                fontSize: 13,
-                fontWeight: FontWeight.w400,
+          ];
+        },
+        body: Stack(
+          children: [
+            PageView(
+              controller: _pageController,
+              onPageChanged: (indexTop) {
+                setState(() {
+                  currentIndexTop = indexTop;
+                  currentIndexBottom = -1;
+                });
+              },
+              children: const [
+                MemoriesScreen(),
+                ActivitiesScreen(),
+                PlannerScreen(),
+                SettingsScreen(),
+              ],
+            ),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: FloatingBottomNav(
+                currentIndex: currentIndexBottom,
+                onTap: (indexBottom) {
+                  setState(() {
+                    currentIndexBottom = indexBottom;
+                  });
+                  onTabTappedNavigationBottom(indexBottom);
+                },
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
