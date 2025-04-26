@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:two/core/themes/app_colors.dart';
 import 'package:two/presentation/screens/baseScreen/activities/activities_screen.dart';
 import 'package:two/presentation/screens/baseScreen/memories/memories_screen.dart';
-import 'package:two/presentation/screens/baseScreen/planner/planner_screen.dart';
 import 'package:two/presentation/screens/baseScreen/settings/settings_screen.dart';
+import 'package:two/presentation/screens/baseScreen/planner/planner_screen.dart'; // ✅ Corrigi a importação
 import 'package:two/presentation/widgets/top_header.dart';
 import 'package:two/presentation/widgets/navegation.dart';
 
 class BaseScreen extends StatefulWidget {
   final int initialPage;
 
-  const BaseScreen({super.key, this.initialPage = 0}); // 🔼 Adicionado "const"
+  const BaseScreen({super.key, this.initialPage = 0});
 
   @override
   State<BaseScreen> createState() => _BaseScreenState();
@@ -105,7 +105,7 @@ class _BaseScreenState extends State<BaseScreen> {
                   children: [
                     MemoriesScreen(),
                     ActivitiesScreen(),
-                    PlannerScreen(),
+                    PlannerScreen(), // ✅ Agora, PlannerScreen está referenciada corretamente
                     SettingsScreen(),
                   ],
                 ),
