@@ -19,7 +19,7 @@ class FloatingBottomNav extends StatelessWidget {
       _NavItem(icon: Icons.person, label: "Perfil"),
     ];
 
-    final double width = MediaQuery.of(context).size.width * 0.58;
+    final double width = MediaQuery.of(context).size.width * 0.55;
     
     return Align(
       alignment: Alignment.bottomCenter,
@@ -27,7 +27,7 @@ class FloatingBottomNav extends StatelessWidget {
         padding: const EdgeInsets.only(bottom: 16),
         child: Container(
           width: width,
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10), 
+          padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5), 
           decoration: BoxDecoration(
             color: AppColors.neutral,
             borderRadius: BorderRadius.circular(50),
@@ -72,7 +72,7 @@ class FloatingBottomNav extends StatelessWidget {
                     ),
                     padding: EdgeInsets.symmetric(
                       vertical: 10,
-                      horizontal: isSelected ? 8 : 0,
+                      horizontal: isSelected ? 10 : 0,
                     ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -80,7 +80,7 @@ class FloatingBottomNav extends StatelessWidget {
                         Icon(
                           items[index].icon,
                           color: isSelected ? AppColors.neutral : AppColors.indicatorBackground,
-                          size: 28,
+                          size: 25,
                         ),
                         const SizedBox(height: 5),
                         Text(
