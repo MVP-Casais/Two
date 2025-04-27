@@ -76,8 +76,8 @@ class MemoryCard extends StatelessWidget {
             boxShadow: [
               BoxShadow(
                 color: AppColors.shadow.withAlpha(20),
-                blurRadius: 4,
-                offset: Offset(0, 4),
+                blurRadius: 5,
+                offset: Offset(100, 10),
               ),
             ],
           ),

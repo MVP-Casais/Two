@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:intl/intl.dart';
 
 class PlannerScreen extends StatefulWidget {
   const PlannerScreen({super.key});
@@ -10,25 +11,43 @@ class PlannerScreen extends StatefulWidget {
 
 class _PlannerScreenState extends State<PlannerScreen> {
   DateTime selectedDate = DateTime.now();
+  DateTime focusedDate = DateTime.now();
   Map<DateTime, List<Map<String, dynamic>>> eventsByDate = {};
 
   void goToPreviousMonth() {
     setState(() {
-      selectedDate = DateTime(selectedDate.year, selectedDate.month - 1, 1);
+      focusedDate = DateTime(
+        focusedDate.year,
+        focusedDate.month - 1,
+        focusedDate.day,
+      );
     });
   }
 
   void goToNextMonth() {
     setState(() {
-      selectedDate = DateTime(selectedDate.year, selectedDate.month + 1, 1);
+      focusedDate = DateTime(
+        focusedDate.year,
+        focusedDate.month + 1,
+        focusedDate.day,
+      );
     });
   }
 
   String getMonthName(int month) {
     const months = [
-      "Janeiro", "Fevereiro", "Março", "Abril",
-      "Maio", "Junho", "Julho", "Agosto",
-      "Setembro", "Outubro", "Novembro", "Dezembro"
+      "Janeiro",
+      "Fevereiro",
+      "Março",
+      "Abril",
+      "Maio",
+      "Junho",
+      "Julho",
+      "Agosto",
+      "Setembro",
+      "Outubro",
+      "Novembro",
+      "Dezembro",
     ];
     return months[month - 1];
   }
@@ -36,12 +55,16 @@ class _PlannerScreenState extends State<PlannerScreen> {
   void showEventDialog(BuildContext context) {
     final TextEditingController nameController = TextEditingController();
     final TextEditingController descriptionController = TextEditingController();
+    final TextEditingController startTimeController = TextEditingController();
+    final TextEditingController endTimeController = TextEditingController();
+    final TextEditingController dateController = TextEditingController();
+    String? selectedCategory;
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
       ),
       builder: (context) {
         return Padding(
@@ -49,15 +72,14 @@ class _PlannerScreenState extends State<PlannerScreen> {
             bottom: MediaQuery.of(context).viewInsets.bottom,
             left: 24,
             right: 24,
-            top: 24,
+            top: 30,
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: ListView(
+            shrinkWrap: true,
             children: [
               Center(
                 child: Text(
-                  "Criar Evento",
+                  "Adicionar novo evento",
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -66,8 +88,15 @@ class _PlannerScreenState extends State<PlannerScreen> {
                 controller: nameController,
                 decoration: InputDecoration(
                   labelText: "Nome do evento",
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  labelStyle: TextStyle(color: Colors.grey.shade600),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Colors.grey.shade400),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
                 ),
               ),
               SizedBox(height: 16),
@@ -75,8 +104,184 @@ class _PlannerScreenState extends State<PlannerScreen> {
                 controller: descriptionController,
                 decoration: InputDecoration(
                   labelText: "Descrição",
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  labelStyle: TextStyle(color: Colors.grey.shade600),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Colors.grey.shade400),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                ),
+              ),
+              SizedBox(height: 16),
+
+              // Data Popup
+              GestureDetector(
+                onTap: () async {
+                  DateTime? pickedDate = await showDatePicker(
+                    context: context,
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime(2000),
+                    lastDate: DateTime(2100),
+                  );
+
+                  if (pickedDate != null && mounted) {
+                    setState(() {
+                      dateController.text = DateFormat(
+                        "dd/MM/yyyy",
+                      ).format(pickedDate);
+                    });
+                  }
+                },
+                child: AbsorbPointer(
+                  child: TextField(
+                    controller: dateController,
+                    readOnly: true,
+                    decoration: InputDecoration(
+                      labelText: "Data",
+                      labelStyle: TextStyle(color: Colors.grey.shade600),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: Colors.grey.shade400),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
+                      suffixIcon: Icon(
+                        Icons.calendar_today,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () async {
+                        TimeOfDay? pickedTime = await showTimePicker(
+                          context: context,
+                          initialTime: TimeOfDay.now(),
+                        );
+                        if (pickedTime != null && mounted) {
+                          setState(() {
+                            startTimeController.text = pickedTime.format(
+                              context,
+                            );
+                          });
+                        }
+                      },
+                      child: AbsorbPointer(
+                        child: TextField(
+                          controller: startTimeController,
+                          readOnly: true,
+                          decoration: InputDecoration(
+                            labelText: "Início",
+                            labelStyle: TextStyle(color: Colors.grey.shade600),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color: Colors.grey.shade400,
+                              ),
+                            ),
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 14,
+                            ),
+                            suffixIcon: Icon(
+                              Icons.access_time,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 16),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () async {
+                        TimeOfDay? pickedTime = await showTimePicker(
+                          context: context,
+                          initialTime: TimeOfDay.now(),
+                        );
+                        if (pickedTime != null && mounted) {
+                          setState(() {
+                            endTimeController.text = pickedTime.format(context);
+                          });
+                        }
+                      },
+                      child: AbsorbPointer(
+                        child: TextField(
+                          controller: endTimeController,
+                          readOnly: true,
+                          decoration: InputDecoration(
+                            labelText: "Término",
+                            labelStyle: TextStyle(color: Colors.grey.shade600),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color: Colors.grey.shade400,
+                              ),
+                            ),
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 14,
+                            ),
+                            suffixIcon: Icon(
+                              Icons.access_time,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                value: selectedCategory,
+                onChanged: (String? newCategory) {
+                  setState(() {
+                    selectedCategory = newCategory;
+                  });
+                },
+                decoration: InputDecoration(
+                  labelText: "Categoria",
+                  labelStyle: TextStyle(color: Colors.grey.shade600),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Colors.grey.shade400),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                ),
+                items:
+                    ["Trabalho", "Pessoal", "Estudo"].map((category) {
+                      return DropdownMenuItem(
+                        value: category,
+                        child: Text(category),
+                      );
+                    }).toList(),
+              ),
+              TextButton(
+                onPressed: () {
+                  // Lógica para adicionar nova categoria
+                },
+                child: Text(
+                  "+ Adicionar categoria",
+                  style: TextStyle(
+                    color: const Color.fromARGB(255, 255, 17, 0),
+                  ),
                 ),
               ),
               SizedBox(height: 24),
@@ -90,21 +295,28 @@ class _PlannerScreenState extends State<PlannerScreen> {
                         eventsByDate[selectedDate]!.add({
                           "title": nameController.text,
                           "description": descriptionController.text,
+                          "startTime": startTimeController.text,
+                          "endTime": endTimeController.text,
+                          "category": selectedCategory ?? "Sem categoria",
                         });
                       });
                       Navigator.pop(context);
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
+                    backgroundColor: const Color.fromARGB(255, 255, 17, 0),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(8),
                     ),
                     padding: EdgeInsets.symmetric(vertical: 16),
                   ),
                   child: Text(
                     "Criar evento",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
@@ -128,39 +340,52 @@ class _PlannerScreenState extends State<PlannerScreen> {
           Expanded(
             child: ListView(
               padding: const EdgeInsets.all(16),
-              children: eventsByDate.entries.expand((entry) {
-                return entry.value.map((event) {
-                  return Card(
-                    margin: EdgeInsets.only(bottom: 16),
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 8,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(16),
-                              bottomLeft: Radius.circular(16),
+              children:
+                  eventsByDate.entries.expand((entry) {
+                    return entry.value.map((event) {
+                      return Card(
+                        margin: EdgeInsets.only(bottom: 16),
+                        elevation: 4,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 8,
+                              height: 80,
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(16),
+                                  bottomLeft: Radius.circular(16),
+                                ),
+                              ),
                             ),
-                          ),
+                            Expanded(
+                              child: ListTile(
+                                title: Text(
+                                  event['title'],
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                subtitle: Text(
+                                  event['description'],
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                                trailing: Icon(Icons.more_vert),
+                              ),
+                            ),
+                          ],
                         ),
-                        Expanded(
-                          child: ListTile(
-                            title: Text(event['title'], style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                            subtitle: Text(event['description'], style: TextStyle(fontSize: 12, color: Colors.black54)),
-                            trailing: Icon(Icons.more_vert),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                });
-              }).toList(),
+                      );
+                    });
+                  }).toList(),
             ),
           ),
         ],
@@ -174,6 +399,7 @@ class _PlannerScreenState extends State<PlannerScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          // Botão para voltar ao mês anterior
           GestureDetector(
             onTap: goToPreviousMonth,
             child: Container(
@@ -183,15 +409,40 @@ class _PlannerScreenState extends State<PlannerScreen> {
                 border: Border.all(color: Colors.grey.shade400, width: 1),
                 borderRadius: BorderRadius.circular(13),
               ),
-              child: Icon(Icons.arrow_back_ios_new, size: 15, color: Colors.grey.shade600),
+              child: Icon(
+                Icons.arrow_back_ios_new,
+                size: 15,
+                color: Colors.black,
+              ),
             ),
           ),
+
+          // Mês e ano centralizados, com o ano abaixo do mês
           Column(
             children: [
-              Text(getMonthName(selectedDate.month), style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              Text("${selectedDate.year}", style: TextStyle(fontSize: 14, color: Colors.black54)),
+              
+              SizedBox(height: 8),
+              Text(
+                getMonthName(focusedDate.month), // Nome do mês
+                style: TextStyle(
+                  
+                  fontSize: 19, // Mantendo o mês maior
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black, // Destacado
+                ),
+              ),
+              Text(
+                "${focusedDate.year}", // Ano abaixo do mês
+                style: TextStyle(
+                  fontSize: 13, // Ano menor
+                  color:
+                      Colors.grey.shade600, // Tom mais opaco sem usar Opacity
+                ),
+              ),
             ],
           ),
+
+          // Botão para avançar ao próximo mês
           GestureDetector(
             onTap: goToNextMonth,
             child: Container(
@@ -201,7 +452,11 @@ class _PlannerScreenState extends State<PlannerScreen> {
                 border: Border.all(color: Colors.grey.shade400, width: 1),
                 borderRadius: BorderRadius.circular(13),
               ),
-              child: Icon(Icons.arrow_forward_ios, size: 15, color: Colors.grey.shade600),
+              child: Icon(
+                Icons.arrow_forward_ios,
+                size: 15,
+                color: Colors.black,
+              ),
             ),
           ),
         ],
@@ -212,7 +467,7 @@ class _PlannerScreenState extends State<PlannerScreen> {
   Widget buildCalendar() {
     return TableCalendar(
       locale: 'pt_BR',
-      focusedDay: selectedDate,
+      focusedDay: focusedDate,
       firstDay: DateTime.utc(2020, 1, 1),
       lastDay: DateTime.utc(2030, 12, 31),
       headerVisible: false,
@@ -227,16 +482,21 @@ class _PlannerScreenState extends State<PlannerScreen> {
           shape: BoxShape.rectangle,
           borderRadius: BorderRadius.circular(13),
         ),
+        todayTextStyle: TextStyle(color: Colors.white),
+        selectedTextStyle: TextStyle(color: Colors.white),
+        markersMaxCount: 3, // Limitando o número de bolinhas
         markerDecoration: BoxDecoration(
           color: Colors.red,
           shape: BoxShape.circle,
         ),
       ),
-      eventLoader: (day) => eventsByDate[day] ?? [],
-      selectedDayPredicate: (day) => isSameDay(selectedDate, day),
+      eventLoader: (day) {
+        return eventsByDate[day] ?? [];
+      },
       onDaySelected: (selectedDay, focusedDay) {
         setState(() {
           selectedDate = selectedDay;
+          focusedDate = focusedDay;
         });
         showEventDialog(context);
       },
