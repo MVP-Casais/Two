@@ -3,7 +3,7 @@ import 'package:two/core/themes/app_colors.dart';
 import 'package:two/presentation/screens/baseScreen/activities/activities_screen.dart';
 import 'package:two/presentation/screens/baseScreen/memories/memories_screen.dart';
 import 'package:two/presentation/screens/baseScreen/settings/settings_screen.dart';
-import 'package:two/presentation/screens/baseScreen/planner/planner_screen.dart'; // ✅ Corrigi a importação
+import 'package:two/presentation/screens/baseScreen/planner/planner_screen.dart';
 import 'package:two/presentation/widgets/top_header.dart';
 import 'package:two/presentation/widgets/top_menu.dart';
 import 'package:two/presentation/widgets/navegation.dart';
@@ -23,6 +23,7 @@ class _BaseScreenState extends State<BaseScreen> {
   int currentIndexBottom = -1;
 
   final ScrollController _scrollController = ScrollController();
+  final GlobalKey<PlannerScreenState> plannerScreenKey = GlobalKey(); // Corrige o tipo do estado
 
   @override
   void initState() {
@@ -75,7 +76,14 @@ class _BaseScreenState extends State<BaseScreen> {
                 background: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    TopHeader(useSliver: false),
+                    TopHeader(
+                      useSliver: false,
+                      onAddEvent: () {
+                        if (currentIndexTop == 2) { // Verifica se está na página PlannerScreen
+                          plannerScreenKey.currentState?.openAddEventModal(context);
+                        }
+                      },
+                    ),
                     TopMenu(
                       currentIndex: currentIndexTop,
                       onTap: (index) => onTabTappedNavigationTop(index),
@@ -96,11 +104,11 @@ class _BaseScreenState extends State<BaseScreen> {
                   currentIndexBottom = -1;
                 });
               },
-              children: const [
-                MemoriesScreen(),
-                ActivitiesScreen(),
-                PlannerScreen(),
-                SettingsScreen(),
+              children: [
+                const MemoriesScreen(),
+                const ActivitiesScreen(),
+                PlannerScreen(key: plannerScreenKey), // Passa a chave global
+                const SettingsScreen(),
               ],
             ),
             Positioned(

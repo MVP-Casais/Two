@@ -4,8 +4,13 @@ import 'package:two/core/themes/app_colors.dart';
 
 class TopHeader extends StatelessWidget {
   final bool useSliver;
+  final VoidCallback? onAddEvent; // Adiciona o callback para o botão de adicionar
 
-  const TopHeader({super.key, this.useSliver = false});
+  const TopHeader({
+    super.key,
+    this.useSliver = false,
+    this.onAddEvent, // Inicializa o callback
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +20,10 @@ class TopHeader extends StatelessWidget {
       children: [
         IconButton(icon: const Icon(Icons.menu), onPressed: () {}),
         SvgPicture.asset('assets/images/TWO.svg', height: 24),
-        IconButton(icon: const Icon(Icons.add), onPressed: () {}),
+        IconButton(
+          icon: const Icon(Icons.add),
+          onPressed: onAddEvent, // Chama o callback ao pressionar o botão
+        ),
       ],
     );
 
@@ -26,14 +34,17 @@ class TopHeader extends StatelessWidget {
         expandedHeight: 60.0,
         backgroundColor: AppColors.background,
         flexibleSpace: Padding(
-          padding: const EdgeInsets.only(top: 40, left: 5, right: 5),
+          padding: const EdgeInsets.only(top: 70, left: 5, right: 5),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               IconButton(icon: const Icon(Icons.menu), onPressed: () {}),
               SvgPicture.asset('assets/images/TWO.svg', height: 24),
-              IconButton(icon: const Icon(Icons.add), onPressed: () {}),
+              IconButton(
+                icon: const Icon(Icons.add),
+                onPressed: onAddEvent, // Chama o callback ao pressionar o botão
+              ),
             ],
           ),
         ),

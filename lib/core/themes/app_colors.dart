@@ -34,5 +34,14 @@ class AppColors {
   
   static const Color borderNavigation = Color(0xFFCCCCCC);
 
-
+  static const Color categoryOne = Color(0xFFFF0505);
+  static const Color categoryTwo = Color(0xFFFFA726);
+  static const Color categoryThree = Color(0xFFF06292);
+  static const Color categoryFour = Color(0xFF00695C);
+  static const Color categoryFive = Color(0xFF8BC34A);
+  static const Color categorySix = Color(0xFF7E57C2);
+  static const Color categorySeven = Color(0xFFFFEB3B);
+  static const Color categoryEight = Color(0xFF9C27B0);
+  static const Color categoryNine = Color(0xFF6ED58D);
+  static const Color categoryTen = Color(0xFFFF9797);
 }
