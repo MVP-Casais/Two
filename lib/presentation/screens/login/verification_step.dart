@@ -80,9 +80,7 @@ class VerificationStep extends StatelessWidget {
             ),
             SizedBox(height: screenHeight * 0.03),
             TextButton(
-              onPressed: () {
-                // Implementar lógica de reenviar código
-              },
+              onPressed: () {},
               child: Text(
                 "Reenviar código",
                 style: TextStyle(
@@ -96,7 +94,11 @@ class VerificationStep extends StatelessWidget {
             CustomButton(
               text: "Entrar",
               onPressed: () {
-                Navigator.pushReplacementNamed(context, '/home');
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  '/home',
+                  (Route<dynamic> route) => false,
+                );
               },
               backgroundColor: AppColors.primary,
               textColor: AppColors.neutral,

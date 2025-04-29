@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:two/core/themes/app_colors.dart';
 import 'package:two/presentation/screens/register/register_screen.dart';
 import 'package:two/presentation/widgets/custom_button.dart';
+import 'package:two/presentation/widgets/custom_input.dart';
 
 class EmailStep extends StatelessWidget {
   final VoidCallback onNext;
@@ -29,15 +30,7 @@ class EmailStep extends StatelessWidget {
               textAlign: TextAlign.left,
             ),
             SizedBox(height: screenHeight * 0.03),
-            TextField(
-              decoration: InputDecoration(
-                labelText: "Digite seu e-mail",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              keyboardType: TextInputType.emailAddress,
-            ),
+            CustomInput(labelText: "Digite seu e-mail"),
             SizedBox(height: screenHeight * 0.03),
             CustomButton(
               text: "Próximo",

@@ -21,7 +21,7 @@ class AppColors {
 
   // Cores Input
   static const Color inputBackground = Color(0x60E0E0E0);
-  static const Color inputBorder = Color(0xFF888888);
+  static const Color inputBorder = Color(0xFFDEDDDD);
   static const Color placeholder = Color(0xFF888888);
 
   // Cores de erro e sucesso
@@ -31,9 +31,10 @@ class AppColors {
   // Cores de sombra
   static const Color shadow = Color(0xFF2D2D2D);
 
-  
+  // Cores de borda Navigation
   static const Color borderNavigation = Color(0xFFCCCCCC);
 
+  // Cores de categorias
   static const Color categoryOne = Color(0xFFFF0505);
   static const Color categoryTwo = Color(0xFFFFA726);
   static const Color categoryThree = Color(0xFFF06292);
@@ -44,4 +45,10 @@ class AppColors {
   static const Color categoryEight = Color(0xFF9C27B0);
   static const Color categoryNine = Color(0xFF6ED58D);
   static const Color categoryTen = Color(0xFFFF9797);
+
+  // Cores index (Círculos da parte superior)
+  static const Color indexAtual = Color(0xFFFF0505);
+  static const Color indexCheck = Color(0xFF4CAF50);
+  static const Color indexDefault = Color(0xFF8F8F8F);
+
 }

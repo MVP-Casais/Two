@@ -201,70 +201,100 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildCarousel() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8),
-      child: SizedBox(
-        height: 130,
-        child: PageView.builder(
-          controller: PageController(viewportFraction: 0.95),
-          itemCount: 4,
-          itemBuilder: (context, index) {
-            final titles = [
-              "Pergunta do dia",
-              "Exemplo 1",
-              "Dica da Semana",
-              "Motivação",
-            ];
-            final subtitles = [
-              "Descrição para o card 1",
-              "Descrição para o card 1",
-              "Aqui vai uma dica interessante!",
-              "Se inspire para começar o dia!",
-            ];
+    final PageController pageController = PageController(viewportFraction: 0.95);
+    int currentIndex = 0;
 
-            return Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8),
-              child: Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(13),
-                    child: SvgPicture.asset(
-                      'assets/images/fundo_carrosel.svg',
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 40,
-                    left: 16,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+    return StatefulBuilder(
+      builder: (context, setState) {
+        return Column(
+          children: [
+            SizedBox(
+              height: 130,
+              child: PageView.builder(
+                controller: pageController,
+                itemCount: 4,
+                onPageChanged: (index) {
+                  setState(() {
+                    currentIndex = index;
+                  });
+                },
+                itemBuilder: (context, index) {
+                  final titles = [
+                    "Pergunta do dia",
+                    "Exemplo 1",
+                    "Dica da Semana",
+                    "Motivação",
+                  ];
+                  final subtitles = [
+                    "Descrição para o card 1",
+                    "Descrição para o card 1",
+                    "Aqui vai uma dica interessante!",
+                    "Se inspire para começar o dia!",
+                  ];
+
+                  return Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8),
+                    child: Stack(
                       children: [
-                        Text(
-                          titles[index],
-                          style: TextStyle(
-                            color: AppColors.titleSecondary,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(13),
+                          child: SvgPicture.asset(
+                            'assets/images/fundo_carrosel.svg',
+                            fit: BoxFit.cover,
+                            width: double.infinity,
                           ),
                         ),
-                        SizedBox(height: 6),
-                        Text(
-                          subtitles[index],
-                          style: TextStyle(
-                            color: AppColors.titleSecondary,
-                            fontSize: 15,
+                        Positioned(
+                          bottom: 40,
+                          left: 16,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                titles[index],
+                                style: TextStyle(
+                                  color: AppColors.titleSecondary,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(height: 6),
+                              Text(
+                                subtitles[index],
+                                style: TextStyle(
+                                  color: AppColors.titleSecondary,
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
-                  ),
-                ],
+                  );
+                },
               ),
-            );
-          },
-        ),
-      ),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(4, (index) {
+                final isActive = index == currentIndex;
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  width: isActive ? 20 : 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: isActive ? AppColors.terciary : AppColors.icons,
+                    borderRadius: BorderRadius.circular(isActive ? 10 : 10),
+                  ),
+                );
+              }),
+            ),
+          ],
+        );
+      },
     );
   }
 }

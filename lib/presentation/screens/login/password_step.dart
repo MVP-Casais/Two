@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:two/core/themes/app_colors.dart';
 import 'package:two/presentation/screens/reset/reset_password.dart';
 import 'package:two/presentation/widgets/custom_button.dart';
+import 'package:two/presentation/widgets/custom_input.dart';
 
 class PasswordStep extends StatefulWidget {
   final VoidCallback onNext;
@@ -37,25 +38,21 @@ class _PasswordStepState extends State<PasswordStep> {
               textAlign: TextAlign.left,
             ),
             SizedBox(height: screenHeight * 0.03),
-            TextField(
+            CustomInput(
               obscureText: _obscureText,
-              decoration: InputDecoration(
-                labelText: "Digite sua senha",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+              labelText: "Digite sua senha",
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _obscureText ? Icons.visibility_off : Icons.visibility,
                 ),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _obscureText ? Icons.visibility : Icons.visibility_off,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _obscureText = !_obscureText;
-                    });
-                  },
-                ),
+                onPressed: () {
+                  setState(() {
+                    _obscureText = !_obscureText;
+                  });
+                },
               ),
             ),
+
             SizedBox(height: screenHeight * 0.02),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -84,11 +81,11 @@ class _PasswordStepState extends State<PasswordStep> {
                 TextButton(
                   onPressed: () {
                     Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const ResetPassword(),
-                ),
-              );
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ResetPassword(),
+                      ),
+                    );
                   },
                   child: Text(
                     "Esqueci a senha",

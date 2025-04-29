@@ -7,16 +7,19 @@ class ActivitiesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16),
+        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
         child: ListView(
           children: [
             GestureDetector(
               onTap: () {},
               child: Container(
-                height: 200,
+                height: screenHeight * 0.25,
                 width: double.infinity,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(13),
@@ -32,26 +35,26 @@ class ActivitiesScreen extends StatelessWidget {
                         ),
                       ),
                       Positioned(
-                        top: 18,
-                        left: 20,
+                        top: screenHeight * 0.02,
+                        left: screenWidth * 0.05,
                         child: Text(
                           'Ótimo progresso!',
                           style: TextStyle(
                             color: AppColors.titleSecondary,
-                            fontSize: 24,
+                            fontSize: screenHeight * 0.029,
                             fontWeight: FontWeight.w900,
                           ),
                         ),
                       ),
                       Positioned(
-                        top: 23,
-                        right: 30,
+                        top: screenHeight * 0.03,
+                        right: screenWidth * 0.08,
                         child: Row(
                           children: [
                             Container(
                               padding: EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 4,
+                                horizontal: screenWidth * 0.03,
+                                vertical: screenHeight * 0.003,
                               ),
                               decoration: BoxDecoration(
                                 color: AppColors.terciary,
@@ -61,25 +64,25 @@ class ActivitiesScreen extends StatelessWidget {
                                 'Top 5',
                                 style: TextStyle(
                                   color: AppColors.titleSecondary,
-                                  fontSize: 17,
+                                  fontSize: screenHeight * 0.016,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
-                            SizedBox(width: 6),
+                            SizedBox(width: screenWidth * 0.015),
                             Icon(
                               Icons.arrow_forward_ios,
-                              size: 16,
+                              size: screenHeight * 0.02,
                               color: AppColors.icons,
                             ),
                           ],
                         ),
                       ),
                       Positioned(
-                        top: 70,
-                        left: 20,
+                        top: screenHeight * 0.09,
+                        left: screenWidth * 0.05,
                         child: ConstrainedBox(
-                          constraints: BoxConstraints(maxWidth: 220),
+                          constraints: BoxConstraints(maxWidth: screenWidth * 0.55),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -87,7 +90,7 @@ class ActivitiesScreen extends StatelessWidget {
                                 'Faltam 200 pontos para subir de nível!',
                                 style: TextStyle(
                                   color: AppColors.titleTerciary,
-                                  fontSize: 17,
+                                  fontSize: screenHeight * 0.02,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -96,10 +99,10 @@ class ActivitiesScreen extends StatelessWidget {
                         ),
                       ),
                       Positioned(
-                        bottom: 12,
-                        left: 20,
+                        bottom: screenHeight * 0.015,
+                        left: screenWidth * 0.05,
                         child: ConstrainedBox(
-                          constraints: BoxConstraints(maxWidth: 220),
+                          constraints: BoxConstraints(maxWidth: screenWidth * 0.55),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -107,7 +110,7 @@ class ActivitiesScreen extends StatelessWidget {
                                 '+3 desafios concluídos esta semana!',
                                 style: TextStyle(
                                   color: AppColors.titleTerciary,
-                                  fontSize: 14,
+                                  fontSize: screenHeight * 0.018,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -120,46 +123,52 @@ class ActivitiesScreen extends StatelessWidget {
                 ),
               ),
             ),
-
-            SizedBox(height: 30),
-
+            SizedBox(height: screenHeight * 0.04),
             Text(
               'Vamos nos conectar mais?',
               style: TextStyle(
-                fontSize: 22,
+                fontSize: screenHeight * 0.028,
                 fontWeight: FontWeight.bold,
                 color: AppColors.titlePrimary,
               ),
             ),
-
-            SizedBox(height: 20),
-
+            SizedBox(height: screenHeight * 0.03),
             _buildActivityCard(
               color: Colors.blue.shade200,
               title: 'Para Curtir em Casa',
               subtitle: 'Momentos especiais sem sair do lar',
+              screenHeight: screenHeight,
+              screenWidth: screenWidth,
             ),
             _buildActivityCard(
               color: Colors.green.shade200,
               title: 'Explorando Juntos',
               subtitle: 'Descubra novos lugares e experiências',
+              screenHeight: screenHeight,
+              screenWidth: screenWidth,
             ),
             _buildActivityCard(
               color: Colors.orange.shade200,
               title: 'Desafios em Casa',
               subtitle: 'Teste sua criatividade e cumplicidade',
+              screenHeight: screenHeight,
+              screenWidth: screenWidth,
             ),
             _buildActivityCard(
               color: Colors.purple.shade200,
               title: 'Missões Lá Fora',
               subtitle: 'Aventuras que fortalecem o vínculo',
+              screenHeight: screenHeight,
+              screenWidth: screenWidth,
             ),
             _buildActivityCard(
               color: Colors.yellow.shade200,
               title: 'Conversas que Conectam',
               subtitle: 'Descubra mais sobre o outro',
+              screenHeight: screenHeight,
+              screenWidth: screenWidth,
             ),
-            SizedBox(height: 60),
+            SizedBox(height: screenHeight * 0.08),
           ],
         ),
       ),
@@ -170,12 +179,14 @@ class ActivitiesScreen extends StatelessWidget {
     required Color color,
     required String title,
     required String subtitle,
+    required double screenHeight,
+    required double screenWidth,
   }) {
     return GestureDetector(
       onTap: () {},
       child: Container(
-        margin: EdgeInsets.only(bottom: 16),
-        padding: EdgeInsets.all(16),
+        margin: EdgeInsets.only(bottom: screenHeight * 0.02),
+        padding: EdgeInsets.all(screenHeight * 0.02),
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(13),
@@ -189,17 +200,16 @@ class ActivitiesScreen extends StatelessWidget {
                   Text(
                     title,
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: screenHeight * 0.022,
                       fontWeight: FontWeight.bold,
                       color: AppColors.titlePrimary,
                     ),
                   ),
-
-                  SizedBox(height: 8),
+                  SizedBox(height: screenHeight * 0.01),
                   Text(
                     subtitle,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: screenHeight * 0.018,
                       color: AppColors.titlePrimary,
                     ),
                   ),
@@ -208,7 +218,7 @@ class ActivitiesScreen extends StatelessWidget {
             ),
             Icon(
               Icons.arrow_forward_ios,
-              size: 20,
+              size: screenHeight * 0.025,
               color: AppColors.titlePrimary,
             ),
           ],

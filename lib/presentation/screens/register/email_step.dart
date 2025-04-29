@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:two/core/themes/app_colors.dart';
 import 'package:two/presentation/widgets/custom_button.dart';
+import 'package:two/presentation/widgets/custom_input.dart';
 
 class EmailStep extends StatelessWidget {
   final VoidCallback onNext;
@@ -11,9 +12,12 @@ class EmailStep extends StatelessWidget {
   Widget build(BuildContext context) {
     final TextEditingController emailController = TextEditingController();
     final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
 
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.045),
+      padding: EdgeInsets.symmetric(
+        horizontal: screenWidth * 0.045,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -26,16 +30,12 @@ class EmailStep extends StatelessWidget {
             ),
             textAlign: TextAlign.left,
           ),
-          SizedBox(height: 16),
-          TextField(
+          SizedBox(height: screenHeight * 0.02),
+          CustomInput(
+            labelText: "nome@exemplo.com",
             controller: emailController,
-            keyboardType: TextInputType.emailAddress,
-            decoration: InputDecoration(
-              hintText: "nome@exemplo.com",
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-            ),
           ),
-          SizedBox(height: 32),
+          SizedBox(height: screenHeight * 0.04),
           CustomButton(
             text: "Próximo",
             onPressed: onNext,

@@ -7,15 +7,18 @@ class MemoriesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: AppColors.background,
       body: Column(
         children: [
-          SizedBox(height: 20),
+          SizedBox(height: screenHeight * 0.02),
           Expanded(
             child: ListView(
-              padding: EdgeInsets.symmetric(horizontal: 16),
+              padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
               children: [
                 MemoryCard(
                   title: 'Viagem ao Rio',
@@ -37,7 +40,7 @@ class MemoriesScreen extends StatelessWidget {
                   description: 'Momento de paz com um céu pintado de laranja.',
                   imagePath: 'assets/images/porDoSol.svg',
                 ),
-                SizedBox(height: 80),
+                SizedBox(height: screenHeight * 0.1),
               ],
             ),
           ),
@@ -63,21 +66,23 @@ class MemoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
     const borderRadius = 24.0;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
+      padding: EdgeInsets.only(bottom: screenHeight * 0.025),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(borderRadius),
         child: Container(
-          height: 450,
+          height: screenHeight * 0.55,
           width: double.infinity,
           decoration: BoxDecoration(
             boxShadow: [
               BoxShadow(
                 color: AppColors.shadow.withAlpha(20),
                 blurRadius: 5,
-                offset: Offset(100, 10),
+                offset: Offset(0, 4),
               ),
             ],
           ),
@@ -93,15 +98,15 @@ class MemoryCard extends StatelessWidget {
 
               // Imagem do evento
               Positioned(
-                top: 16,
-                left: 10,
-                right: 10,
+                top: screenHeight * 0.02,
+                left: screenWidth * 0.03,
+                right: screenWidth * 0.03,
                 child: Center(
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(18),
                     child: Container(
-                      height: 250,
-                      width: 320,
+                      height: screenHeight * 0.30,
+                      width: screenWidth * 0.8,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(18),
                         boxShadow: [
@@ -120,9 +125,9 @@ class MemoryCard extends StatelessWidget {
 
               // Textos
               Positioned(
-                bottom: 40,
-                left: 20,
-                right: 20,
+                bottom: screenHeight * 0.05,
+                left: screenWidth * 0.05,
+                right: screenWidth * 0.05,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -130,26 +135,26 @@ class MemoryCard extends StatelessWidget {
                       title,
                       style: TextStyle(
                         color: AppColors.titleSecondary,
-                        fontSize: 28,
+                        fontSize: screenHeight * 0.035,
                         fontWeight: FontWeight.bold,
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 6),
+                    SizedBox(height: screenHeight * 0.01),
                     Text(
                       date,
                       style: TextStyle(
                         color: AppColors.titleSecondary,
-                        fontSize: 16,
+                        fontSize: screenHeight * 0.016,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    SizedBox(height: screenHeight * 0.01),
                     Text(
                       description,
                       style: TextStyle(
                         color: AppColors.titleSecondary,
-                        fontSize: 16,
+                        fontSize: screenHeight * 0.02,
                         fontWeight: FontWeight.w400,
                       ),
                     ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:two/core/themes/app_colors.dart';
 import 'package:two/presentation/widgets/custom_button.dart';
+import 'package:two/presentation/widgets/custom_input.dart';
 
 class UserComplete extends StatefulWidget {
   final VoidCallback onComplete;
@@ -38,15 +39,10 @@ class _UserCompleteState extends State<UserComplete> {
             textAlign: TextAlign.left,
           ),
           SizedBox(height: 16),
-          TextField(
+          CustomInput(
             controller: nameController,
-            decoration: InputDecoration(
-              hintText: "Nome completo",
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
+              labelText: "Nome completo",
             ),
-          ),
           SizedBox(height: 20),
           Text(
             "Insira o seu username",
@@ -58,15 +54,10 @@ class _UserCompleteState extends State<UserComplete> {
             textAlign: TextAlign.left,
           ),
           SizedBox(height: 16),
-          TextField(
+          CustomInput(
             controller: usernameController,
-            decoration: InputDecoration(
-              hintText: "Digite seu username",
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
+              labelText: "Digite seu username",
             ),
-          ),
           SizedBox(height: 20),
           Text(
             "Selecione seu gênero",
@@ -84,10 +75,17 @@ class _UserCompleteState extends State<UserComplete> {
               Expanded(
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        selectedGender == "Masculino"
-                            ? AppColors.primary
-                            : AppColors.background,
+                    backgroundColor: selectedGender == "Masculino"
+                        ? AppColors.primary
+                        : AppColors.background,
+                    side: BorderSide(
+                      color: selectedGender == "Masculino"
+                          ? AppColors.primary
+                          : AppColors.inputBorder,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                   onPressed: () {
                     setState(() {
@@ -97,10 +95,9 @@ class _UserCompleteState extends State<UserComplete> {
                   child: Text(
                     "Masculino",
                     style: TextStyle(
-                      color:
-                          selectedGender == "Masculino"
-                              ? AppColors.neutral
-                              : AppColors.titlePrimary,
+                      color: selectedGender == "Masculino"
+                          ? AppColors.neutral
+                          : AppColors.titlePrimary,
                     ),
                   ),
                 ),
@@ -109,10 +106,17 @@ class _UserCompleteState extends State<UserComplete> {
               Expanded(
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        selectedGender == "Feminino"
-                            ? AppColors.primary
-                            : AppColors.background,
+                    backgroundColor: selectedGender == "Feminino"
+                        ? AppColors.primary
+                        : AppColors.background,
+                    side: BorderSide(
+                      color: selectedGender == "Feminino"
+                          ? AppColors.primary
+                          : AppColors.inputBorder,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                   onPressed: () {
                     setState(() {
@@ -122,10 +126,9 @@ class _UserCompleteState extends State<UserComplete> {
                   child: Text(
                     "Feminino",
                     style: TextStyle(
-                      color:
-                          selectedGender == "Feminino"
-                              ? AppColors.neutral
-                              : AppColors.titlePrimary,
+                      color: selectedGender == "Feminino"
+                          ? AppColors.neutral
+                          : AppColors.titlePrimary,
                     ),
                   ),
                 ),
@@ -134,10 +137,17 @@ class _UserCompleteState extends State<UserComplete> {
               Expanded(
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        selectedGender == "Outro"
-                            ? AppColors.primary
-                            : AppColors.background,
+                    backgroundColor: selectedGender == "Outro"
+                        ? AppColors.primary
+                        : AppColors.background,
+                    side: BorderSide(
+                      color: selectedGender == "Outro"
+                          ? AppColors.primary
+                          : AppColors.inputBorder,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                   onPressed: () {
                     setState(() {
@@ -147,10 +157,9 @@ class _UserCompleteState extends State<UserComplete> {
                   child: Text(
                     "Outro",
                     style: TextStyle(
-                      color:
-                          selectedGender == "Outro"
-                              ? AppColors.neutral
-                              : AppColors.titlePrimary,
+                      color: selectedGender == "Outro"
+                          ? AppColors.neutral
+                          : AppColors.titlePrimary,
                     ),
                   ),
                 ),
@@ -159,11 +168,17 @@ class _UserCompleteState extends State<UserComplete> {
           ),
           SizedBox(height: 32),
           CustomButton(
-            text: "Concluir",
-            onPressed: widget.onComplete,
-            backgroundColor: AppColors.primary,
-            textColor: AppColors.neutral,
-          ),
+              text: "Entrar",
+              onPressed: () {
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  '/pre-login',
+                  (Route<dynamic> route) => false,
+                );
+              },
+              backgroundColor: AppColors.primary,
+              textColor: AppColors.neutral,
+            ),
         ],
       ),
     );

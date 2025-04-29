@@ -141,11 +141,25 @@ class PlannerScreenState extends State<PlannerScreen> {
                               ),
                             ),
                             const SizedBox(height: 8),
-                            _buildColorPicker(
-                              context,
-                              index,
-                              setModalState,
-                              errorMessage,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                _buildColorPicker(
+                                  context,
+                                  index,
+                                  setModalState,
+                                  errorMessage,
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete, color: AppColors.primary),
+                                  onPressed: () {
+                                    setModalState(() {
+                                      categories.removeAt(index);
+                                    });
+                                    setState(() {});
+                                  },
+                                ),
+                              ],
                             ),
                             const SizedBox(height: 16),
                           ],
@@ -192,42 +206,41 @@ class PlannerScreenState extends State<PlannerScreen> {
                   content: Wrap(
                     spacing: 10,
                     runSpacing: 10,
-                    children:
-                        categoryColors.map((color) {
-                          return GestureDetector(
-                            onTap: () {
-                              setModalState(() {
-                                if (categories.any(
-                                  (cat) =>
-                                      cat['color'] == color &&
-                                      cat != categories[index],
-                                )) {
-                                  errorMessage =
-                                      "Esta cor já está sendo usada.";
-                                } else {
-                                  categories[index]['color'] = color;
-                                  errorMessage = null;
-                                }
+                    children: categoryColors.map((color) {
+                      return GestureDetector(
+                        onTap: () {
+                          setModalState(() {
+                            if (categories.any(
+                              (cat) =>
+                                  cat['color'] == color &&
+                                  cat != categories[index],
+                            )) {
+                              errorMessage = "Esta cor já está sendo usada.";
+                            } else {
+                              setState(() {
+                                categories[index]['color'] = color;
+                                errorMessage = null;
                               });
-                              Navigator.pop(context);
-                            },
-                            child: Container(
-                              width: 50,
-                              height: 50,
-                              decoration: BoxDecoration(
-                                color: color,
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color:
-                                      categories[index]['color'] == color
-                                          ? Colors.black
-                                          : Colors.transparent,
-                                  width: 2,
-                                ),
-                              ),
+                            }
+                          });
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          width: 50,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: color,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: categories[index]['color'] == color
+                                  ? Colors.black
+                                  : Colors.transparent,
+                              width: 2,
                             ),
-                          );
-                        }).toList(),
+                          ),
+                        ),
+                      );
+                    }).toList(),
                   ),
                 );
               },
@@ -254,49 +267,49 @@ class PlannerScreenState extends State<PlannerScreen> {
     showDialog(
       context: context,
       builder: (context) {
-        return Dialog(
-          backgroundColor: AppColors.background,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Container(
-            width:
-                MediaQuery.of(context).size.width *
-                0.9, // 90% da largura da tela
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "Adicionar Nova Categoria",
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.titlePrimary,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                _buildTextField(newCategoryController, "Nome da Categoria"),
-                const SizedBox(height: 16),
-                const Text(
-                  "Selecione uma Cor",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.titlePrimary,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  children:
-                      categoryColors.map((color) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Dialog(
+              backgroundColor: AppColors.background,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.9, // 90% da largura da tela
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Adicionar Nova Categoria",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.titlePrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    _buildTextField(newCategoryController, "Nome da Categoria"),
+                    const SizedBox(height: 16),
+                    const Text(
+                      "Selecione uma Cor",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.titlePrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: categoryColors.map((color) {
                         return GestureDetector(
                           onTap: () {
-                            selectedColor = color;
-                            setState(() {});
+                            setModalState(() {
+                              selectedColor = color; // Atualiza a cor selecionada
+                            });
                           },
                           child: Container(
                             width: 40,
@@ -305,37 +318,38 @@ class PlannerScreenState extends State<PlannerScreen> {
                               color: color,
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color:
-                                    selectedColor == color
-                                        ? Colors.black
-                                        : Colors.transparent,
+                                color: selectedColor == color
+                                    ? Colors.black
+                                    : Colors.transparent,
                                 width: 2,
                               ),
                             ),
                           ),
                         );
                       }).toList(),
+                    ),
+                    const SizedBox(height: 24),
+                    CustomButton(
+                      text: "Adicionar",
+                      onPressed: () {
+                        if (newCategoryController.text.isNotEmpty) {
+                          setState(() {
+                            addNewCategory(
+                              newCategoryController.text,
+                              selectedColor,
+                            );
+                          });
+                          Navigator.pop(context);
+                        }
+                      },
+                      backgroundColor: AppColors.primary,
+                      textColor: AppColors.neutral,
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 24),
-                CustomButton(
-                  text: "Adicionar",
-                  onPressed: () {
-                    if (newCategoryController.text.isNotEmpty) {
-                      setState(() {
-                        addNewCategory(
-                          newCategoryController.text,
-                          selectedColor,
-                        );
-                      });
-                      Navigator.pop(context);
-                    }
-                  },
-                  backgroundColor: AppColors.primary,
-                  textColor: AppColors.neutral,
-                ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
       },
     );
@@ -447,7 +461,9 @@ class PlannerScreenState extends State<PlannerScreen> {
           },
         );
       },
-    );
+    ).whenComplete(() {
+      setState(() {}); // Atualiza a interface para refletir as novas categorias
+    });
   }
 
   void _showEventDetails(BuildContext context, Map<String, dynamic> event) {
@@ -555,12 +571,20 @@ class PlannerScreenState extends State<PlannerScreen> {
     String label, {
     int maxLines = 1,
   }) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return TextField(
       controller: controller,
       maxLines: maxLines,
+      style: TextStyle(fontSize: screenHeight * 0.02),
       decoration: InputDecoration(
         labelText: label,
+        labelStyle: TextStyle(fontSize: screenHeight * 0.018),
         floatingLabelBehavior: FloatingLabelBehavior.never,
+        contentPadding: EdgeInsets.symmetric(
+          vertical: screenHeight * 0.015,
+          horizontal: screenHeight * 0.02,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: AppColors.inputBackground),
@@ -582,6 +606,8 @@ class PlannerScreenState extends State<PlannerScreen> {
     TextEditingController controller,
     String label,
   ) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return GestureDetector(
       onTap: () async {
         DateTime? pickedDate = await showDatePicker(
@@ -599,9 +625,15 @@ class PlannerScreenState extends State<PlannerScreen> {
       child: AbsorbPointer(
         child: TextField(
           controller: controller,
+          style: TextStyle(fontSize: screenHeight * 0.02),
           decoration: InputDecoration(
             labelText: label,
+            labelStyle: TextStyle(fontSize: screenHeight * 0.018),
             floatingLabelBehavior: FloatingLabelBehavior.never,
+            contentPadding: EdgeInsets.symmetric(
+              vertical: screenHeight * 0.015,
+              horizontal: screenHeight * 0.02,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(color: AppColors.inputBackground),
@@ -614,10 +646,11 @@ class PlannerScreenState extends State<PlannerScreen> {
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(color: AppColors.primary),
             ),
-            suffixIcon: const Icon(
+            suffixIcon: Icon(
               Icons.calendar_today,
               color: AppColors.icons,
-            ), // Ícone de calendário
+              size: screenHeight * 0.025,
+            ),
           ),
         ),
       ),
@@ -629,6 +662,8 @@ class PlannerScreenState extends State<PlannerScreen> {
     TextEditingController startController,
     TextEditingController endController,
   ) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Row(
       children: [
         Expanded(
@@ -639,9 +674,7 @@ class PlannerScreenState extends State<PlannerScreen> {
                 initialTime: TimeOfDay.now(),
                 builder: (context, child) {
                   return MediaQuery(
-                    data: MediaQuery.of(
-                      context,
-                    ).copyWith(alwaysUse24HourFormat: true),
+                    data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
                     child: child!,
                   );
                 },
@@ -655,9 +688,15 @@ class PlannerScreenState extends State<PlannerScreen> {
             child: AbsorbPointer(
               child: TextField(
                 controller: startController,
+                style: TextStyle(fontSize: screenHeight * 0.02),
                 decoration: InputDecoration(
                   labelText: "Início",
+                  labelStyle: TextStyle(fontSize: screenHeight * 0.018),
                   floatingLabelBehavior: FloatingLabelBehavior.never,
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: screenHeight * 0.015,
+                    horizontal: screenHeight * 0.02,
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(color: AppColors.inputBackground),
@@ -670,16 +709,17 @@ class PlannerScreenState extends State<PlannerScreen> {
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(color: AppColors.primary),
                   ),
-                  suffixIcon: const Icon(
+                  suffixIcon: Icon(
                     Icons.access_time,
                     color: AppColors.icons,
-                  ), // Ícone de relógio
+                    size: screenHeight * 0.025,
+                  ),
                 ),
               ),
             ),
           ),
         ),
-        const SizedBox(width: 16),
+        SizedBox(width: screenHeight * 0.02),
         Expanded(
           child: GestureDetector(
             onTap: () async {
@@ -688,9 +728,7 @@ class PlannerScreenState extends State<PlannerScreen> {
                 initialTime: TimeOfDay.now(),
                 builder: (context, child) {
                   return MediaQuery(
-                    data: MediaQuery.of(
-                      context,
-                    ).copyWith(alwaysUse24HourFormat: true),
+                    data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
                     child: child!,
                   );
                 },
@@ -704,9 +742,15 @@ class PlannerScreenState extends State<PlannerScreen> {
             child: AbsorbPointer(
               child: TextField(
                 controller: endController,
+                style: TextStyle(fontSize: screenHeight * 0.02),
                 decoration: InputDecoration(
                   labelText: "Término",
+                  labelStyle: TextStyle(fontSize: screenHeight * 0.018),
                   floatingLabelBehavior: FloatingLabelBehavior.never,
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: screenHeight * 0.015,
+                    horizontal: screenHeight * 0.02,
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(color: AppColors.inputBackground),
@@ -719,10 +763,11 @@ class PlannerScreenState extends State<PlannerScreen> {
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(color: AppColors.primary),
                   ),
-                  suffixIcon: const Icon(
+                  suffixIcon: Icon(
                     Icons.access_time,
                     color: AppColors.icons,
-                  ), // Ícone de relógio
+                    size: screenHeight * 0.025,
+                  ),
                 ),
               ),
             ),

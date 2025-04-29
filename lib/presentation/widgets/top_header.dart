@@ -4,25 +4,40 @@ import 'package:two/core/themes/app_colors.dart';
 
 class TopHeader extends StatelessWidget {
   final bool useSliver;
-  final VoidCallback? onAddEvent; // Adiciona o callback para o botão de adicionar
+  final VoidCallback? onAddEvent;
 
   const TopHeader({
     super.key,
     this.useSliver = false,
-    this.onAddEvent, // Inicializa o callback
+    this.onAddEvent,
   });
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
     final content = Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        IconButton(icon: const Icon(Icons.menu), onPressed: () {}),
-        SvgPicture.asset('assets/images/TWO.svg', height: 24),
         IconButton(
-          icon: const Icon(Icons.add),
-          onPressed: onAddEvent, // Chama o callback ao pressionar o botão
+          icon: Icon(
+            Icons.menu,
+            size: screenHeight * 0.03,
+          ),
+          onPressed: () {},
+        ),
+        SvgPicture.asset(
+          'assets/images/TWO.svg',
+          height: screenHeight * 0.03,
+        ),
+        IconButton(
+          icon: Icon(
+            Icons.add,
+            size: screenHeight * 0.03,
+          ),
+          onPressed: onAddEvent,
         ),
       ],
     );
@@ -31,28 +46,24 @@ class TopHeader extends StatelessWidget {
       return SliverAppBar(
         floating: false,
         snap: false,
-        expandedHeight: 60.0,
+        expandedHeight: screenHeight * 0.08,
         backgroundColor: AppColors.background,
         flexibleSpace: Padding(
-          padding: const EdgeInsets.only(top: 70, left: 5, right: 5),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              IconButton(icon: const Icon(Icons.menu), onPressed: () {}),
-              SvgPicture.asset('assets/images/TWO.svg', height: 24),
-              IconButton(
-                icon: const Icon(Icons.add),
-                onPressed: onAddEvent, // Chama o callback ao pressionar o botão
-              ),
-            ],
+          padding: EdgeInsets.only(
+            top: screenHeight * 0.05,
+            left: screenWidth * 0.02,
+            right: screenWidth * 0.02,
           ),
+          child: content,
         ),
       );
     } else {
       return SafeArea(
         child: Padding(
-          padding: const EdgeInsets.only(bottom: 6, left: 5, right: 5),
+          padding: EdgeInsets.symmetric(
+            horizontal: screenWidth * 0.02,
+            vertical: screenHeight * 0.01,
+          ),
           child: content,
         ),
       );

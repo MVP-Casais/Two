@@ -53,14 +53,14 @@ class _LoginPageState extends State<LoginPage> {
           child: isCurrent
               ? Icon(
                   icons[index],
-                  color: AppColors.primary,
+                  color: AppColors.indexAtual,
                   size: 24,
                 )
               : Container(
                   width: 10,
                   height: 10,
                   decoration: BoxDecoration(
-                    color: isCompleted ? Colors.green : AppColors.inputBorder,
+                    color: isCompleted ? AppColors.indexCheck : AppColors.indexDefault,
                     shape: BoxShape.circle,
                   ),
                 ),

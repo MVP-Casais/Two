@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:two/core/themes/app_colors.dart';
 import 'package:two/presentation/widgets/custom_button.dart';
+import 'package:two/presentation/widgets/custom_input.dart';
 
 class PasswordStep extends StatefulWidget {
   final VoidCallback onNext;
@@ -13,20 +14,24 @@ class PasswordStep extends StatefulWidget {
 
 class _PasswordStepState extends State<PasswordStep> {
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
 
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
 
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.045),
+      padding: EdgeInsets.symmetric(
+        horizontal: screenWidth * 0.045,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SizedBox(height: 16),
+          SizedBox(height: screenHeight * 0.02),
           Text(
             "Crie uma senha",
             style: TextStyle(
@@ -36,33 +41,32 @@ class _PasswordStepState extends State<PasswordStep> {
             ),
             textAlign: TextAlign.left,
           ),
-          SizedBox(height: 16),
-          TextField(
+          SizedBox(height: screenHeight * 0.02),
+          CustomInput(
             controller: passwordController,
             obscureText: !_isPasswordVisible,
-            decoration: InputDecoration(
-              hintText: "******",
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                  color: AppColors.icons,
-                ),
-                onPressed: () {
-                  setState(() {
-                    _isPasswordVisible = !_isPasswordVisible;
-                  });
-                },
+            labelText: "Senha",
+            suffixIcon: IconButton(
+              icon: Icon(
+                _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                color: AppColors.icons,
               ),
+              onPressed: () {
+                setState(() {
+                  _isPasswordVisible = !_isPasswordVisible;
+                });
+              },
             ),
           ),
-          SizedBox(height: 5),
-          Text("A senha deve ter pelo menos 8 caracteres",
-              style: TextStyle(
-                fontSize: screenHeight * 0.015,
-                color: AppColors.textSecondarylight,
-              )),
-          SizedBox(height: 20),
+          SizedBox(height: screenHeight * 0.01),
+          Text(
+            "A senha deve ter pelo menos 8 caracteres",
+            style: TextStyle(
+              fontSize: screenHeight * 0.015,
+              color: AppColors.textSecondarylight,
+            ),
+          ),
+          SizedBox(height: screenHeight * 0.03),
           Text(
             "Confirme sua senha",
             style: TextStyle(
@@ -72,27 +76,26 @@ class _PasswordStepState extends State<PasswordStep> {
             ),
             textAlign: TextAlign.left,
           ),
-          SizedBox(height: 16),
-          TextField(
+          SizedBox(height: screenHeight * 0.02),
+          CustomInput(
             controller: confirmPasswordController,
             obscureText: !_isConfirmPasswordVisible,
-            decoration: InputDecoration(
-              hintText: "Confirme sua senha",
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                  color: AppColors.icons,
-                ),
-                onPressed: () {
-                  setState(() {
-                    _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
-                  });
-                },
+            labelText: "Confirme sua senha",
+            suffixIcon: IconButton(
+              icon: Icon(
+                _isConfirmPasswordVisible
+                    ? Icons.visibility
+                    : Icons.visibility_off,
+                color: AppColors.icons,
               ),
+              onPressed: () {
+                setState(() {
+                  _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                });
+              },
             ),
           ),
-          SizedBox(height: 32),
+          SizedBox(height: screenHeight * 0.04),
           CustomButton(
             text: "Próximo",
             onPressed: widget.onNext,
