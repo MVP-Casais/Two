@@ -1,0 +1,135 @@
+[
+  {
+    "titulo": "Desafio do Silêncio",
+    "descricao": "Fiquem em silêncio por 30 minutos, sem usar palavras, apenas expressões.",
+    "duracao": "30 min",
+    "intensidade": "Média",
+    "tags": ["diversão", "comunicação", "exercício"]
+  },
+  {
+    "titulo": "Desafio de Cores",
+    "descricao": "Escolham uma cor e façam tudo utilizando apenas essa cor.",
+    "duracao": "1h",
+    "intensidade": "Baixa",
+    "tags": ["criatividade", "diversão", "exploração"]
+  },
+  {
+    "titulo": "Desafio de Pintura",
+    "descricao": "Pintem uma tela juntos, sem se preocupar com o resultado.",
+    "duracao": "2h",
+    "intensidade": "Média",
+    "tags": ["criatividade", "arte", "relaxamento"]
+  },
+  {
+    "titulo": "Desafio de Dança",
+    "descricao": "Aprendam uma coreografia de dança e dancem juntos.",
+    "duracao": "1h",
+    "intensidade": "Alta",
+    "tags": ["diversão", "música", "energia"]
+  },
+  {
+    "titulo": "Desafio de Memória",
+    "descricao": "Façam um jogo de memória com objetos da casa.",
+    "duracao": "30 min",
+    "intensidade": "Média",
+    "tags": ["exercício mental", "diversão", "jogo"]
+  },
+  {
+    "titulo": "Desafio de Culinária com Ingredientes Aleatórios",
+    "descricao": "Preparem uma receita com ingredientes aleatórios que vocês têm em casa.",
+    "duracao": "1h",
+    "intensidade": "Média",
+    "tags": ["culinária", "diversão", "exploração"]
+  },
+  {
+    "titulo": "Desafio do Labirinto",
+    "descricao": "Criem um labirinto dentro de casa e tentem atravessá-lo.",
+    "duracao": "1h",
+    "intensidade": "Média",
+    "tags": ["diversão", "estratégia", "atividade"]
+  },
+  {
+    "titulo": "Desafio de Troca de Papéis",
+    "descricao": "Troquem de papéis e façam as atividades do outro durante uma hora.",
+    "duracao": "1h",
+    "intensidade": "Baixa",
+    "tags": ["comunicação", "diversão", "troca"]
+  },
+  {
+    "titulo": "Desafio do Filtro de Fotos",
+    "descricao": "Tirem fotos criativas com filtros e postem nas redes sociais.",
+    "duracao": "30 min",
+    "intensidade": "Baixa",
+    "tags": ["diversão", "criatividade", "social"]
+  },
+  {
+    "titulo": "Desafio de Montar uma História",
+    "descricao": "Criem uma história juntos, alternando as frases.",
+    "duracao": "30 min",
+    "intensidade": "Baixa",
+    "tags": ["criatividade", "interação", "diversão"]
+  },
+  {
+    "titulo": "Desafio de Imitação de Filmes",
+    "descricao": "Escolham uma cena de filme e façam uma imitação cômica.",
+    "duracao": "1h",
+    "intensidade": "Média",
+    "tags": ["diversão", "teatro", "criatividade"]
+  },
+  {
+    "titulo": "Desafio de Rir Sem Parar",
+    "descricao": "Tentem ficar sem rir durante 5 minutos, quem rir primeiro perde.",
+    "duracao": "30 min",
+    "intensidade": "Baixa",
+    "tags": ["diversão", "comédia", "interação"]
+  },
+  {
+    "titulo": "Desafio do Trote",
+    "descricao": "Deem trotes engraçados para amigos ou familiares, mas de maneira saudável.",
+    "duracao": "1h",
+    "intensidade": "Baixa",
+    "tags": ["diversão", "comédia", "criatividade"]
+  },
+  {
+    "titulo": "Desafio de Decoração",
+    "descricao": "Tirem um tempo para decorar uma parte da casa com um tema específico.",
+    "duracao": "2h",
+    "intensidade": "Média",
+    "tags": ["criatividade", "decoração", "interação"]
+  },
+  {
+    "titulo": "Desafio de Imitação de Sons",
+    "descricao": "Tentem imitar sons de animais ou objetos e desafiem-se a acertar.",
+    "duracao": "1h",
+    "intensidade": "Baixa",
+    "tags": ["diversão", "criatividade", "som"]
+  },
+  {
+    "titulo": "Desafio de Karaoke de Imitações",
+    "descricao": "Façam um karaokê, mas imitando cantores famosos.",
+    "duracao": "1h",
+    "intensidade": "Média",
+    "tags": ["música", "diversão", "teatro"]
+  },
+  {
+    "titulo": "Desafio de Trabalhar em Equipe",
+    "descricao": "Escolham uma tarefa doméstica e realizem-na com a maior eficiência possível.",
+    "duracao": "1h",
+    "intensidade": "Baixa",
+    "tags": ["produtividade", "colaboração", "interação"]
+  },
+  {
+    "titulo": "Desafio de Puzzles",
+    "descricao": "Montem juntos um quebra-cabeça difícil e desafiem-se a terminar rápido.",
+    "duracao": "1h",
+    "intensidade": "Média",
+    "tags": ["diversão", "desafio", "intelectual"]
+  },
+  {
+    "titulo": "Desafio de Construir um Forte",
+    "descricao": "Usando almofadas e cobertores, construam um forte e façam um filme no interior.",
+    "duracao": "1h",
+    "intensidade": "Baixa",
+    "tags": ["diversão", "criatividade", "jogo"]
+  }
+]

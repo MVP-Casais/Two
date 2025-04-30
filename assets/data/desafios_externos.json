@@ -1,0 +1,94 @@
+[
+  {
+    "titulo": "Desafio de Caça ao Tesouro",
+    "descricao": "Criem uma caça ao tesouro e tentem encontrar os objetos escondidos.",
+    "duracao": "2h",
+    "intensidade": "Alta",
+    "tags": ["aventura", "exploração", "jogo"]
+  },
+  {
+    "titulo": "Desafio de Fotografia no Parque",
+    "descricao": "Tirem fotos em locais específicos do parque (ex: uma árvore, um animal, um pôr do sol).",
+    "duracao": "1h",
+    "intensidade": "Média",
+    "tags": ["diversão", "exploração", "fotografia"]
+  },
+  {
+    "titulo": "Desafio do Dia Sem Tecnologia",
+    "descricao": "Fiquem um dia inteiro sem usar qualquer tipo de tecnologia (excepto emergências).",
+    "duracao": "1 dia",
+    "intensidade": "Alta",
+    "tags": ["relacionamento", "desconexão", "natureza"]
+  },
+  {
+    "titulo": "Desafio de Troca de Roupa",
+    "descricao": "Troquem de roupas e saiam para um passeio com a nova aparência.",
+    "duracao": "1h",
+    "intensidade": "Baixa",
+    "tags": ["diversão", "experiência", "moda"]
+  },
+  {
+    "titulo": "Navegação no Google Maps",
+    "descricao": "Tentem chegar a um destino usando apenas o Google Maps e sem se perder.",
+    "duracao": "1h",
+    "intensidade": "Média",
+    "tags": ["aventura", "exploração", "competição"]
+  },
+  {
+    "titulo": "Desafio de Cartas no Parque",
+    "descricao": "Joguem cartas de truco ou baralho em um parque e desafiem-se a vencer.",
+    "duracao": "1h",
+    "intensidade": "Baixa",
+    "tags": ["jogo", "estratégia", "interação"]
+  },
+  {
+    "titulo": "Corrida de Bicicleta",
+    "descricao": "Façam uma corrida de bicicletas em um percurso determinado.",
+    "duracao": "1h",
+    "intensidade": "Alta",
+    "tags": ["aventura", "esporte", "competição"]
+  },
+  {
+    "titulo": "Desafio de Pintura ao Ar Livre",
+    "descricao": "Levem material de pintura e escolham um ponto bonito ao ar livre para pintar.",
+    "duracao": "2h",
+    "intensidade": "Média",
+    "tags": ["arte", "criatividade", "exploração"]
+  },
+  {
+    "titulo": "Desafio de Escalada",
+    "descricao": "Participem de uma atividade de escalada em um centro de escalada ou em uma parede natural.",
+    "duracao": "2h",
+    "intensidade": "Alta",
+    "tags": ["aventura", "esporte", "exploração"]
+  },
+  {
+    "titulo": "Desafio de Procurar Geocaching",
+    "descricao": "Encontrem um local de geocaching e tentem achar o tesouro escondido.",
+    "duracao": "2h",
+    "intensidade": "Média",
+    "tags": ["aventura", "exploração", "jogo"]
+  },
+  {
+    "titulo": "Desafio de Caminhada Noturna",
+    "descricao": "Façam uma caminhada noturna em um local tranquilo e seguro.",
+    "duracao": "1h",
+    "intensidade": "Baixa",
+    "tags": ["natureza", "exploração", "relaxamento"]
+  },
+  {
+    "titulo": "Desafio de Piquenique Surpresa",
+    "descricao": "Organizem um piquenique surpresa para o outro em um parque.",
+    "duracao": "2h",
+    "intensidade": "Baixa",
+    "tags": ["comida", "relaxamento", "romântico"]
+  },
+  {
+    "titulo": "Desafio de Montar uma Tenda",
+    "descricao": "Façam um acampamento improvisado montando uma tenda no parque.",
+    "duracao": "3h",
+    "intensidade": "Média",
+    "tags": ["acampamento", "exploração", "natureza"]
+  }
+]
+

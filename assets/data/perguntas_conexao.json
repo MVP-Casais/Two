@@ -1,0 +1,98 @@
+[
+  {
+    "titulo": "Qual foi o momento mais feliz de sua vida?",
+    "descricao": "Compartilhem suas experiências e memórias felizes.",
+    "tags": ["emocional", "conexão", "reflexão"]
+  },
+  {
+    "titulo": "O que você mais admira em mim?",
+    "descricao": "Falem sobre as qualidades que vocês mais admiram um no outro.",
+    "tags": ["complementar", "emocional", "romântico"]
+  },
+  {
+    "titulo": "Se você pudesse viver em qualquer lugar do mundo, onde seria?",
+    "descricao": "Falem sobre seus sonhos de viver em um novo lugar.",
+    "tags": ["sonhos", "exploração", "futuro"]
+  },
+  {
+    "titulo": "O que você considera ser um verdadeiro amigo?",
+    "descricao": "Explorem o conceito de amizade profunda e verdadeira.",
+    "tags": ["reflexão", "amizade", "emoções"]
+  },
+  {
+    "titulo": "Qual é o seu maior medo?",
+    "descricao": "Compartilhem seus medos mais profundos e como enfrentá-los.",
+    "tags": ["emoções", "conexão", "vulnerabilidade"]
+  },
+  {
+    "titulo": "Qual é a sua maior realização até agora?",
+    "descricao": "Falem sobre as conquistas que marcaram suas vidas.",
+    "tags": ["realização", "histórias", "inspirador"]
+  },
+  {
+    "titulo": "O que você gostaria de aprender juntos?",
+    "descricao": "Descubram uma habilidade ou atividade que gostariam de explorar.",
+    "tags": ["aprendizado", "exploração", "conexão"]
+  },
+  {
+    "titulo": "Se você pudesse mudar algo em sua vida, o que seria?",
+    "descricao": "Conversem sobre as mudanças que gostariam de fazer.",
+    "tags": ["reflexão", "futuro", "emocional"]
+  },
+  {
+    "titulo": "Qual é a lembrança mais engraçada que você tem?",
+    "descricao": "Compartilhem suas histórias mais engraçadas e divertidas.",
+    "tags": ["diversão", "memórias", "emoções"]
+  },
+  {
+    "titulo": "Se você tivesse que fazer uma viagem agora, para onde iria?",
+    "descricao": "Falem sobre os destinos que gostariam de conhecer.",
+    "tags": ["sonhos", "exploração", "viagem"]
+  },
+  {
+    "titulo": "O que te faz sentir mais amado(a)?",
+    "descricao": "Compartilhem o que faz vocês se sentirem mais amados.",
+    "tags": ["emoções", "relacionamento", "amor"]
+  },
+  {
+    "titulo": "Qual foi o momento mais desafiador da sua vida?",
+    "descricao": "Conversem sobre momentos difíceis e como superaram.",
+    "tags": ["emoções", "desafios", "força"]
+  },
+  {
+    "titulo": "O que você mais aprecia no nosso relacionamento?",
+    "descricao": "Falem sobre as qualidades que vocês mais valorizam um no outro.",
+    "tags": ["relacionamento", "apreciação", "emoções"]
+  },
+  {
+    "titulo": "O que significa para você 'casa'?",
+    "descricao": "Conversem sobre o que representa o conceito de lar para cada um.",
+    "tags": ["reflexão", "casa", "emoções"]
+  },
+  {
+    "titulo": "Como você imagina o futuro?",
+    "descricao": "Falem sobre suas expectativas e sonhos para o futuro.",
+    "tags": ["futuro", "sonhos", "conexão"]
+  },
+  {
+    "titulo": "Como você lida com as adversidades?",
+    "descricao": "Falem sobre as formas que lidam com momentos difíceis ou desafios.",
+    "tags": ["emoções", "força", "reflexão"]
+  },
+  {
+    "titulo": "O que você acha que é mais importante em um relacionamento?",
+    "descricao": "Conversem sobre os valores essenciais para um relacionamento saudável.",
+    "tags": ["relacionamento", "valores", "emoções"]
+  },
+  {
+    "titulo": "Qual a sua definição de felicidade?",
+    "descricao": "Compartilhem o que a felicidade significa para cada um de vocês.",
+    "tags": ["emoções", "reflexão", "felicidade"]
+  },
+  {
+    "titulo": "O que você gostaria de conquistar juntos?",
+    "descricao": "Conversem sobre os objetivos e sonhos que gostariam de alcançar como casal.",
+    "tags": ["sonhos", "relacionamento", "futuro"]
+  }
+]
+

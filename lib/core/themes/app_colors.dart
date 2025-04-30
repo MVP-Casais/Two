@@ -51,4 +51,10 @@ class AppColors {
   static const Color indexCheck = Color(0xFF4CAF50);
   static const Color indexDefault = Color(0xFF8F8F8F);
 
+  // Cores cards atividades
+  static const Color cardBackgroundBlue = Color(0xFF90CAF9);
+  static const Color cardBackgroundGreen = Color(0xFFA5D6A7);
+  static const Color cardBackgroundOrange = Color(0xFFFFCC80);
+  static const Color cardBackgroundPurple = Color(0xFFCE93D8);
+  static const Color cardBackgroundYellow = Color(0xFFFFF59D);
 }

@@ -1,0 +1,149 @@
+[
+  {
+    "titulo": "Noite à Luz de Velas",
+    "descricao": "Apaguem todas as luzes, acendam velas e preparem um jantar juntos. Sem celular!",
+    "duracao": "1h",
+    "intensidade": "leve",
+    "tags": ["romântico", "culinária", "intimidade"]
+  },
+  {
+    "titulo": "Desafio do Chef Maluco",
+    "descricao": "Cada um escolhe 3 ingredientes aleatórios. Criem uma receita maluca e comam juntos!",
+    "duracao": "45 min",
+    "intensidade": "moderada",
+    "tags": ["diversão", "desafio", "criatividade"]
+  },
+  {
+    "titulo": "Noite de Cinema em Casa",
+    "descricao": "Prepare a pipoca e escolha um filme para assistir junto.",
+    "duracao": "2h",
+    "intensidade": "Baixa",
+    "tags": ["relaxamento", "filme", "diversão"]
+  },
+  {
+    "titulo": "Jogo de Tabuleiro",
+    "descricao": "Escolha um jogo de tabuleiro e divirta-se com seu parceiro.",
+    "duracao": "1h",
+    "intensidade": "Média",
+    "tags": ["competição", "diversão", "estratégia"]
+  },
+  {
+    "titulo": "Cozinhando Juntos",
+    "descricao": "Preparem uma refeição juntos, criando algo novo na cozinha.",
+    "duracao": "1h",
+    "intensidade": "Média",
+    "tags": ["culinária", "romântico", "interação"]
+  },
+  {
+    "titulo": "Construção de Lego",
+    "descricao": "Montem um conjunto de Lego juntos, criando algo legal.",
+    "duracao": "2h",
+    "intensidade": "Baixa",
+    "tags": ["criatividade", "relaxante", "interação"]
+  },
+  {
+    "titulo": "Desafio de Fotos Criativas",
+    "descricao": "Desafiem-se a tirar fotos criativas em casa com objetos simples.",
+    "duracao": "1h",
+    "intensidade": "Média",
+    "tags": ["diversão", "criatividade", "exploração"]
+  },
+  {
+    "titulo": "Maratona de Séries",
+    "descricao": "Escolha uma série e assistam aos episódios juntos.",
+    "duracao": "4h",
+    "intensidade": "Baixa",
+    "tags": ["relaxamento", "entretenimento", "conexão"]
+  },
+  {
+    "titulo": "Noite de Puzzles",
+    "descricao": "Que tal montar um quebra-cabeça juntos enquanto conversam?",
+    "duracao": "2h",
+    "intensidade": "Média",
+    "tags": ["relaxante", "interação", "estratégia"]
+  },
+  {
+    "titulo": "Jantar Temático",
+    "descricao": "Preparem um jantar temático com pratos de um país diferente.",
+    "duracao": "3h",
+    "intensidade": "Alta",
+    "tags": ["culinária", "diversão", "exploração"]
+  },
+  {
+    "titulo": "Desafio de Yoga",
+    "descricao": "Façam uma sessão de yoga juntos, relaxando a mente e o corpo.",
+    "duracao": "1h",
+    "intensidade": "Baixa",
+    "tags": ["saúde", "relaxamento", "interação"]
+  },
+  {
+    "titulo": "Leitura Compartilhada",
+    "descricao": "Leiam um livro ou artigo interessante e discutam as ideias.",
+    "duracao": "1h",
+    "intensidade": "Baixa",
+    "tags": ["intelectual", "calmo", "conexão"]
+  },
+  {
+    "titulo": "Noite de Fondue",
+    "descricao": "Preparem um fondue doce ou salgado para uma noite de indulgência.",
+    "duracao": "2h",
+    "intensidade": "Média",
+    "tags": ["culinária", "romântico", "diversão"]
+  },
+  {
+    "titulo": "Desafio de Improviso",
+    "descricao": "Façam um jogo de improviso onde vocês devem criar cenas e personagens.",
+    "duracao": "1h",
+    "intensidade": "Alta",
+    "tags": ["diversão", "criatividade", "interação"]
+  },
+  {
+    "titulo": "Dia de Spa em Casa",
+    "descricao": "Façam um spa em casa com banhos relaxantes, massagens e cuidados de pele.",
+    "duracao": "2h",
+    "intensidade": "Baixa",
+    "tags": ["relaxamento", "bem-estar", "romântico"]
+  },
+  {
+    "titulo": "Maratona de Jogos de Vídeo",
+    "descricao": "Escolham alguns jogos de vídeo e se desafiem em partidas competitivas.",
+    "duracao": "2h",
+    "intensidade": "Alta",
+    "tags": ["competição", "diversão", "jogo"]
+  },
+  {
+    "titulo": "Escrita Criativa",
+    "descricao": "Escrevam juntos uma história, alternando parágrafos, e vejam onde ela vai.",
+    "duracao": "1h",
+    "intensidade": "Média",
+    "tags": ["criatividade", "diversão", "escrita"]
+  },
+  {
+    "titulo": "Fazendo Origamis",
+    "descricao": "Tirem um tempo para aprender a fazer origamis e criem juntos.",
+    "duracao": "1h",
+    "intensidade": "Baixa",
+    "tags": ["criatividade", "arte", "relaxante"]
+  },
+  {
+    "titulo": "Tarde de Pintura com os Dedos",
+    "descricao": "Pinte com os dedos e criem algo artístico juntos.",
+    "duracao": "1h",
+    "intensidade": "Média",
+    "tags": ["arte", "criatividade", "diversão"]
+  },
+  {
+    "titulo": "Desafio de Escultura de Argila",
+    "descricao": "Tentem esculpir algo interessante usando argila ou massinha.",
+    "duracao": "2h",
+    "intensidade": "Média",
+    "tags": ["criatividade", "arte", "diversão"]
+  },
+  {
+    "titulo": "Dia de Organização",
+    "descricao": "Organizem uma parte da casa juntos: armários, livros, ou fotos.",
+    "duracao": "3h",
+    "intensidade": "Média",
+    "tags": ["produtivo", "interação", "organização"]
+  }
+]

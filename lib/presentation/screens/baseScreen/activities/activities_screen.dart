@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:two/core/themes/app_colors.dart';
+import 'package:two/presentation/screens/baseScreen/activities/reproduction/reproduction_screen.dart';
 
 class ActivitiesScreen extends StatelessWidget {
   const ActivitiesScreen({super.key});
@@ -82,7 +83,9 @@ class ActivitiesScreen extends StatelessWidget {
                         top: screenHeight * 0.09,
                         left: screenWidth * 0.05,
                         child: ConstrainedBox(
-                          constraints: BoxConstraints(maxWidth: screenWidth * 0.55),
+                          constraints: BoxConstraints(
+                            maxWidth: screenWidth * 0.55,
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -102,7 +105,9 @@ class ActivitiesScreen extends StatelessWidget {
                         bottom: screenHeight * 0.015,
                         left: screenWidth * 0.05,
                         child: ConstrainedBox(
-                          constraints: BoxConstraints(maxWidth: screenWidth * 0.55),
+                          constraints: BoxConstraints(
+                            maxWidth: screenWidth * 0.55,
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -134,39 +139,84 @@ class ActivitiesScreen extends StatelessWidget {
             ),
             SizedBox(height: screenHeight * 0.03),
             _buildActivityCard(
-              color: Colors.blue.shade200,
+              color: AppColors.cardBackgroundBlue,
               title: 'Para Curtir em Casa',
               subtitle: 'Momentos especiais sem sair do lar',
               screenHeight: screenHeight,
               screenWidth: screenWidth,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        AtividadePage(categoria: 'atividades_casa'),
+                  ),
+                );
+              },
             ),
             _buildActivityCard(
-              color: Colors.green.shade200,
+              color: AppColors.cardBackgroundGreen,
               title: 'Explorando Juntos',
               subtitle: 'Descubra novos lugares e experiências',
               screenHeight: screenHeight,
               screenWidth: screenWidth,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        AtividadePage(categoria: 'atividades_externas'),
+                  ),
+                );
+              },
             ),
             _buildActivityCard(
-              color: Colors.orange.shade200,
+              color: AppColors.cardBackgroundOrange,
               title: 'Desafios em Casa',
               subtitle: 'Teste sua criatividade e cumplicidade',
               screenHeight: screenHeight,
               screenWidth: screenWidth,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        AtividadePage(categoria: 'desafios_casa'),
+                  ),
+                );
+              },
             ),
             _buildActivityCard(
-              color: Colors.purple.shade200,
+              color: AppColors.cardBackgroundPurple,
               title: 'Missões Lá Fora',
               subtitle: 'Aventuras que fortalecem o vínculo',
               screenHeight: screenHeight,
               screenWidth: screenWidth,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        AtividadePage(categoria: 'desafios_externos'),
+                  ),
+                );
+              },
             ),
             _buildActivityCard(
-              color: Colors.yellow.shade200,
+              color: AppColors.cardBackgroundYellow,
               title: 'Conversas que Conectam',
               subtitle: 'Descubra mais sobre o outro',
               screenHeight: screenHeight,
               screenWidth: screenWidth,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        AtividadePage(categoria: 'perguntas_conexao'),
+                  ),
+                );
+              },
             ),
             SizedBox(height: screenHeight * 0.08),
           ],
@@ -181,9 +231,10 @@ class ActivitiesScreen extends StatelessWidget {
     required String subtitle,
     required double screenHeight,
     required double screenWidth,
+    required Null Function() onPressed,
   }) {
     return GestureDetector(
-      onTap: () {},
+      onTap: onPressed,
       child: Container(
         margin: EdgeInsets.only(bottom: screenHeight * 0.02),
         padding: EdgeInsets.all(screenHeight * 0.02),

@@ -1,0 +1,135 @@
+[
+  {
+    "titulo": "Caminhada no Parque",
+    "descricao": "Façam uma caminhada ao ar livre e aproveitem para conversar.",
+    "duracao": "1h",
+    "intensidade": "Baixa",
+    "tags": ["saúde", "relaxamento", "natureza"]
+  },
+  {
+    "titulo": "Piquenique ao Ar Livre",
+    "descricao": "Preparem uma cesta de piquenique e desfrutem do tempo juntos ao ar livre.",
+    "duracao": "2h",
+    "intensidade": "Média",
+    "tags": ["romântico", "diversão", "natureza"]
+  },
+  {
+    "titulo": "Visita a um Museu",
+    "descricao": "Escolham um museu e explorem juntos a cultura local.",
+    "duracao": "3h",
+    "intensidade": "Média",
+    "tags": ["cultura", "educação", "exploração"]
+  },
+  {
+    "titulo": "Passeio de Bicicleta",
+    "descricao": "Façam um passeio de bicicleta por uma trilha ou cidade.",
+    "duracao": "2h",
+    "intensidade": "Alta",
+    "tags": ["saúde", "exploração", "aventura"]
+  },
+  {
+    "titulo": "Jantar em um Restaurante Novo",
+    "descricao": "Saia para um restaurante que vocês nunca experimentaram antes.",
+    "duracao": "2h",
+    "intensidade": "Média",
+    "tags": ["gastronomia", "romântico", "aventura"]
+  },
+  {
+    "titulo": "Acampamento no Jardim",
+    "descricao": "Montem uma barraca no jardim e façam um acampamento improvisado.",
+    "duracao": "1 noite",
+    "intensidade": "Média",
+    "tags": ["aventura", "romântico", "exploração"]
+  },
+  {
+    "titulo": "Visita ao Zoológico",
+    "descricao": "Vão ao zoológico e aproveitem para observar e aprender sobre animais.",
+    "duracao": "2h",
+    "intensidade": "Baixa",
+    "tags": ["educação", "natureza", "diversão"]
+  },
+  {
+    "titulo": "Passeio de Caiaque",
+    "descricao": "Façam um passeio de caiaque em um rio ou lago próximo.",
+    "duracao": "3h",
+    "intensidade": "Alta",
+    "tags": ["aventura", "natureza", "exploração"]
+  },
+  {
+    "titulo": "Noite de Observação de Estrelas",
+    "descricao": "Procurem um lugar tranquilo e observem as estrelas no céu.",
+    "duracao": "2h",
+    "intensidade": "Baixa",
+    "tags": ["romântico", "relaxante", "natureza"]
+  },
+  {
+    "titulo": "Exploração de Mercado Local",
+    "descricao": "Visitem um mercado local e descubram novos sabores e produtos.",
+    "duracao": "2h",
+    "intensidade": "Média",
+    "tags": ["exploração", "gastronomia", "diversão"]
+  },
+  {
+    "titulo": "Tour Fotográfico Pela Cidade",
+    "descricao": "Explore a cidade e tire fotos interessantes dos pontos turísticos.",
+    "duracao": "3h",
+    "intensidade": "Média",
+    "tags": ["fotografia", "exploração", "cultura"]
+  },
+  {
+    "titulo": "Caça ao Tesouro em uma Praça",
+    "descricao": "Criem pistas e façam uma caça ao tesouro em uma praça local.",
+    "duracao": "2h",
+    "intensidade": "Média",
+    "tags": ["exploração", "diversão", "jogo"]
+  },
+  {
+    "titulo": "Karaokê ao Ar Livre",
+    "descricao": "Levem um aparelho de karaokê e cantem suas músicas favoritas no parque.",
+    "duracao": "2h",
+    "intensidade": "Alta",
+    "tags": ["música", "diversão", "aventura"]
+  },
+  {
+    "titulo": "Aula de Dança ao Ar Livre",
+    "descricao": "Se inscrevam para uma aula de dança ao ar livre ou criem a própria.",
+    "duracao": "1h",
+    "intensidade": "Média",
+    "tags": ["música", "dança", "diversão"]
+  },
+  {
+    "titulo": "Observação de Pássaros",
+    "descricao": "Saia para um passeio e observe aves na natureza, anotando as espécies.",
+    "duracao": "2h",
+    "intensidade": "Baixa",
+    "tags": ["natureza", "relaxamento", "exploração"]
+  },
+  {
+    "titulo": "Passeio de Trem Turístico",
+    "descricao": "Faça um passeio de trem turístico e explore uma região próxima.",
+    "duracao": "4h",
+    "intensidade": "Média",
+    "tags": ["exploração", "viagem", "turismo"]
+  },
+  {
+    "titulo": "Exploração Subaquática",
+    "descricao": "Façam um passeio de snorkel ou mergulho em uma área de águas cristalinas.",
+    "duracao": "3h",
+    "intensidade": "Alta",
+    "tags": ["aventura", "exploração", "natureza"]
+  },
+  {
+    "titulo": "Workshop de Cerâmica",
+    "descricao": "Participem de uma oficina de cerâmica e criem peças juntos.",
+    "duracao": "3h",
+    "intensidade": "Média",
+    "tags": ["arte", "criação", "exploração"]
+  },
+  {
+    "titulo": "Desafio de Paintball",
+    "descricao": "Participem de um jogo de paintball e desafiem-se em equipe.",
+    "duracao": "2h",
+    "intensidade": "Alta",
+    "tags": ["aventura", "competição", "diversão"]
+  }
+]
