@@ -8,6 +8,9 @@ class CustomInput extends StatelessWidget {
   final bool obscureText;
   final Widget? prefixIcon;
   final Widget? suffixIcon;
+  final bool isDropdown;
+  final List<DropdownMenuItem<String>>? dropdownItems;
+  final ValueChanged<String?>? onChanged;
 
   const CustomInput({
     super.key,
@@ -17,6 +20,9 @@ class CustomInput extends StatelessWidget {
     this.obscureText = false,
     this.prefixIcon,
     this.suffixIcon,
+    this.isDropdown = false,
+    this.dropdownItems,
+    this.onChanged,
   });
 
   @override
@@ -28,37 +34,67 @@ class CustomInput extends StatelessWidget {
         color: AppColors.inputBackground,
         borderRadius: BorderRadius.circular(10),
       ),
-      child: TextField(
-        controller: controller,
-        keyboardType: keyboardType,
-        obscureText: obscureText,
-        style: TextStyle(fontSize: screenHeight * 0.02),
-        decoration: InputDecoration(
-          floatingLabelBehavior: FloatingLabelBehavior.never,
-          labelText: labelText,
-          labelStyle: TextStyle(fontSize: screenHeight * 0.018),
-          contentPadding: EdgeInsets.symmetric(
-            vertical: screenHeight * 0.01,
-            horizontal: screenHeight * 0.01,
-          ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: AppColors.inputBorder),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: AppColors.inputBorder),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: AppColors.inputBorder),
-          ),
-          filled: true,
-          fillColor: Colors.transparent,
-          prefixIcon: prefixIcon,
-          suffixIcon: suffixIcon,
-        ),
-      ),
+      child: isDropdown
+          ? DropdownButtonFormField<String>(
+              items: dropdownItems,
+              onChanged: onChanged,
+              decoration: InputDecoration(
+                floatingLabelBehavior: FloatingLabelBehavior.never,
+                labelText: labelText,
+                labelStyle: TextStyle(fontSize: screenHeight * 0.018),
+                contentPadding: EdgeInsets.symmetric(
+                  vertical: screenHeight * 0.01,
+                  horizontal: screenHeight * 0.01,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: AppColors.inputBorder),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: AppColors.inputBorder),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: AppColors.inputBorder),
+                ),
+                filled: true,
+                fillColor: Colors.transparent,
+                prefixIcon: prefixIcon,
+                suffixIcon: suffixIcon,
+              ),
+            )
+          : TextField(
+              controller: controller,
+              keyboardType: keyboardType,
+              obscureText: obscureText,
+              style: TextStyle(fontSize: screenHeight * 0.02),
+              decoration: InputDecoration(
+                floatingLabelBehavior: FloatingLabelBehavior.never,
+                labelText: labelText,
+                labelStyle: TextStyle(fontSize: screenHeight * 0.018),
+                contentPadding: EdgeInsets.symmetric(
+                  vertical: screenHeight * 0.01,
+                  horizontal: screenHeight * 0.01,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: AppColors.inputBorder),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: AppColors.inputBorder),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: AppColors.inputBorder),
+                ),
+                filled: true,
+                fillColor: Colors.transparent,
+                prefixIcon: prefixIcon,
+                suffixIcon: suffixIcon,
+              ),
+            ),
     );
   }
 }
