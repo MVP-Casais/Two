@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:two/core/themes/app_colors.dart';
 import 'package:two/presentation/screens/baseScreen/activities/activities_screen.dart';
 import 'package:two/presentation/screens/baseScreen/memories/memories_screen.dart';
-import 'package:two/presentation/screens/baseScreen/settings/settings_screen.dart';
+import 'package:two/presentation/screens/baseScreen/presenceMode/presence_mode.dart';
 import 'package:two/presentation/screens/baseScreen/planner/planner_screen.dart';
 import 'package:two/presentation/widgets/top_header.dart';
 import 'package:two/presentation/widgets/top_menu.dart';
@@ -82,6 +82,11 @@ class _BaseScreenState extends State<BaseScreen> {
                       onAddEvent: () {
                         if (currentIndexTop == 2) {
                           plannerScreenKey.currentState?.openAddEventModal(context);
+                        } else if (currentIndexTop == 0) {
+                          openAddMemoryModal(context, (title, description, imageUrl) {
+                            setState(() {
+                            });
+                          });
                         }
                       },
                     ),
@@ -109,7 +114,7 @@ class _BaseScreenState extends State<BaseScreen> {
                 const MemoriesScreen(),
                 const ActivitiesScreen(),
                 PlannerScreen(key: plannerScreenKey),
-                const SettingsScreen(),
+                PresenceModeScreen(),
               ],
             ),
             Positioned(
