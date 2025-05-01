@@ -11,6 +11,7 @@ class CustomInput extends StatelessWidget {
   final bool isDropdown;
   final List<DropdownMenuItem<String>>? dropdownItems;
   final ValueChanged<String?>? onChanged;
+  final int? maxLines;
 
   const CustomInput({
     super.key,
@@ -23,6 +24,7 @@ class CustomInput extends StatelessWidget {
     this.isDropdown = false,
     this.dropdownItems,
     this.onChanged,
+    this.maxLines = 1,
   });
 
   @override
@@ -68,6 +70,7 @@ class CustomInput extends StatelessWidget {
               controller: controller,
               keyboardType: keyboardType,
               obscureText: obscureText,
+              maxLines: maxLines, // Define o limite de linhas
               style: TextStyle(fontSize: screenHeight * 0.02),
               decoration: InputDecoration(
                 floatingLabelBehavior: FloatingLabelBehavior.never,

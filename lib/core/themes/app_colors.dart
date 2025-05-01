@@ -57,4 +57,8 @@ class AppColors {
   static const Color cardBackgroundOrange = Color(0xFFFFCC80);
   static const Color cardBackgroundPurple = Color(0xFFCE93D8);
   static const Color cardBackgroundYellow = Color(0xFFFFF59D);
+
+  // Cores loading
+  static const Color loadingBackground = Color(0xFFE1E0E0);
+  static const Color loadingIndicator = Color(0xFFFF0505);
 }

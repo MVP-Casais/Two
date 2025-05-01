@@ -4,7 +4,7 @@ import 'package:two/presentation/screens/baseScreen/activities/activities_screen
 import 'package:two/presentation/screens/baseScreen/base_screen.dart';
 import 'package:two/presentation/screens/baseScreen/memories/memories_screen.dart';
 import 'package:two/presentation/screens/baseScreen/planner/planner_screen.dart';
-import 'package:two/presentation/screens/baseScreen/settings/settings_screen.dart';
+import 'package:two/presentation/screens/baseScreen/presenceMode/presence_mode.dart';
 import 'package:two/presentation/screens/profile/profile_screen.dart';
 import 'package:two/presentation/screens/ranking/ranking_screen.dart';
 import 'package:two/presentation/screens/register/help_register.dart';
@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
         '/memories': (context) => MemoriesScreen(),
         '/activities': (context) => const ActivitiesScreen(),
         '/planner': (context) => const PlannerScreen(),
-        '/settings': (context) => const SettingsScreen(),
+        '/presence-mode': (context) => PresenceModeScreen(),
         '/base': (context) => BaseScreen(),
         '/ranking': (context) => const RankingScreen(),
         '/profile': (context) => const ProfileScreen(),
