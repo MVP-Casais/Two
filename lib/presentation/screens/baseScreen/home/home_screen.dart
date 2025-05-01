@@ -26,7 +26,7 @@ class HomeScreen extends StatelessWidget {
         children: [
           CustomScrollView(
             slivers: [
-              const TopHeader(useSliver: true),
+              const TopHeader(useSliver: true, showAddIcon: false),
 
               SliverList(
                 delegate: SliverChildListDelegate([
@@ -201,7 +201,9 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildCarousel() {
-    final PageController pageController = PageController(viewportFraction: 0.95);
+    final PageController pageController = PageController(
+      viewportFraction: 0.95,
+    );
     int currentIndex = 0;
 
     return StatefulBuilder(
