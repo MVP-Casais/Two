@@ -11,9 +11,27 @@ class InformationScreen extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Informações Pessoais'),
-        backgroundColor: AppColors.background,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(60),
+        child: AppBar(
+          backgroundColor: AppColors.background,
+          elevation: 0,
+          leading: GestureDetector(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: const Icon(Icons.arrow_back_ios, size: 20, color: AppColors.icons),
+          ),
+          centerTitle: true,
+          title: const Text(
+            'Informações Pessoais',
+            style: TextStyle(
+              fontSize: 19,
+              fontWeight: FontWeight.bold,
+              color: AppColors.titlePrimary,
+            ),
+          ),
+        ),
       ),
       body: Container(
         color: AppColors.background,

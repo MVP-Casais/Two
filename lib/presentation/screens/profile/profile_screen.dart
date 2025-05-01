@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:two/core/themes/app_colors.dart';
 import 'package:two/presentation/screens/baseScreen/home/home_screen.dart';
 import 'package:two/presentation/screens/profile/information/information_screen.dart';
+import 'package:two/presentation/screens/profile/notification/notification_screen.dart';
 import 'package:two/presentation/screens/profile/security/security_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -12,7 +13,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class ProfileScreenState extends State<ProfileScreen> {
-  bool _isDarkMode = false; 
+  bool _isDarkMode = false;
 
   @override
   Widget build(BuildContext context) {
@@ -36,37 +37,34 @@ class ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
- Widget _buildTopHeader() {
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-    child: Stack(
-      alignment: Alignment.center,
-      children: [
-        Align(
-          alignment: Alignment.centerLeft,
-          child: GestureDetector(
-            onTap: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const HomeScreen()),
-              );
-            },
-            child: const Icon(Icons.arrow_back_ios, size: 20),
-          ),
-        ),
-        const Center(
-          child: Text(
-            'Perfil',
-            style: TextStyle(
-              fontSize: 19,
-              fontWeight: FontWeight.bold,
+  Widget _buildTopHeader() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Align(
+            alignment: Alignment.centerLeft,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const HomeScreen()),
+                );
+              },
+              child: const Icon(Icons.arrow_back_ios, size: 20),
             ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+          const Center(
+            child: Text(
+              'Perfil',
+              style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildProfileSection() {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -119,15 +117,34 @@ class ProfileScreenState extends State<ProfileScreen> {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const InformationScreen()),
+              MaterialPageRoute(
+                builder: (context) => const InformationScreen(),
+              ),
             );
           },
         ),
-        _buildSettingsItem(Icons.lock_outline, 'Senha e segurança', onTap: () {
-          Navigator.push(context,
-          MaterialPageRoute(builder: (context) => const SecurityScreen()));
-        },),
-        _buildSettingsItem(Icons.notifications_none, 'Preferências de notificações'),
+        _buildSettingsItem(
+          Icons.lock_outline,
+          'Senha e segurança',
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const SecurityScreen()),
+            );
+          },
+        ),
+        _buildSettingsItem(
+          Icons.notifications_none,
+          'Preferências de notificações',
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const NotificationScreen(),
+              ),
+            );
+          },
+        ),
         const SizedBox(height: 16),
         _buildSectionTitle('Configurações compartilhadas'),
         _buildSettingsItem(Icons.group_outlined, 'Informações da conexão'),
@@ -162,24 +179,27 @@ class ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildSettingsItem(IconData icon, String title, {String? subtitle, VoidCallback? onTap}) {
+  Widget _buildSettingsItem(
+    IconData icon,
+    String title, {
+    String? subtitle,
+    VoidCallback? onTap,
+  }) {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return ListTile(
       leading: Icon(icon, color: AppColors.icons, size: screenWidth * 0.06),
-      title: Text(
-        title,
-        style: TextStyle(fontSize: screenWidth * 0.04),
-      ),
-      subtitle: subtitle != null
-          ? Text(
-              subtitle,
-              style: TextStyle(
-                fontSize: screenWidth * 0.035,
-                color: AppColors.textSecondarylight,
-              ),
-            )
-          : null,
+      title: Text(title, style: TextStyle(fontSize: screenWidth * 0.04)),
+      subtitle:
+          subtitle != null
+              ? Text(
+                subtitle,
+                style: TextStyle(
+                  fontSize: screenWidth * 0.035,
+                  color: AppColors.textSecondarylight,
+                ),
+              )
+              : null,
       trailing: Icon(Icons.arrow_forward_ios, size: screenWidth * 0.04),
       onTap: onTap,
     );
@@ -190,10 +210,7 @@ class ProfileScreenState extends State<ProfileScreen> {
 
     return ListTile(
       leading: Icon(icon, color: AppColors.icons, size: screenWidth * 0.06),
-      title: Text(
-        title,
-        style: TextStyle(fontSize: screenWidth * 0.04),
-      ),
+      title: Text(title, style: TextStyle(fontSize: screenWidth * 0.04)),
       trailing: GestureDetector(
         onTap: () {
           setState(() {
@@ -204,9 +221,7 @@ class ProfileScreenState extends State<ProfileScreen> {
           width: screenWidth * 0.12,
           height: screenWidth * 0.06,
           decoration: BoxDecoration(
-            color: _isDarkMode
-                ? AppColors.primary
-                : AppColors.placeholder,
+            color: _isDarkMode ? AppColors.primary : AppColors.placeholder,
             borderRadius: BorderRadius.circular(screenWidth * 0.03),
           ),
           child: Stack(
