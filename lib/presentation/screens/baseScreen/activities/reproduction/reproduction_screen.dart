@@ -53,6 +53,7 @@ class AtividadePage extends StatefulWidget {
 class _AtividadePageState extends State<AtividadePage> {
   late Future<List<Atividade>> atividades;
   List<Atividade> salvos = [];
+  final Set<String> atividadesFeitas = {};
 
   Future<List<Atividade>> carregarAtividades() async {
     final String path = 'assets/data/${widget.categoria}.json';
@@ -81,10 +82,18 @@ class _AtividadePageState extends State<AtividadePage> {
 
   Future<void> salvarAtividade(Atividade atividade) async {
     final prefs = await SharedPreferences.getInstance();
-    salvos.add(atividade);
-    final jsonList = salvos.map((a) => json.encode(a.toJson())).toList();
-    await prefs.setStringList('salvos_${widget.categoria}', jsonList);
-    setState(() {});
+    if (!salvos.contains(atividade)) {
+      salvos.add(atividade);
+      final jsonList = salvos.map((a) => json.encode(a.toJson())).toList();
+      await prefs.setStringList('salvos_${widget.categoria}', jsonList);
+      setState(() {});
+    }
+  }
+
+  void marcarComoFeito(Atividade atividade) {
+    setState(() {
+      atividadesFeitas.add(atividade.titulo);
+    });
   }
 
   final Map<String, String> titulosBonitos = {
@@ -103,6 +112,9 @@ class _AtividadePageState extends State<AtividadePage> {
   }
 
   void mostrarCarta(Atividade atividade) {
+    final isFeito = atividadesFeitas.contains(atividade.titulo);
+    final isSalvo = salvos.any((item) => item.titulo == atividade.titulo);
+
     showDialog(
       context: context,
       builder: (context) {
@@ -283,17 +295,35 @@ class _AtividadePageState extends State<AtividadePage> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         CustomButton(
-                          onPressed: () => salvarAtividade(atividade),
-                          icon: Icon(Icons.bookmark_add_outlined, color: AppColors.neutral, size: 20),
-                          text: "Salvar",
+                          onPressed: () {
+                            salvarAtividade(atividade);
+                            Navigator.pop(context); // Fechar o diálogo
+                          },
+                          icon: Icon(
+                            isSalvo
+                                ? Icons.bookmark
+                                : Icons.bookmark_border, // Ícone preenchido ou fino
+                            color: AppColors.neutral,
+                            size: 20,
+                          ),
+                          text: isSalvo ? "Salvo" : "Salvar",
                           backgroundColor: Colors.blue.shade600,
                           textColor: AppColors.neutral,
                         ),
                         SizedBox(height: 10),
                         CustomButton(
-                          onPressed: () => Navigator.pop(context),
-                          icon: Icon(Icons.check_circle_outline, color: AppColors.neutral, size: 20),
-                          text: "Feito!",
+                          onPressed: () {
+                            marcarComoFeito(atividade);
+                            Navigator.pop(context); // Fechar o diálogo
+                          },
+                          icon: Icon(
+                            isFeito
+                                ? Icons.check_circle
+                                : Icons.check_circle_outline, // Ícone preenchido ou fino
+                            color: AppColors.neutral,
+                            size: 20,
+                          ),
+                          text: isFeito ? "Feito!" : "Marcar como Feito",
                           backgroundColor: AppColors.indexCheck,
                           textColor: AppColors.neutral,
                         ),
@@ -318,28 +348,90 @@ class _AtividadePageState extends State<AtividadePage> {
   void mostrarSalvos() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text("Salvos"),
-        content: SizedBox(
-          width: double.maxFinite,
-          height: 300,
-          child: ListView.builder(
-            itemCount: salvos.length,
-            itemBuilder: (context, index) {
-              final item = salvos[index];
-              return ListTile(
-                title: Text(item.titulo),
-                subtitle: Text(item.descricao),
-              );
-            },
+      builder: (context) => Dialog(
+        backgroundColor: AppColors.background,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Center(
+                child: Text(
+                  "Salvos",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.titlePrimary,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.maxFinite,
+                height: 300,
+                child: ListView.builder(
+                  itemCount: salvos.length,
+                  itemBuilder: (context, index) {
+                    final item = salvos[index];
+                    return GestureDetector(
+                      onTap: () => mostrarCarta(item),
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: AppColors.neutral,
+                          borderRadius: BorderRadius.circular(8),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.shadow.withAlpha(50),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              item.titulo,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.titlePrimary,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              item.descricao,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: AppColors.textSecondarylight,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 16),
+              CustomButton(
+                text: "Fechar",
+                backgroundColor: AppColors.primary,
+                textColor: AppColors.neutral,
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text("Fechar"),
-          ),
-        ],
       ),
     );
   }
@@ -421,23 +513,25 @@ class _AtividadePageState extends State<AtividadePage> {
           future: atividades,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             }
 
             if (snapshot.hasError) {
-              return Center(child: Text('Erro ao carregar atividades.'));
+              return const Center(child: Text('Erro ao carregar atividades.'));
             }
 
             final items = snapshot.data ?? [];
 
             if (items.isEmpty) {
-              return Center(child: Text('Nenhuma atividade disponível.'));
+              return const Center(child: Text('Nenhuma atividade disponível.'));
             }
 
             return ListView.builder(
               itemCount: items.length,
               itemBuilder: (context, index) {
                 final atividade = items[index];
+                final isFeito = atividadesFeitas.contains(atividade.titulo);
+
                 return GestureDetector(
                   onTap: () => mostrarCarta(atividade),
                   child: Container(
@@ -449,39 +543,43 @@ class _AtividadePageState extends State<AtividadePage> {
                     decoration: BoxDecoration(
                       color: AppColors.neutral,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppColors.borderNavigation),
+                      border: Border(
+                        left: BorderSide(
+                          color: isFeito ? Colors.green : Colors.transparent,
+                          width: 8,
+                        ),
+                      ),
                       boxShadow: [
                         BoxShadow(
                           color: AppColors.shadow.withAlpha(20),
                           blurRadius: 4,
-                          offset: Offset(0, 2),
+                          offset: const Offset(0, 2),
                         ),
                       ],
                     ),
-                    width: double.infinity,
-                    constraints: BoxConstraints(
-                      minHeight: screenHeight * 0.14, // Altura mínima
-                      maxHeight: screenHeight * 0.18, // Altura máxima para textos grandes
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Row(
                       children: [
-                        Text(
-                          atividade.titulo,
-                          style: TextStyle(
-                            fontSize: screenHeight * 0.022,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis, 
-                        ),
-                        SizedBox(height: screenHeight * 0.01),
-                        Flexible(
-                          child: Text(
-                            atividade.descricao,
-                            style: TextStyle(fontSize: screenHeight * 0.018),
-                            maxLines: 3, 
-                            overflow: TextOverflow.ellipsis, 
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                atividade.titulo,
+                                style: TextStyle(
+                                  fontSize: screenHeight * 0.022,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              SizedBox(height: screenHeight * 0.01),
+                              Text(
+                                atividade.descricao,
+                                style: TextStyle(fontSize: screenHeight * 0.018),
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
                           ),
                         ),
                       ],

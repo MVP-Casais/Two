@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:two/core/themes/app_colors.dart';
 import 'package:two/presentation/screens/baseScreen/activities/reproduction/reproduction_screen.dart';
+import 'package:two/presentation/screens/ranking/ranking_screen.dart';
 
 class ActivitiesScreen extends StatelessWidget {
   const ActivitiesScreen({super.key});
@@ -18,7 +19,14 @@ class ActivitiesScreen extends StatelessWidget {
         child: ListView(
           children: [
             GestureDetector(
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const RankingScreen(),
+                  ),
+                );
+              },
               child: Container(
                 height: screenHeight * 0.25,
                 width: double.infinity,
