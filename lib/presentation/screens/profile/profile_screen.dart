@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:two/core/themes/app_colors.dart';
-import 'package:two/presentation/screens/baseScreen/home/home_screen.dart';
-import 'package:two/presentation/screens/profile/information/information_screen.dart';
+import 'package:two/presentation/screens/profile/connection_information/connection_information_screen.dart';
+import 'package:two/presentation/screens/profile/information_profile/information_screen.dart';
 import 'package:two/presentation/screens/profile/notification/notification_screen.dart';
 import 'package:two/presentation/screens/profile/security/security_screen.dart';
 
@@ -47,10 +47,11 @@ class ProfileScreenState extends State<ProfileScreen> {
             alignment: Alignment.centerLeft,
             child: GestureDetector(
               onTap: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const HomeScreen()),
-                );
+                if (Navigator.canPop(context)) {
+                  Navigator.pop(context);
+                } else {
+                  Navigator.pushReplacementNamed(context, '/home');
+                }
               },
               child: const Icon(Icons.arrow_back_ios, size: 20),
             ),
@@ -147,7 +148,18 @@ class ProfileScreenState extends State<ProfileScreen> {
         ),
         const SizedBox(height: 16),
         _buildSectionTitle('Configurações compartilhadas'),
-        _buildSettingsItem(Icons.group_outlined, 'Informações da conexão'),
+        _buildSettingsItem(
+          Icons.group_outlined,
+          'Informações da conexão',
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ConnectionInformationScreen(),
+              ),
+            );
+          },
+        ),
         const SizedBox(height: 16),
         _buildSectionTitle('Outros'),
         _buildSwitchItem(Icons.dark_mode_outlined, 'Tema noturno'),
@@ -208,16 +220,16 @@ class ProfileScreenState extends State<ProfileScreen> {
   Widget _buildSwitchItem(IconData icon, String title) {
     final screenWidth = MediaQuery.of(context).size.width;
 
-    return ListTile(
-      leading: Icon(icon, color: AppColors.icons, size: screenWidth * 0.06),
-      title: Text(title, style: TextStyle(fontSize: screenWidth * 0.04)),
-      trailing: GestureDetector(
-        onTap: () {
-          setState(() {
-            _isDarkMode = !_isDarkMode;
-          });
-        },
-        child: Container(
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _isDarkMode = !_isDarkMode;
+        });
+      },
+      child: ListTile(
+        leading: Icon(icon, color: AppColors.icons, size: screenWidth * 0.06),
+        title: Text(title, style: TextStyle(fontSize: screenWidth * 0.04)),
+        trailing: Container(
           width: screenWidth * 0.12,
           height: screenWidth * 0.06,
           decoration: BoxDecoration(
