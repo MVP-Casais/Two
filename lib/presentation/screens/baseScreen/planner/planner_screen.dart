@@ -375,11 +375,17 @@ class PlannerScreenState extends State<PlannerScreen> {
     required Color categoryColor,
     required DateTime date,
   }) {
-    final normalizedDate = DateTime(
-      date.year,
-      date.month,
-      date.day,
-    ); // Normaliza a data
+    final normalizedDate = DateTime(date.year, date.month, date.day);
+
+    if (normalizedDate.isBefore(DateTime.now().subtract(const Duration(days: 1)))) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Não é possível adicionar eventos em datas passadas."),
+        ),
+      );
+      return;
+    }
+
     setState(() {
       eventsByDate[normalizedDate] ??= [];
       eventsByDate[normalizedDate]!.add({
@@ -875,13 +881,21 @@ class PlannerScreenState extends State<PlannerScreen> {
       onPressed: () {
         if (nameController.text.isNotEmpty && dateController.text.isNotEmpty) {
           final eventDate = DateFormat("dd/MM/yyyy").parse(dateController.text);
+
+          if (eventDate.isBefore(DateTime.now().subtract(const Duration(days: 1)))) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Não é possível adicionar eventos em datas passadas."),
+              ),
+            );
+            return;
+          }
+
           final category = selectedCategory ?? "Sem categoria";
-          final categoryColor =
-              categories.firstWhere(
-                    (cat) => cat['name'] == category,
-                    orElse: () => {"color": Colors.grey},
-                  )['color']
-                  as Color;
+          final categoryColor = categories.firstWhere(
+            (cat) => cat['name'] == category,
+            orElse: () => {"color": Colors.grey},
+          )['color'] as Color;
 
           _addEvent(
             title: nameController.text,
@@ -967,19 +981,18 @@ class PlannerScreenState extends State<PlannerScreen> {
               top: 46,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children:
-                    events.map((event) {
-                      final eventMap = event as Map<String, dynamic>;
-                      return Container(
-                        width: 6,
-                        height: 6,
-                        margin: const EdgeInsets.symmetric(horizontal: 2),
-                        decoration: BoxDecoration(
-                          color: eventMap['categoryColor'] ?? Colors.grey,
-                          shape: BoxShape.circle,
-                        ),
-                      );
-                    }).toList(),
+                children: events.take(3).map((event) {
+                  final eventMap = event as Map<String, dynamic>;
+                  return Container(
+                    width: 6,
+                    height: 6,
+                    margin: const EdgeInsets.symmetric(horizontal: 2),
+                    decoration: BoxDecoration(
+                      color: eventMap['categoryColor'] ?? Colors.grey,
+                      shape: BoxShape.circle,
+                    ),
+                  );
+                }).toList(),
               ),
             );
           }
@@ -991,6 +1004,96 @@ class PlannerScreenState extends State<PlannerScreen> {
           selectedDate = selectedDay;
           focusedDate = focusedDay;
         });
+
+        _mostrarEventosDoDia(context, selectedDay);
+      },
+    );
+  }
+
+  void _mostrarEventosDoDia(BuildContext context, DateTime date) {
+    final normalizedDate = DateTime(date.year, date.month, date.day);
+    final eventos = eventsByDate[normalizedDate] ?? [];
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: AppColors.background,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Eventos do Dia",
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.titlePrimary,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                if (eventos.isEmpty)
+                  const Text(
+                    "Nenhum evento marcado para esta data.",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: AppColors.titlePrimary,
+                    ),
+                  )
+                else
+                  ...eventos.map((evento) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            evento['title'],
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.titlePrimary,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "${evento['startTime']} - ${evento['endTime']}",
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: AppColors.textSecondarylight,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            evento['description'],
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: AppColors.textSecondarylight,
+                            ),
+                          ),
+                          const Divider(),
+                        ],
+                      ),
+                    );
+                  }),
+                const SizedBox(height: 16),
+                Center(
+                  child: CustomButton(
+                    text: "Fechar",
+                    onPressed: () => Navigator.pop(context),
+                    backgroundColor: AppColors.primary,
+                    textColor: AppColors.neutral,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
       },
     );
   }
