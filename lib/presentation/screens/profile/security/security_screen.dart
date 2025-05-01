@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:two/core/themes/app_colors.dart';
+import 'package:two/presentation/widgets/custom_button.dart';
 import 'package:two/presentation/widgets/custom_input.dart';
 
 class SecurityScreen extends StatefulWidget {
@@ -42,63 +43,79 @@ class _SecurityScreenState extends State<SecurityScreen> {
           ),
         ),
       ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: screenWidth * 0.1),
-            _buildInputWithTitle(
-              'Senha Atual',
-              'Digite sua senha atual',
-              _isCurrentPasswordVisible,
-              () {
-                setState(() {
-                  _isCurrentPasswordVisible = !_isCurrentPasswordVisible;
-                });
-              },
-            ),
-            SizedBox(height: screenWidth * 0.05),
-            _buildInputWithTitle(
-              'Nova Senha',
-              'Digite sua nova senha',
-              _isNewPasswordVisible,
-              () {
-                setState(() {
-                  _isNewPasswordVisible = !_isNewPasswordVisible;
-                });
-              },
-            ),
-            SizedBox(height: screenWidth * 0.05),
-            _buildInputWithTitle(
-              'Confirmar Nova Senha',
-              'Confirme sua nova senha',
-              _isConfirmPasswordVisible,
-              () {
-                setState(() {
-                  _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
-                });
-              },
-            ),
-            SizedBox(height: screenWidth * 0.3),
-            GestureDetector(
-              onTap: () {
-                // ação de excluir conta
-              },
-              child: Center(
-                child: Text(
-                  'Excluir conta',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
+      body: Stack(
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: screenWidth * 0.1),
+                _buildInputWithTitle(
+                  'Senha Atual',
+                  'Digite sua senha atual',
+                  _isCurrentPasswordVisible,
+                  () {
+                    setState(() {
+                      _isCurrentPasswordVisible = !_isCurrentPasswordVisible;
+                    });
+                  },
+                ),
+                SizedBox(height: screenWidth * 0.05),
+                _buildInputWithTitle(
+                  'Nova Senha',
+                  'Digite sua nova senha',
+                  _isNewPasswordVisible,
+                  () {
+                    setState(() {
+                      _isNewPasswordVisible = !_isNewPasswordVisible;
+                    });
+                  },
+                ),
+                SizedBox(height: screenWidth * 0.05),
+                _buildInputWithTitle(
+                  'Confirmar Nova Senha',
+                  'Confirme sua nova senha',
+                  _isConfirmPasswordVisible,
+                  () {
+                    setState(() {
+                      _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                    });
+                  },
+                ),
+                SizedBox(height: screenWidth * 0.3),
+                GestureDetector(
+                  onTap: () {
+                    // ação de excluir conta
+                  },
+                  child: Center(
+                    child: Text(
+                      'Excluir conta',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primary,
+                      ),
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
-            SizedBox(height: screenWidth * 0.1),
-          ],
-        ),
+          ),
+          Positioned(
+            bottom: screenWidth * 0.05,
+            left: screenWidth * 0.05,
+            right: screenWidth * 0.05,
+            child: CustomButton(
+              backgroundColor: AppColors.primary,
+              text: 'Salvar Alterações',
+              textColor: AppColors.neutral,
+              onPressed: () {
+                // ação de salvar alterações
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

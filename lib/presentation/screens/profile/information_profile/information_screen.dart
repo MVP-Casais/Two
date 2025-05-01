@@ -3,16 +3,8 @@ import 'package:two/core/themes/app_colors.dart';
 import 'package:two/presentation/widgets/custom_button.dart';
 import 'package:two/presentation/widgets/custom_input.dart';
 
-class InformationScreen extends StatefulWidget {
+class InformationScreen extends StatelessWidget {
   const InformationScreen({super.key});
-
-  @override
-  State<InformationScreen> createState() => _InformationScreenState();
-}
-
-class _InformationScreenState extends State<InformationScreen> {
-  final List<String> genders = ['Masculino', 'Feminino', 'Outro'];
-  String? selectedGender;
 
   @override
   Widget build(BuildContext context) {
@@ -28,11 +20,7 @@ class _InformationScreenState extends State<InformationScreen> {
             onTap: () {
               Navigator.pop(context);
             },
-            child: const Icon(
-              Icons.arrow_back_ios,
-              size: 20,
-              color: AppColors.icons,
-            ),
+            child: const Icon(Icons.arrow_back_ios, size: 20, color: AppColors.icons),
           ),
           centerTitle: true,
           title: const Text(
@@ -66,7 +54,6 @@ class _InformationScreenState extends State<InformationScreen> {
                       SizedBox(height: screenWidth * 0.05),
                       GestureDetector(
                         onTap: () {
-                          // Ação de editar perfil
                         },
                         child: Text(
                           'Editar Perfil',
@@ -121,12 +108,14 @@ class _InformationScreenState extends State<InformationScreen> {
           ),
         ),
         const SizedBox(height: 8),
-        CustomInput(labelText: hint),
+        CustomInput(labelText: label),
       ],
     );
   }
 
   Widget _buildGenderDropdown() {
+    final List<String> genders = ['Masculino', 'Feminino', 'Outro'];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -142,20 +131,19 @@ class _InformationScreenState extends State<InformationScreen> {
         CustomInput(
           labelText: 'Gênero',
           isDropdown: true,
-          dropdownItems:
-              genders.map((String gender) {
-                return DropdownMenuItem<String>(
-                  value: gender,
-                  child: Text(
-                    gender,
-                    style: const TextStyle(fontWeight: FontWeight.normal),
-                  ),
-                );
-              }).toList(),
+          dropdownItems: genders.map((String gender) {
+            return DropdownMenuItem<String>(
+              value: gender,
+              child: Text(
+                gender,
+                style: const TextStyle(
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
+            );
+          }).toList(),
           onChanged: (String? newValue) {
-            setState(() {
-              selectedGender = newValue;
-            });
+            // ação ao selecionar um gênero
           },
         ),
       ],
