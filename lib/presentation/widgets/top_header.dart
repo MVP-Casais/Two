@@ -5,11 +5,13 @@ import 'package:two/core/themes/app_colors.dart';
 class TopHeader extends StatelessWidget {
   final bool useSliver;
   final VoidCallback? onAddEvent;
+  final bool showAddIcon;
 
   const TopHeader({
     super.key,
     this.useSliver = false,
     this.onAddEvent,
+    this.showAddIcon = true,
   });
 
   @override
@@ -17,28 +19,34 @@ class TopHeader extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
-    final content = Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
+    final content = Stack(
+      alignment: Alignment.center,
       children: [
-        IconButton(
-          icon: Icon(
-            Icons.menu,
-            size: screenHeight * 0.03,
+        Align(
+          alignment: Alignment.centerLeft,
+          child: IconButton(
+            icon: Icon(
+              Icons.menu,
+              size: screenHeight * 0.03,
+            ),
+            onPressed: () {},
           ),
-          onPressed: () {},
         ),
         SvgPicture.asset(
           'assets/images/TWO.svg',
           height: screenHeight * 0.03,
         ),
-        IconButton(
-          icon: Icon(
-            Icons.add,
-            size: screenHeight * 0.03,
+        if (showAddIcon)
+          Align(
+            alignment: Alignment.centerRight,
+            child: IconButton(
+              icon: Icon(
+                Icons.add,
+                size: screenHeight * 0.03,
+              ),
+              onPressed: onAddEvent,
+            ),
           ),
-          onPressed: onAddEvent,
-        ),
       ],
     );
 

@@ -52,16 +52,18 @@ class FloatingBottomNav extends StatelessWidget {
                 child: GestureDetector(
                   onTap: () {
                     onTap(index);
-                    switch (index) {
-                      case 0:
-                        Navigator.pushReplacementNamed(context, '/home');
-                        break;
-                      case 1:
-                        Navigator.pushReplacementNamed(context, '/ranking');
-                        break;
-                      case 2:
-                        Navigator.pushReplacementNamed(context, '/profile');
-                        break;
+                    if (index != currentIndex) { 
+                      switch (index) {
+                        case 0:
+                          Navigator.pushReplacementNamed(context, '/home');
+                          break;
+                        case 1:
+                          Navigator.pushReplacementNamed(context, '/ranking');
+                          break;
+                        case 2:
+                          Navigator.pushReplacementNamed(context, '/profile');
+                          break;
+                      }
                     }
                   },
                   child: AnimatedContainer(

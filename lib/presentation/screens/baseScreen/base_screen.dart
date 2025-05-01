@@ -78,8 +78,9 @@ class _BaseScreenState extends State<BaseScreen> {
                   children: [
                     TopHeader(
                       useSliver: false,
+                      showAddIcon: currentIndexTop == 2 || currentIndexTop == 0,
                       onAddEvent: () {
-                        if (currentIndexTop == 2) { // Verifica se está na página PlannerScreen
+                        if (currentIndexTop == 2) {
                           plannerScreenKey.currentState?.openAddEventModal(context);
                         }
                       },
@@ -107,7 +108,7 @@ class _BaseScreenState extends State<BaseScreen> {
               children: [
                 const MemoriesScreen(),
                 const ActivitiesScreen(),
-                PlannerScreen(key: plannerScreenKey), // Passa a chave global
+                PlannerScreen(key: plannerScreenKey),
                 const SettingsScreen(),
               ],
             ),
