@@ -15,6 +15,7 @@ class PresenceModeScreen extends StatefulWidget {
   _PresenceModeScreenState createState() => _PresenceModeScreenState();
 }
 
+@pragma('vm:entry-point') 
 class _PresenceModeScreenState extends State<PresenceModeScreen>
     with SingleTickerProviderStateMixin {
   final RealPresenceMode _realPresenceMode = RealPresenceMode();
@@ -110,8 +111,9 @@ class _PresenceModeScreenState extends State<PresenceModeScreen>
     }
   }
 
+  @pragma('vm:entry-point') // Adicionado para permitir acesso do código nativo
   static void _onBackgroundServiceStart(ServiceInstance service) {
-    DartPluginRegistrant.ensureInitialized();
+        DartPluginRegistrant.ensureInitialized();
 
     int remainingSeconds = 0;
     bool isSessionActive = false;
