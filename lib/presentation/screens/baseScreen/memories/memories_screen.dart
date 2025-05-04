@@ -165,8 +165,8 @@ class MemoryCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(12),
                             child: PhotoView(
                               imageProvider: isLocalFile
-                                  ? FileImage(File(imageUrl))
-                                  : CachedNetworkImageProvider(imageUrl),
+                                  ? FileImage(File(imageUrl)) as ImageProvider<Object>
+                                  : CachedNetworkImageProvider(imageUrl) as ImageProvider<Object>,
                               backgroundDecoration: const BoxDecoration(
                                 color: Colors.black,
                               ),
