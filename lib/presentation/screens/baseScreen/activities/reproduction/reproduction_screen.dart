@@ -90,6 +90,14 @@ class _AtividadePageState extends State<AtividadePage> {
     }
   }
 
+  Future<void> removerAtividade(Atividade atividade) async {
+    final prefs = await SharedPreferences.getInstance();
+    salvos.removeWhere((item) => item.titulo == atividade.titulo);
+    final jsonList = salvos.map((a) => json.encode(a.toJson())).toList();
+    await prefs.setStringList('salvos_${widget.categoria}', jsonList);
+    setState(() {});
+  }
+
   void marcarComoFeito(Atividade atividade) {
     setState(() {
       atividadesFeitas.add(atividade.titulo);
@@ -112,8 +120,9 @@ class _AtividadePageState extends State<AtividadePage> {
   }
 
   void mostrarCarta(Atividade atividade) {
-    final isFeito = atividadesFeitas.contains(atividade.titulo);
+    final height = MediaQuery.of(context).size.height * 0.6;
     final isSalvo = salvos.any((item) => item.titulo == atividade.titulo);
+    final isFeito = atividadesFeitas.contains(atividade.titulo);
 
     showDialog(
       context: context,
@@ -122,63 +131,93 @@ class _AtividadePageState extends State<AtividadePage> {
           insetPadding: EdgeInsets.all(16),
           backgroundColor: Colors.transparent,
           child: FlipCard(
-            front: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    AppColors.terciary,
-                    AppColors.secondary,
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+            front: Stack(
+              children: [
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColors.terciary,
+                        AppColors.secondary,
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 10,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  padding: EdgeInsets.all(24),
+                  height: height,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        atividade.titulo,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.neutral,
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      Text(
+                        "Hora de aproveitar juntos!",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.neutral,
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      Icon(Icons.favorite, size: 100, color: AppColors.primary),
+                      SizedBox(height: 30),
+                      Text(
+                        "Toque para virar",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.neutral,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 10,
-                    offset: Offset(0, 4),
-                  ),
-                ],
-              ),
-              padding: EdgeInsets.all(24),
-              height: 450,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    atividade.titulo,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.neutral,
+                if (isFeito)
+                  Positioned(
+                    top: 16,
+                    right: 16,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.green,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.check, color: Colors.white, size: 16),
+                          SizedBox(width: 4),
+                          Text(
+                            "Concluído",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  SizedBox(height: 20),
-                  Text(
-                    "Hora de aproveitar juntos!",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.neutral,
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  Icon(Icons.favorite, size: 80, color: AppColors.primary),
-                  SizedBox(height: 30),
-                  Text(
-                    "Toque para virar",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.neutral,
-                    ),
-                  ),
-                ],
-              ),
+              ],
             ),
             back: Container(
               decoration: BoxDecoration(
@@ -193,144 +232,145 @@ class _AtividadePageState extends State<AtividadePage> {
                 ],
               ),
               padding: EdgeInsets.all(24),
-              height: 450,
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      atividade.titulo,
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.titlePrimary,
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                    RichText(
-                      text: TextSpan(
-                        text: "Instrução: ",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.titlePrimary,
-                        ),
+              height: height,
+              child: Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          TextSpan(
-                            text: atividade.descricao,
+                          Text(
+                            atividade.titulo,
                             style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.normal,
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
                               color: AppColors.titlePrimary,
                             ),
                           ),
+                          SizedBox(height: 16),
+                          Text(
+                            atividade.descricao,
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: AppColors.titlePrimary,
+                            ),
+                          ),
+                          if (atividade.duracao.isNotEmpty) ...[
+                            SizedBox(height: 16),
+                            RichText(
+                              text: TextSpan(
+                                text: "Duração: ",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.titlePrimary,
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text: atividade.duracao,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.normal,
+                                      color: AppColors.titlePrimary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                          if (atividade.intensidade.isNotEmpty) ...[
+                            SizedBox(height: 8),
+                            RichText(
+                              text: TextSpan(
+                                text: "Intensidade: ",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.titlePrimary,
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text: atividade.intensidade,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.normal,
+                                      color: AppColors.titlePrimary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                          if (atividade.tags != null &&
+                              atividade.tags!.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 16),
+                              child: Wrap(
+                                spacing: 8,
+                                children: atividade.tags!
+                                    .map((tag) => Chip(
+                                          label: Text(tag),
+                                          backgroundColor:
+                                              AppColors.inputBackground,
+                                          labelStyle: TextStyle(
+                                            color: AppColors.titlePrimary,
+                                            fontSize: 14,
+                                          ),
+                                        ))
+                                    .toList(),
+                              ),
+                            ),
                         ],
                       ),
                     ),
-                    if (atividade.duracao.isNotEmpty) ...[
-                      SizedBox(height: 16),
-                      RichText(
-                        text: TextSpan(
-                          text: "Duração: ",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.titlePrimary,
-                          ),
-                          children: [
-                            TextSpan(
-                              text: atividade.duracao,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.normal,
-                                color: AppColors.titlePrimary,
-                              ),
-                            ),
-                          ],
+                  ),
+                  SizedBox(height: 16),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      CustomButton(
+                        onPressed: () async {
+                          if (isSalvo) {
+                            await removerAtividade(atividade);
+                          } else {
+                            await salvarAtividade(atividade);
+                          }
+                          setState(() {});
+                          Navigator.pop(context);
+                        },
+                        icon: Icon(
+                          isSalvo ? Icons.bookmark : Icons.bookmark_border,
+                          color: AppColors.neutral,
+                          size: 20,
                         ),
+                        text: isSalvo ? "Remover dos Salvos" : "Salvar",
+                        backgroundColor: Colors.blue.shade600,
+                        textColor: AppColors.neutral,
                       ),
-                    ],
-                    if (atividade.intensidade.isNotEmpty) ...[
                       SizedBox(height: 8),
-                      RichText(
-                        text: TextSpan(
-                          text: "Intensidade: ",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.titlePrimary,
-                          ),
-                          children: [
-                            TextSpan(
-                              text: atividade.intensidade,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.normal,
-                                color: AppColors.titlePrimary,
-                              ),
-                            ),
-                          ],
+                      CustomButton(
+                        onPressed: () {
+                          if (!isFeito) {
+                            marcarComoFeito(atividade);
+                          }
+                          setState(() {});
+                          Navigator.pop(context);
+                        },
+                        icon: Icon(
+                          isFeito
+                              ? Icons.check_circle
+                              : Icons.check_circle_outline,
+                          color: AppColors.neutral,
+                          size: 20,
                         ),
+                        text: isFeito ? "Concluído" : "Marcar como Concluído",
+                        backgroundColor: AppColors.indexCheck,
+                        textColor: AppColors.neutral,
                       ),
                     ],
-                    if (atividade.tags != null && atividade.tags!.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 16),
-                        child: Wrap(
-                          spacing: 8,
-                          children: atividade.tags!
-                              .map((tag) => Chip(
-                                    label: Text(tag),
-                                    backgroundColor: AppColors.inputBackground,
-                                    labelStyle: TextStyle(
-                                      color: AppColors.titlePrimary,
-                                      fontSize: 14,
-                                    ),
-                                  ))
-                              .toList(),
-                        ),
-                      ),
-                    SizedBox(height: 30),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        CustomButton(
-                          onPressed: () {
-                            salvarAtividade(atividade);
-                            Navigator.pop(context); // Fechar o diálogo
-                          },
-                          icon: Icon(
-                            isSalvo
-                                ? Icons.bookmark
-                                : Icons.bookmark_border, // Ícone preenchido ou fino
-                            color: AppColors.neutral,
-                            size: 20,
-                          ),
-                          text: isSalvo ? "Salvo" : "Salvar",
-                          backgroundColor: Colors.blue.shade600,
-                          textColor: AppColors.neutral,
-                        ),
-                        SizedBox(height: 10),
-                        CustomButton(
-                          onPressed: () {
-                            marcarComoFeito(atividade);
-                            Navigator.pop(context); // Fechar o diálogo
-                          },
-                          icon: Icon(
-                            isFeito
-                                ? Icons.check_circle
-                                : Icons.check_circle_outline, // Ícone preenchido ou fino
-                            color: AppColors.neutral,
-                            size: 20,
-                          ),
-                          text: isFeito ? "Feito!" : "Marcar como Feito",
-                          backgroundColor: AppColors.indexCheck,
-                          textColor: AppColors.neutral,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -340,12 +380,24 @@ class _AtividadePageState extends State<AtividadePage> {
   }
 
   void mostrarAleatoria(List<Atividade> lista) {
+    if (lista.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Nenhuma atividade disponível para sugerir.')),
+      );
+      return;
+    }
     final random = Random();
     final atividade = lista[random.nextInt(lista.length)];
     mostrarCarta(atividade);
   }
 
   void mostrarSalvos() {
+    if (salvos.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Nenhuma atividade salva.')),
+      );
+      return;
+    }
     showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -392,28 +444,43 @@ class _AtividadePageState extends State<AtividadePage> {
                             ),
                           ],
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              item.titulo,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.titlePrimary,
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    item.titulo,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.titlePrimary,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    item.descricao,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: AppColors.textSecondarylight,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
                               ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              item.descricao,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textSecondarylight,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
+                            IconButton(
+                              icon: Icon(Icons.delete, color: Colors.red),
+                              onPressed: () async {
+                                await removerAtividade(item);
+                                Navigator.pop(context); // Fechar o diálogo
+                                mostrarSalvos(); // Reabrir com a lista atualizada
+                              },
                             ),
                           ],
                         ),
@@ -445,19 +512,24 @@ class _AtividadePageState extends State<AtividadePage> {
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
-        scrolledUnderElevation: 0, 
+        scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, size: screenHeight * 0.025, color: AppColors.titlePrimary),
+          icon: Icon(Icons.arrow_back_ios,
+              size: screenHeight * 0.025, color: AppColors.titlePrimary),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           titulosBonitos[widget.categoria] ?? 'Atividades',
-          style: TextStyle(fontSize: screenHeight * 0.022, color: AppColors.titlePrimary, fontWeight: FontWeight.w500),
+          style: TextStyle(
+              fontSize: screenHeight * 0.022,
+              color: AppColors.titlePrimary,
+              fontWeight: FontWeight.w500),
         ),
         centerTitle: true,
         actions: [
           PopupMenuButton<String>(
-            icon: Icon(Icons.menu, size: screenHeight * 0.025, color: AppColors.titlePrimary),
+            icon: Icon(Icons.menu,
+                size: screenHeight * 0.025, color: AppColors.titlePrimary),
             onSelected: (value) async {
               final lista = await atividades;
               if (value == 'aleatoria') mostrarAleatoria(lista);
@@ -465,7 +537,9 @@ class _AtividadePageState extends State<AtividadePage> {
             },
             itemBuilder: (context) => [
               PopupMenuItem(
-                padding: EdgeInsets.symmetric(vertical: screenHeight * 0.015, horizontal: screenWidth * 0.05),
+                padding: EdgeInsets.symmetric(
+                    vertical: screenHeight * 0.015,
+                    horizontal: screenWidth * 0.05),
                 textStyle: TextStyle(
                   fontSize: screenHeight * 0.022,
                   color: AppColors.titlePrimary,
@@ -474,14 +548,17 @@ class _AtividadePageState extends State<AtividadePage> {
                 value: 'aleatoria',
                 child: Row(
                   children: [
-                    Icon(Icons.shuffle, color: AppColors.icons, size: screenHeight * 0.025),
+                    Icon(Icons.shuffle,
+                        color: AppColors.icons, size: screenHeight * 0.025),
                     SizedBox(width: screenWidth * 0.03),
                     Text("Sugerir Atividade"),
                   ],
                 ),
               ),
               PopupMenuItem(
-                padding: EdgeInsets.symmetric(vertical: screenHeight * 0.015, horizontal: screenWidth * 0.05),
+                padding: EdgeInsets.symmetric(
+                    vertical: screenHeight * 0.015,
+                    horizontal: screenWidth * 0.05),
                 textStyle: TextStyle(
                   fontSize: screenHeight * 0.022,
                   color: AppColors.titlePrimary,
@@ -490,7 +567,8 @@ class _AtividadePageState extends State<AtividadePage> {
                 value: 'salvos',
                 child: Row(
                   children: [
-                    Icon(Icons.bookmark, color: AppColors.icons, size: screenHeight * 0.025),
+                    Icon(Icons.bookmark,
+                        color: AppColors.icons, size: screenHeight * 0.025),
                     SizedBox(width: screenWidth * 0.03),
                     Text("Ver Salvos"),
                   ],
@@ -506,9 +584,7 @@ class _AtividadePageState extends State<AtividadePage> {
         ],
       ),
       body: Container(
-        decoration: BoxDecoration(
-          color: AppColors.background
-        ),
+        decoration: BoxDecoration(color: AppColors.background),
         child: FutureBuilder<List<Atividade>>(
           future: atividades,
           builder: (context, snapshot) {
@@ -526,7 +602,17 @@ class _AtividadePageState extends State<AtividadePage> {
               return const Center(child: Text('Nenhuma atividade disponível.'));
             }
 
-            return ListView.builder(
+            return GridView.builder(
+              padding: EdgeInsets.symmetric(
+                horizontal: screenWidth * 0.02,
+                vertical: screenHeight * 0.02,
+              ),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3, 
+                crossAxisSpacing: screenWidth * 0.02,
+                mainAxisSpacing: screenHeight * 0.02,
+                childAspectRatio: 0.7, 
+              ),
               itemCount: items.length,
               itemBuilder: (context, index) {
                 final atividade = items[index];
@@ -534,56 +620,63 @@ class _AtividadePageState extends State<AtividadePage> {
 
                 return GestureDetector(
                   onTap: () => mostrarCarta(atividade),
-                  child: Container(
-                    margin: EdgeInsets.symmetric(
-                      horizontal: screenWidth * 0.04,
-                      vertical: screenHeight * 0.01,
-                    ),
-                    padding: EdgeInsets.all(screenHeight * 0.02),
-                    decoration: BoxDecoration(
-                      color: AppColors.neutral,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border(
-                        left: BorderSide(
-                          color: isFeito ? Colors.green : Colors.transparent,
-                          width: 8,
-                        ),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.shadow.withAlpha(20),
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                atividade.titulo,
-                                style: TextStyle(
-                                  fontSize: screenHeight * 0.022,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              SizedBox(height: screenHeight * 0.01),
-                              Text(
-                                atividade.descricao,
-                                style: TextStyle(fontSize: screenHeight * 0.018),
-                                maxLines: 3,
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                  child: Stack(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              AppColors.terciary,
+                              AppColors.secondary,
                             ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 10,
+                              offset: Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Center(
+                          child: Icon(
+                            Icons.favorite,
+                            size: 40, // Reduzir o tamanho do ícone
+                            color: AppColors.primary,
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                      if (isFeito)
+                        Positioned(
+                          top: 8,
+                          right: 8,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.green,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.check, color: Colors.white, size: 12),
+                                SizedBox(width: 4),
+                                Text(
+                                  "Concluído",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 );
               },
