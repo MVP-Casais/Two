@@ -29,7 +29,7 @@ class TopMenu extends StatelessWidget {
             Icons.calendar_month_outlined,
             "Planner do Casal",
           ),
-          _buildIcon(context, 3, Icons.settings_outlined, "Configurações"),
+          _buildIcon(context, 3, Icons.timer_outlined, "Presença Real"),
         ],
       ),
     );
@@ -47,7 +47,7 @@ class TopMenu extends StatelessWidget {
       0: Icons.visibility, 
       1: Icons.widgets, 
       2: Icons.calendar_month, 
-      3: Icons.settings, 
+      3: Icons.timer_rounded, 
     };
 
     return GestureDetector(

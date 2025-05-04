@@ -1,157 +1,159 @@
 import 'dart:async';
+import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:confetti/confetti.dart';
 import 'package:two/core/themes/app_colors.dart';
-
-class SessionHistoryEntry {
-  final DateTime date;
-  final int points;
-  final String formattedTime;
-
-  SessionHistoryEntry(this.date, this.points, this.formattedTime);
-}
-
-class QualityTimeTracker {
-  Timer? _timer;
-  int _seconds = 0;
-  int _maxDuration = 0;
-  Function? onTick;
-
-  void setMaxDuration(int seconds) {
-    _maxDuration = seconds;
-  }
-
-  void startTimer() {
-    _seconds = 0;
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      _seconds++;
-      if (onTick != null) onTick!();
-      if (_maxDuration > 0 && _seconds >= _maxDuration) {
-        stopTimer();
-      }
-    });
-  }
-
-  void stopTimer() {
-    _timer?.cancel();
-  }
-
-  int get totalSeconds => _seconds;
-
-  String get formattedTime {
-    int minutes = _seconds ~/ 60;
-    int seconds = _seconds % 60;
-    return '$minutes:${seconds.toString().padLeft(2, '0')}';
-  }
-}
-
-class ConnectionScore {
-  int _points = 0;
-
-  void addPoints(int minutes) {
-    _points += minutes;
-  }
-
-  int get points => _points;
-
-  void resetPoints() {
-    _points = 0;
-  }
-}
-
-class RealPresenceMode {
-  final QualityTimeTracker timeTracker = QualityTimeTracker();
-  final ConnectionScore connectionScore = ConnectionScore();
-  bool _isActive = false;
-  final List<SessionHistoryEntry> _history = [];
-
-  final List<String> _challenges = [
-    "Olhem nos olhos por 2 minutos sem falar nada.",
-    "Façam um elogio sincero um para o outro.",
-    "Relembrem juntos uma memória engraçada.",
-    "Contem um segredo que nunca disseram.",
-    "Façam uma mini dança juntos, mesmo sem música.",
-  ];
-  String _currentChallenge = "";
-
-  void pickRandomChallenge() {
-    _currentChallenge = (_challenges..shuffle()).first;
-  }
-
-  String get currentChallenge => _currentChallenge;
-
-  void setSessionDuration(int seconds) {
-    timeTracker.setMaxDuration(seconds);
-  }
-
-  Future<void> activateMode() async {
-    _isActive = true;
-    timeTracker.startTimer();
-    pickRandomChallenge();
-    await _blockNotifications();
-  }
-
-  Future<void> deactivateMode() async {
-    _isActive = false;
-    timeTracker.stopTimer();
-    await _unblockNotifications();
-    int minutes = timeTracker.totalSeconds ~/ 60;
-    connectionScore.addPoints(minutes);
-    _history.add(SessionHistoryEntry(
-      DateTime.now(),
-      minutes,
-      timeTracker.formattedTime,
-    ));
-  }
-
-  Future<void> _blockNotifications() async {
-    var status = await Permission.notification.request();
-    if (status.isGranted) {
-      print("Notificações bloqueadas");
-    }
-  }
-
-  Future<void> _unblockNotifications() async {
-    var status = await Permission.notification.request();
-    if (status.isGranted) {
-      print("Notificações desbloqueadas");
-    }
-  }
-
-  bool get isActive => _isActive;
-  int get currentPoints => connectionScore.points;
-  void resetPoints() => connectionScore.resetPoints();
-  List<SessionHistoryEntry> get history => List.unmodifiable(_history);
-}
+import 'package:two/presentation/screens/baseScreen/presenceMode/realPresenceMode/real_presence_mode.dart';
+import 'package:two/presentation/widgets/custom_button.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 
 class PresenceModeScreen extends StatefulWidget {
+  const PresenceModeScreen({super.key});
+
   @override
   _PresenceModeScreenState createState() => _PresenceModeScreenState();
 }
 
-class _PresenceModeScreenState extends State<PresenceModeScreen> {
+class _PresenceModeScreenState extends State<PresenceModeScreen>
+    with SingleTickerProviderStateMixin {
   final RealPresenceMode _realPresenceMode = RealPresenceMode();
-  late Timer _timer;
+  Timer? _timer;
   int _selectedDuration = 30;
+  late AnimationController _animationController;
+  late ConfettiController _confettiController;
+  bool _isTimeSelected = false;
 
   @override
   void initState() {
     super.initState();
-    _realPresenceMode.timeTracker.onTick = () => setState(() {});
-    _startUIUpdateTimer();
-  }
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: _selectedDuration),
+    )..addListener(() async {
+        if (mounted) {
+          setState(() {});
+        }
+        if (_animationController.isCompleted && _realPresenceMode.isActive) {
+          _realPresenceMode.deactivateMode().then((_) async {
+            _confettiController.play();
+            await _showCompletionDialog(_realPresenceMode.currentPoints);
+            setState(() {
+              _isTimeSelected = false;
+            });
+          });
+        }
+      });
+    _confettiController =
+        ConfettiController(duration: const Duration(seconds: 3));
 
-  void _startUIUpdateTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_realPresenceMode.isActive) {
-        setState(() {});
+    _initializeBackgroundService();
+
+    final service = FlutterBackgroundService();
+    service.on('tick').listen((event) {
+      final remaining = event?['remaining'] ?? 0;
+      setState(() {
+        _realPresenceMode.timeTracker.totalSeconds = remaining;
+      });
+
+      if (remaining == 0 && _realPresenceMode.isActive) {
+        _realPresenceMode.deactivateMode().then((_) async {
+          _confettiController.play();
+          await _showCompletionDialog(_realPresenceMode.currentPoints);
+          setState(() {
+            _isTimeSelected = false;
+          });
+        });
       }
     });
+
+    service.on('sessionComplete').listen((event) {
+      _confettiController.play();
+      _realPresenceMode.deactivateMode().then((_) async {
+        await _showCompletionDialog(_realPresenceMode.currentPoints);
+        setState(() {
+          _isTimeSelected = false;
+        });
+      });
+    });
+  }
+
+  Future<void> _initializeBackgroundService() async {
+    final service = FlutterBackgroundService();
+
+    await service.configure(
+      androidConfiguration: AndroidConfiguration(
+        onStart: _onBackgroundServiceStart,
+        isForegroundMode: true,
+        autoStart: false,
+      ),
+      iosConfiguration: IosConfiguration(
+        onForeground: _onBackgroundServiceStart,
+        autoStart: false,
+      ),
+    );
+  }
+
+  Future<void> startTimerInBackground(int duration) async {
+    final service = FlutterBackgroundService();
+    if (!(await service.isRunning())) {
+      await service.startService();
+    }
+
+    service.invoke('startSession', {'duration': duration});
+  }
+
+  Future<void> stopTimerInBackground() async {
+    final service = FlutterBackgroundService();
+    if (await service.isRunning()) {
+      service.invoke('stopSession');
+    }
+  }
+
+  static void _onBackgroundServiceStart(ServiceInstance service) {
+    DartPluginRegistrant.ensureInitialized();
+
+    int remainingSeconds = 0;
+    bool isSessionActive = false;
+
+    service.on('startSession').listen((event) {
+      remainingSeconds = event?['duration'] ?? 0;
+      isSessionActive = true;
+    });
+
+    service.on('stopSession').listen((event) {
+      isSessionActive = false;
+      remainingSeconds = 0;
+      service.invoke('stopped');
+    });
+
+    Timer.periodic(const Duration(seconds: 1), (timer) async {
+      if (!isSessionActive || remainingSeconds <= 0) {
+        if (remainingSeconds <= 0 && isSessionActive) {
+          isSessionActive = false;
+          service.invoke('sessionComplete');
+        }
+        return;
+      }
+
+      remainingSeconds--;
+      service.invoke('tick', {'remaining': remainingSeconds});
+    });
+  }
+
+  Future<void> _stopBackgroundService() async {
+    final service = FlutterBackgroundService();
+    if (await service.isRunning()) {
+      service.invoke('stop');
+    }
   }
 
   @override
   void dispose() {
-    _timer.cancel();
+    _stopBackgroundService();
+    _timer?.cancel();
+    _animationController.dispose();
+    _confettiController.dispose();
     super.dispose();
   }
 
@@ -166,21 +168,29 @@ class _PresenceModeScreenState extends State<PresenceModeScreen> {
         children: [
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildStatusCard(),
-                  const SizedBox(height: 30),
-                  _buildDurationDropdown(),
-                  const SizedBox(height: 20),
-                  _buildActionButtons(screenWidth, screenHeight),
-                  const SizedBox(height: 40),
-                  _buildStatusIndicator(screenHeight),
-                  const SizedBox(height: 30),
-                  _buildSessionHistory(),
-                ],
-              ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (!_isTimeSelected) _buildTimePicker(),
+                if (_isTimeSelected) _buildProgressCircle(screenHeight),
+                const SizedBox(height: 20),
+                _buildActionButtons(screenWidth, screenHeight),
+                const SizedBox(height: 40),
+                _buildSessionHistory(),
+              ],
+            ),
+          ),
+          Align(
+            alignment: Alignment.topCenter,
+            child: ConfettiWidget(
+              confettiController: _confettiController,
+              blastDirectionality: BlastDirectionality.explosive,
+              shouldLoop: false,
+              maxBlastForce: 20,
+              minBlastForce: 5,
+              emissionFrequency: 0.05,
+              numberOfParticles: 30,
+              gravity: 0.3,
             ),
           ),
         ],
@@ -188,87 +198,72 @@ class _PresenceModeScreenState extends State<PresenceModeScreen> {
     );
   }
 
-  Widget _buildStatusCard() {
+  Widget _buildProgressCircle(double screenHeight) {
+    final double circleSize = MediaQuery.of(context).size.width * 0.8;
+
     return Container(
-      padding: const EdgeInsets.all(16),
+      height: circleSize,
+      width: circleSize,
       decoration: BoxDecoration(
-        color: AppColors.neutral.withOpacity(0.9),
-        borderRadius: BorderRadius.circular(16),
+        shape: BoxShape.circle,
+        color: AppColors.background,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 8,
+            color: AppColors.shadow.withAlpha(50),
+            blurRadius: 12,
             offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: Column(
+      child: Stack(
+        alignment: Alignment.center,
         children: [
-          Text(
-            _realPresenceMode.isActive ? "Modo Ativo" : "Modo Desativado",
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: AppColors.titlePrimary,
+          SizedBox(
+            height: circleSize,
+            width: circleSize,
+            child: CircularProgressIndicator(
+              value: 1.0 - _animationController.value,
+              strokeWidth: 16.0,
+              backgroundColor: AppColors.neutral.withAlpha(50),
+              valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
             ),
           ),
-          const SizedBox(height: 20),
-          Row(
+          Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.timer, color: AppColors.icons, size: 30),
-              const SizedBox(width: 10),
               Text(
                 _realPresenceMode.timeTracker.formattedTime,
                 style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
+                  fontSize: 52,
+                  fontWeight: FontWeight.bold,
                   color: AppColors.titlePrimary,
+                ),
+              ),
+              const SizedBox(height: 4),
+              const Text(
+                'Tempo restante',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: AppColors.textSecondarylight,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.star, color: Colors.amber, size: 30),
-              const SizedBox(width: 10),
-              Text(
-                "${_realPresenceMode.currentPoints} pontos",
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.titlePrimary,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          if (_realPresenceMode.isActive)
-            Text(
-              'Desafio: ${_realPresenceMode.currentChallenge}',
-              style: const TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
-              textAlign: TextAlign.center,
-            ),
         ],
       ),
     );
   }
 
-  Widget _buildDurationDropdown() {
-    return DropdownButton<int>(
-      value: _selectedDuration,
-      items: [5, 10, 15, 30, 60].map((int value) {
-        return DropdownMenuItem<int>(
-          value: value,
-          child: Text('$value minutos'),
-        );
-      }).toList(),
-      onChanged: (newValue) {
+  Widget _buildTimePicker() {
+    return CupertinoTimerPicker(
+      mode: CupertinoTimerPickerMode.ms,
+      initialTimerDuration: Duration(seconds: _selectedDuration),
+      onTimerDurationChanged: (Duration newDuration) {
         setState(() {
-          _selectedDuration = newValue!;
-          _realPresenceMode.setSessionDuration(_selectedDuration * 60);
+          _selectedDuration = newDuration.inSeconds;
+          _realPresenceMode.setSessionDuration(newDuration.inSeconds);
+          _animationController.duration = newDuration;
+          _animationController.reset();
         });
       },
     );
@@ -281,22 +276,38 @@ class _PresenceModeScreenState extends State<PresenceModeScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         ElevatedButton(
-          onPressed: _realPresenceMode.isActive
-              ? null
-              : () async {
-                  _realPresenceMode.setSessionDuration(_selectedDuration * 60);
+          onPressed: !_realPresenceMode.isActive
+              ? () async {
+                  if (!_isTimeSelected) {
+                    setState(() {
+                      _isTimeSelected = true;
+                      _realPresenceMode.setSessionDuration(_selectedDuration);
+                      _animationController.duration = Duration(
+                        seconds: _selectedDuration,
+                      );
+                      _animationController.reset();
+                    });
+                  }
+
+                  await _showDndSuggestionDialog();
                   await _realPresenceMode.activateMode();
-                  setState(() {});
-                },
+                  await startTimerInBackground(_selectedDuration);
+
+                  if (mounted) {
+                    _animationController.reset();
+                    _animationController.forward(); // Inicia a animação
+                  }
+                }
+              : null,
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
-            fixedSize: Size(buttonWidth, screenHeight * 0.06), 
+            fixedSize: Size(buttonWidth, screenHeight * 0.06),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
           ),
           child: const Text(
-            'Ativar',
+            'Começar',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -308,18 +319,24 @@ class _PresenceModeScreenState extends State<PresenceModeScreen> {
           onPressed: _realPresenceMode.isActive
               ? () async {
                   await _realPresenceMode.deactivateMode();
-                  setState(() {});
+                  _animationController.reset();
+                  setState(() {
+                    _isTimeSelected = false;
+                  });
+                  _confettiController.play();
+                  await _showCompletionDialog(_realPresenceMode.currentPoints);
+                  await stopTimerInBackground();
                 }
               : null,
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.secondary,
-            fixedSize: Size(buttonWidth, screenHeight * 0.06), // Define o tamanho fixo
+            backgroundColor: AppColors.success,
+            fixedSize: Size(buttonWidth, screenHeight * 0.06),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
           ),
           child: const Text(
-            'Desativar',
+            'Concluir',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -331,71 +348,199 @@ class _PresenceModeScreenState extends State<PresenceModeScreen> {
     );
   }
 
-  Widget _buildStatusIndicator(double screenHeight) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      height: screenHeight * 0.2,
-      width: screenHeight * 0.2,
-      decoration: BoxDecoration(
-        color: _realPresenceMode.isActive
-            ? Colors.greenAccent.withOpacity(0.8)
-            : Colors.redAccent.withOpacity(0.8),
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+  Widget _buildSessionHistory() {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Histórico de Sessões',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.titlePrimary,
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _realPresenceMode.history.clear(); // Limpa o histórico
+                  });
+                },
+                child: const Text(
+                  'Apagar histórico',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textSecondarylight,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _realPresenceMode.history.length,
+              itemBuilder: (context, index) {
+                final entry = _realPresenceMode.history[index];
+                final String formattedDate =
+                    "${entry.date.day.toString().padLeft(2, '0')}/${entry.date.month.toString().padLeft(2, '0')}/${entry.date.year}";
+                return Card(
+                  margin: const EdgeInsets.symmetric(vertical: 8.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: ListTile(
+                    title: Text(
+                      'Tempo: ${entry.formattedTime}',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.titlePrimary,
+                      ),
+                    ),
+                    subtitle: Text(
+                      'Pontos: ${entry.points}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textSecondarylight,
+                      ),
+                    ),
+                    trailing: Text(
+                      formattedDate,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textSecondarylight,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
           ),
         ],
-      ),
-      child: Center(
-        child: Icon(
-          _realPresenceMode.isActive ? Icons.check : Icons.close,
-          color: AppColors.neutral,
-          size: 50,
-        ),
       ),
     );
   }
 
-  Widget _buildSessionHistory() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Histórico de Sessões',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.titlePrimary),
-        ),
-        const SizedBox(height: 10),
-        ..._realPresenceMode.history.map((entry) {
-          final String formattedDate =
-              "${entry.date.day.toString().padLeft(2, '0')}/"
-              "${entry.date.month.toString().padLeft(2, '0')}/"
-              "${entry.date.year}";
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Future<void> _showCompletionDialog(int points) async {
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: AppColors.background,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Expanded(
-                  child: Text(
-                    'Tempo: ${entry.formattedTime} | Pontos: ${entry.points}',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: AppColors.titlePrimary),
+                const Text(
+                  'Parabéns!',
+                  style: TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.titlePrimary,
                   ),
                 ),
-                Text(
-                  formattedDate,
-                  style: const TextStyle(
-                    fontSize: 14,
+                const SizedBox(height: 12),
+                Icon(Icons.favorite, color: AppColors.primary, size: 48),
+                const SizedBox(height: 12),
+                const Text(
+                  'Vocês passaram um tempo de qualidade juntos',
+                  style: TextStyle(
+                    fontSize: 16,
                     color: AppColors.textSecondarylight,
                   ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Pontos ganhos: $points',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.titlePrimary,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                CustomButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  text: "Fechar",
+                  backgroundColor: AppColors.primary,
+                  textColor: AppColors.neutral,
                 ),
               ],
             ),
-          );
-        }).toList(),
-      ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _showDndSuggestionDialog() async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: AppColors.background,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Ative o "Não Perturbe"',
+                  style: TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.titlePrimary,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Icon(
+                  Icons.notifications_off,
+                  color: AppColors.primary,
+                  size: 48,
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'Para aproveitar melhor o momento, ative o modo "Não Perturbe" no seu celular. '
+                  'Isso ajuda a evitar interrupções e focar totalmente na experiência.',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: AppColors.textSecondarylight,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                CustomButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  text: "Fechar",
+                  backgroundColor: AppColors.primary,
+                  textColor: AppColors.neutral,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
