@@ -232,7 +232,7 @@ class HomeScreen extends StatelessWidget {
 
     return StatefulBuilder(
       builder: (context, setState) {
-        Future<List<Map<String, String>>> _loadActivitiesForToday() async {
+        Future<List<Map<String, String>>> loadActivitiesForToday() async {
           final List<String> jsonFiles = [
             'assets/data/perguntas_conexao.json',
             'assets/data/desafios_casa.json',
@@ -256,7 +256,7 @@ class HomeScreen extends StatelessWidget {
         }
 
         return FutureBuilder<List<Map<String, String>>>(
-          future: _loadActivitiesForToday(),
+          future: loadActivitiesForToday(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return Center(child: CircularProgressIndicator());

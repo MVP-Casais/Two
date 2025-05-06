@@ -286,7 +286,7 @@ class PlannerScreenState extends State<PlannerScreen> {
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.titlePrimary,
+                        color: AppColors.titleSecondary,
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -297,7 +297,7 @@ class PlannerScreenState extends State<PlannerScreen> {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.titlePrimary,
+                        color: AppColors.titleSecondary,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -432,7 +432,7 @@ class PlannerScreenState extends State<PlannerScreen> {
                     _buildTextField(
                       descriptionController,
                       "Digite a descrição do evento aqui...",
-                      maxLines: 4,
+                      maxLines: 3,
                     ),
                     const SizedBox(height: 16),
                     _buildDatePickerField(context, dateController, "Data"),
@@ -586,7 +586,7 @@ class PlannerScreenState extends State<PlannerScreen> {
       decoration: InputDecoration(
         labelText: label,
         labelStyle: TextStyle(fontSize: screenHeight * 0.018),
-        floatingLabelBehavior: FloatingLabelBehavior.never,
+        floatingLabelBehavior: FloatingLabelBehavior.auto, // Altera o comportamento do rótulo
         contentPadding: EdgeInsets.symmetric(
           vertical: screenHeight * 0.015,
           horizontal: screenHeight * 0.02,
@@ -635,7 +635,7 @@ class PlannerScreenState extends State<PlannerScreen> {
           decoration: InputDecoration(
             labelText: label,
             labelStyle: TextStyle(fontSize: screenHeight * 0.018),
-            floatingLabelBehavior: FloatingLabelBehavior.never,
+            floatingLabelBehavior: FloatingLabelBehavior.auto,
             contentPadding: EdgeInsets.symmetric(
               vertical: screenHeight * 0.015,
               horizontal: screenHeight * 0.02,
@@ -654,7 +654,7 @@ class PlannerScreenState extends State<PlannerScreen> {
             ),
             suffixIcon: Icon(
               Icons.calendar_today,
-              color: AppColors.icons,
+              color: const Color.fromARGB(255, 151, 146, 146),
               size: screenHeight * 0.025,
             ),
           ),
@@ -698,7 +698,7 @@ class PlannerScreenState extends State<PlannerScreen> {
                 decoration: InputDecoration(
                   labelText: "Início",
                   labelStyle: TextStyle(fontSize: screenHeight * 0.018),
-                  floatingLabelBehavior: FloatingLabelBehavior.never,
+                  floatingLabelBehavior: FloatingLabelBehavior.auto,
                   contentPadding: EdgeInsets.symmetric(
                     vertical: screenHeight * 0.015,
                     horizontal: screenHeight * 0.02,
@@ -717,7 +717,7 @@ class PlannerScreenState extends State<PlannerScreen> {
                   ),
                   suffixIcon: Icon(
                     Icons.access_time,
-                    color: AppColors.icons,
+                    color: const Color.fromARGB(255, 151, 146, 146),
                     size: screenHeight * 0.025,
                   ),
                 ),
@@ -752,7 +752,7 @@ class PlannerScreenState extends State<PlannerScreen> {
                 decoration: InputDecoration(
                   labelText: "Término",
                   labelStyle: TextStyle(fontSize: screenHeight * 0.018),
-                  floatingLabelBehavior: FloatingLabelBehavior.never,
+                  floatingLabelBehavior: FloatingLabelBehavior.auto,
                   contentPadding: EdgeInsets.symmetric(
                     vertical: screenHeight * 0.015,
                     horizontal: screenHeight * 0.02,
@@ -771,7 +771,7 @@ class PlannerScreenState extends State<PlannerScreen> {
                   ),
                   suffixIcon: Icon(
                     Icons.access_time,
-                    color: AppColors.icons,
+                    color: const Color.fromARGB(255, 151, 146, 146),
                     size: screenHeight * 0.025,
                   ),
                 ),
