@@ -8,6 +8,7 @@ import 'package:two/presentation/screens/baseScreen/presenceMode/presence_mode.d
 import 'package:two/presentation/screens/profile/profile_screen.dart';
 import 'package:two/presentation/screens/ranking/ranking_screen.dart';
 import 'package:two/presentation/screens/register/help_register.dart';
+import 'package:two/presentation/screens/tutorial/tutorial.dart';
 import 'presentation/screens/onboarding/onboarding_screen.dart';
 import 'presentation/screens/login/login.dart';
 import 'presentation/screens/pre_login/pre_login.dart';
@@ -27,7 +28,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: '/home', 
+      initialRoute: '/tutorial', 
       routes: {
         '/onboarding': (context) => const OnboardingScreen(),
         '/pre-login': (context) => const PreLoginPage(),
@@ -42,6 +43,8 @@ class MyApp extends StatelessWidget {
         '/base': (context) => BaseScreen(),
         '/ranking': (context) => const RankingScreen(),
         '/profile': (context) => const ProfileScreen(),
+        '/tutorial': (context) => const TutorialScreen(),
+
       },
       locale: const Locale('pt', 'BR'), // ADICIONADO: define o locale do app (opcional, mas ajuda)
     );
