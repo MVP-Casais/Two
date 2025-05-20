@@ -191,6 +191,16 @@ class RankingScreen extends StatelessWidget {
                         name: 'Usuário 6',
                         points: 311,
                       ),
+                      _buildRankingItem(
+                        position: 7,
+                        name: 'Usuário 7',
+                        points: 250,
+                      ),
+                      _buildRankingItem(
+                        position: 8,
+                        name: 'Usuário 8',
+                        points: 200,
+                      ),                 
                     ],
                   ),
                 ),

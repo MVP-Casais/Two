@@ -77,9 +77,55 @@ class ProfileScreenState extends State<ProfileScreen> {
       ),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: screenWidth * 0.08,
-            backgroundImage: const NetworkImage('https://i.pravatar.cc/300'),
+          GestureDetector(
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) => Dialog(
+                  backgroundColor: Colors.transparent,
+                  child: GestureDetector(
+                    onTap: () => Navigator.of(context).pop(),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(24),
+                        color: Colors.transparent,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withAlpha((0.3 * 255).toInt()),
+                            blurRadius: 24,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      padding: const EdgeInsets.all(8),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: const Color.fromARGB(255, 255, 0, 0),
+                            width: 6,
+                          ),
+                          borderRadius: BorderRadius.circular(24),
+                          color: Colors.white,
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(18),
+                          child: Image.network(
+                            'https://i.pravatar.cc/300',
+                            fit: BoxFit.cover,
+                            width: MediaQuery.of(context).size.width * 0.7,
+                            height: MediaQuery.of(context).size.width * 0.7,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+            child: CircleAvatar(
+              radius: screenWidth * 0.08,
+              backgroundImage: const NetworkImage('https://i.pravatar.cc/300'),
+            ),
           ),
           SizedBox(width: screenWidth * 0.04),
           Column(
@@ -202,16 +248,15 @@ class ProfileScreenState extends State<ProfileScreen> {
     return ListTile(
       leading: Icon(icon, color: AppColors.icons, size: screenWidth * 0.06),
       title: Text(title, style: TextStyle(fontSize: screenWidth * 0.04)),
-      subtitle:
-          subtitle != null
-              ? Text(
-                subtitle,
-                style: TextStyle(
-                  fontSize: screenWidth * 0.035,
-                  color: AppColors.textSecondarylight,
-                ),
-              )
-              : null,
+      subtitle: subtitle != null
+          ? Text(
+              subtitle,
+              style: TextStyle(
+                fontSize: screenWidth * 0.035,
+                color: AppColors.textSecondarylight,
+              ),
+            )
+          : null,
       trailing: Icon(Icons.arrow_forward_ios, size: screenWidth * 0.04),
       onTap: onTap,
     );
