@@ -6,12 +6,14 @@ class TopHeader extends StatelessWidget {
   final bool useSliver;
   final VoidCallback? onAddEvent;
   final bool showAddIcon;
+  final Color? addIconColor; // NOVO
 
   const TopHeader({
     super.key,
     this.useSliver = false,
     this.onAddEvent,
     this.showAddIcon = true,
+    this.addIconColor, // NOVO
   });
 
   @override
@@ -22,16 +24,6 @@ class TopHeader extends StatelessWidget {
     final content = Stack(
       alignment: Alignment.center,
       children: [
-        Align(
-          alignment: Alignment.centerLeft,
-          child: IconButton(
-            icon: Icon(
-              Icons.menu,
-              size: screenHeight * 0.03,
-            ),
-            onPressed: () {},
-          ),
-        ),
         SvgPicture.asset(
           'assets/images/TWO.svg',
           height: screenHeight * 0.03,
@@ -43,8 +35,10 @@ class TopHeader extends StatelessWidget {
               icon: Icon(
                 Icons.add,
                 size: screenHeight * 0.03,
+                color: addIconColor ?? AppColors.placeholder, // NOVO
               ),
               onPressed: onAddEvent,
+              disabledColor: (addIconColor ?? AppColors.icons).withOpacity(0.4), // NOVO
             ),
           ),
       ],

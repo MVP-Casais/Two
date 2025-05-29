@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:two/core/themes/app_colors.dart';
+import 'package:two/providers/login_provider.dart';
+import 'package:two/services/email_verification_service.dart';
 import 'email_step.dart';
 import 'password_step.dart';
 import 'verification_step.dart';
@@ -14,8 +17,35 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
+  String _email = '';
 
-  void _goToNextPage() {
+  void _goToNextPage() async {
+    if (_currentPage == 0) {
+      // Página de email, apenas salva o email
+      final loginProvider = Provider.of<LoginProvider>(context, listen: false);
+      _email = loginProvider.email ?? '';
+    }
+    if (_currentPage == 1) {
+      // Só envia o código se a senha estiver correta
+      final loginProvider = Provider.of<LoginProvider>(context, listen: false);
+      final success = await loginProvider.login();
+      if (!success) {
+        if (loginProvider.errorMessage != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(loginProvider.errorMessage!)),
+          );
+        }
+        return;
+      }
+      final sent = await EmailVerificationService.sendCode(_email);
+      if (!sent) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Erro ao enviar código de verificação.')),
+        );
+        return;
+      }
+    }
     if (_currentPage < 2) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
@@ -60,7 +90,9 @@ class _LoginPageState extends State<LoginPage> {
                   width: 10,
                   height: 10,
                   decoration: BoxDecoration(
-                    color: isCompleted ? AppColors.indexCheck : AppColors.indexDefault,
+                    color: isCompleted
+                        ? AppColors.indexCheck
+                        : AppColors.indexDefault,
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -87,7 +119,7 @@ class _LoginPageState extends State<LoginPage> {
           IconButton(
             icon: const Icon(Icons.help_outline, color: AppColors.icons),
             onPressed: () {
-              Navigator.pushNamed(context, '/help-login'); 
+              Navigator.pushNamed(context, '/help-login');
             },
           ),
         ],
@@ -95,7 +127,8 @@ class _LoginPageState extends State<LoginPage> {
         elevation: 0,
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.005), 
+        padding: EdgeInsets.symmetric(
+            horizontal: MediaQuery.of(context).size.width * 0.005),
         child: PageView(
           controller: _pageController,
           onPageChanged: (index) {
@@ -107,9 +140,13 @@ class _LoginPageState extends State<LoginPage> {
           children: [
             EmailStep(onNext: _goToNextPage),
             PasswordStep(onNext: _goToNextPage),
-            VerificationStep(onComplete: () {
-              Navigator.pushReplacementNamed(context, '/home');
-            }),
+            VerificationStep(
+              onComplete: () {
+                Navigator.pushNamedAndRemoveUntil(
+                    context, '/home', (route) => false);
+              },
+              email: _email,
+            ),
           ],
         ),
       ),

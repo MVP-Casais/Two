@@ -3,6 +3,9 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:two/core/themes/app_colors.dart';
 import 'package:two/presentation/widgets/custom_button.dart';
+import 'package:provider/provider.dart';
+import 'package:two/providers/connection_provider.dart';
+import 'package:two/providers/planner_provider.dart';
 
 class PlannerScreen extends StatefulWidget {
   const PlannerScreen({super.key});
@@ -364,41 +367,6 @@ class PlannerScreenState extends State<PlannerScreen> {
       ),
     );
   }
-
-  // ===================== Métodos de Eventos =====================
-  void _addEvent({
-    required String title,
-    required String description,
-    required String startTime,
-    required String endTime,
-    required String category,
-    required Color categoryColor,
-    required DateTime date,
-  }) {
-    final normalizedDate = DateTime(date.year, date.month, date.day);
-
-    if (normalizedDate.isBefore(DateTime.now().subtract(const Duration(days: 1)))) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Não é possível adicionar eventos em datas passadas."),
-        ),
-      );
-      return;
-    }
-
-    setState(() {
-      eventsByDate[normalizedDate] ??= [];
-      eventsByDate[normalizedDate]!.add({
-        "title": title,
-        "description": description,
-        "startTime": startTime,
-        "endTime": endTime,
-        "category": category,
-        "categoryColor": categoryColor,
-      });
-    });
-  }
-
   void openAddEventModal(BuildContext context) {
     final nameController = TextEditingController();
     final descriptionController = TextEditingController();
@@ -586,7 +554,7 @@ class PlannerScreenState extends State<PlannerScreen> {
       decoration: InputDecoration(
         labelText: label,
         labelStyle: TextStyle(fontSize: screenHeight * 0.018),
-        floatingLabelBehavior: FloatingLabelBehavior.auto, // Altera o comportamento do rótulo
+        floatingLabelBehavior: FloatingLabelBehavior.never, 
         contentPadding: EdgeInsets.symmetric(
           vertical: screenHeight * 0.015,
           horizontal: screenHeight * 0.02,
@@ -635,7 +603,7 @@ class PlannerScreenState extends State<PlannerScreen> {
           decoration: InputDecoration(
             labelText: label,
             labelStyle: TextStyle(fontSize: screenHeight * 0.018),
-            floatingLabelBehavior: FloatingLabelBehavior.auto,
+            floatingLabelBehavior: FloatingLabelBehavior.never,
             contentPadding: EdgeInsets.symmetric(
               vertical: screenHeight * 0.015,
               horizontal: screenHeight * 0.02,
@@ -698,7 +666,7 @@ class PlannerScreenState extends State<PlannerScreen> {
                 decoration: InputDecoration(
                   labelText: "Início",
                   labelStyle: TextStyle(fontSize: screenHeight * 0.018),
-                  floatingLabelBehavior: FloatingLabelBehavior.auto,
+                  floatingLabelBehavior: FloatingLabelBehavior.never,
                   contentPadding: EdgeInsets.symmetric(
                     vertical: screenHeight * 0.015,
                     horizontal: screenHeight * 0.02,
@@ -752,7 +720,7 @@ class PlannerScreenState extends State<PlannerScreen> {
                 decoration: InputDecoration(
                   labelText: "Término",
                   labelStyle: TextStyle(fontSize: screenHeight * 0.018),
-                  floatingLabelBehavior: FloatingLabelBehavior.auto,
+                  floatingLabelBehavior: FloatingLabelBehavior.never,
                   contentPadding: EdgeInsets.symmetric(
                     vertical: screenHeight * 0.015,
                     horizontal: screenHeight * 0.02,
@@ -876,41 +844,54 @@ class PlannerScreenState extends State<PlannerScreen> {
     TextEditingController endTimeController,
     String? selectedCategory,
   ) {
-    return CustomButton(
-      text: "Criar Evento",
-      onPressed: () {
-        if (nameController.text.isNotEmpty && dateController.text.isNotEmpty) {
-          final eventDate = DateFormat("dd/MM/yyyy").parse(dateController.text);
+    return Consumer<PlannerProvider>(
+      builder: (context, plannerProvider, _) {
+        return CustomButton(
+          text: "Criar Evento",
+          onPressed: () async {
+            if (nameController.text.isNotEmpty && dateController.text.isNotEmpty) {
+              final eventDate = DateFormat("dd/MM/yyyy").parse(dateController.text);
 
-          if (eventDate.isBefore(DateTime.now().subtract(const Duration(days: 1)))) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text("Não é possível adicionar eventos em datas passadas."),
-              ),
-            );
-            return;
-          }
+              if (eventDate.isBefore(DateTime.now().subtract(const Duration(days: 1)))) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Não é possível adicionar eventos em datas passadas."),
+                  ),
+                );
+                return;
+              }
 
-          final category = selectedCategory ?? "Sem categoria";
-          final categoryColor = categories.firstWhere(
-            (cat) => cat['name'] == category,
-            orElse: () => {"color": Colors.grey},
-          )['color'] as Color;
+              final category = selectedCategory ?? "Sem categoria";
+              final categoryColor = categories.firstWhere(
+                (cat) => cat['name'] == category,
+                orElse: () => {"color": Colors.grey},
+              )['color'] as Color;
 
-          _addEvent(
-            title: nameController.text,
-            description: descriptionController.text,
-            startTime: startTimeController.text,
-            endTime: endTimeController.text,
-            category: category,
-            categoryColor: categoryColor,
-            date: eventDate,
-          );
-          Navigator.pop(context);
-        }
+              // Chama o provider para criar o evento no banco
+              final success = await plannerProvider.createEvent(
+                title: nameController.text,
+                description: descriptionController.text,
+                startTime: startTimeController.text,
+                endTime: endTimeController.text,
+                category: category,
+                categoryColor: categoryColor,
+                date: eventDate,
+              );
+              if (success) {
+                Navigator.pop(context);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Erro ao criar evento no banco."),
+                  ),
+                );
+              }
+            }
+          },
+          backgroundColor: AppColors.primary,
+          textColor: AppColors.neutral,
+        );
       },
-      backgroundColor: AppColors.primary,
-      textColor: AppColors.neutral,
     );
   }
 
@@ -1099,7 +1080,55 @@ class PlannerScreenState extends State<PlannerScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    // Sempre busca eventos do banco ao abrir a tela
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await Provider.of<PlannerProvider>(context, listen: false).fetchEvents();
+      setState(() {}); // Garante atualização da tela após buscar eventos
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final connectionProvider = Provider.of<ConnectionProvider>(context);
+    final isConnected = connectionProvider.isConnected;
+    final plannerProvider = Provider.of<PlannerProvider>(context);
+
+    // Atualiza os eventosByDate sempre que o provider mudar
+    eventsByDate = plannerProvider.eventsByDate;
+
+    // Agora usa o provider de conexão para decidir se mostra o planner ou a mensagem
+    if (!isConnected) {
+      return Scaffold(
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  'Você precisa conectar com seu parceiro(a) para usar o Planner.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 18),
+                ),
+                const SizedBox(height: 24),
+                CustomButton(
+                  text: 'Conectar com parceiro(a)',
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/connection');
+                  },
+                  backgroundColor: AppColors.primary,
+                  textColor: AppColors.neutral,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    // Usuário está conectado: mostra o planner normalmente e o botão de adicionar estará ativo
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Column(
@@ -1121,26 +1150,24 @@ class PlannerScreenState extends State<PlannerScreen> {
                   ),
                 ),
                 Expanded(
-                  child:
-                      (eventsByDate.values.expand((e) => e).isNotEmpty)
-                          ? ListView(
-                            padding: const EdgeInsets.all(16),
-                            children:
-                                eventsByDate.values.expand((e) => e).map((
-                                  event,
-                                ) {
-                                  return _buildEventCard(event);
-                                }).toList(),
-                          )
-                          : Center(
-                            child: Text(
-                              "Nenhum evento adicionado.",
-                              style: TextStyle(
-                                color: AppColors.titlePrimary,
-                                fontSize: 16,
-                              ),
+                  child: (eventsByDate.values.expand((e) => e).isNotEmpty)
+                      ? ListView(
+                          padding: const EdgeInsets.all(16),
+                          children: eventsByDate.values
+                              .expand((e) => e)
+                              .map((event) {
+                            return _buildEventCard(event);
+                          }).toList(),
+                        )
+                      : Center(
+                          child: Text(
+                            "Nenhum evento adicionado.",
+                            style: TextStyle(
+                              color: AppColors.titlePrimary,
+                              fontSize: 16,
                             ),
                           ),
+                        ),
                 ),
               ],
             ),
@@ -1343,25 +1370,37 @@ class PlannerScreenState extends State<PlannerScreen> {
                     });
                   }),
                   const Spacer(),
-                  CustomButton(
-                    text: "Salvar Alterações",
-                    onPressed: () {
-                      setState(() {
-                        event['title'] = nameController.text;
-                        event['description'] = descriptionController.text;
-                        event['startTime'] = startTimeController.text;
-                        event['endTime'] = endTimeController.text;
-                        event['category'] = selectedCategory ?? "Sem categoria";
-                        event['categoryColor'] =
-                            categories.firstWhere(
+                  Consumer<PlannerProvider>(
+                    builder: (context, plannerProvider, _) {
+                      return CustomButton(
+                        text: "Salvar Alterações",
+                        onPressed: () async {
+                          final success = await plannerProvider.updateEvent(
+                            event: event,
+                            title: nameController.text,
+                            description: descriptionController.text,
+                            startTime: startTimeController.text,
+                            endTime: endTimeController.text,
+                            category: selectedCategory ?? "Sem categoria",
+                            categoryColor: categories.firstWhere(
                               (cat) => cat['name'] == selectedCategory,
                               orElse: () => {"color": Colors.grey},
-                            )['color'];
-                      });
-                      Navigator.pop(context);
+                            )['color'],
+                          );
+                          if (success) {
+                            Navigator.pop(context);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("Erro ao editar evento no banco."),
+                              ),
+                            );
+                          }
+                        },
+                        backgroundColor: AppColors.primary,
+                        textColor: AppColors.neutral,
+                      );
                     },
-                    backgroundColor: AppColors.primary,
-                    textColor: AppColors.neutral,
                   ),
                   const SizedBox(height: 16),
                 ],
@@ -1373,23 +1412,42 @@ class PlannerScreenState extends State<PlannerScreen> {
     );
   }
 
-  void _deleteEvent(Map<String, dynamic> event) {
-    setState(() {
-      // Lista temporária para armazenar as datas a serem removidas
-      final datesToRemove = <DateTime>[];
-
-      // Itera sobre todas as datas para encontrar e remover o evento
-      eventsByDate.forEach((date, events) {
-        events.remove(event);
-        if (events.isEmpty) {
-          datesToRemove.add(date); // Marca a data para remoção
-        }
-      });
-
-      // Remove as datas marcadas fora da iteração
-      for (final date in datesToRemove) {
-        eventsByDate.remove(date);
+  void _deleteEvent(Map<String, dynamic> event) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.background,
+        title: const Text(
+          'Excluir evento',
+          style: TextStyle(
+              color: AppColors.titlePrimary, fontWeight: FontWeight.w500),
+          textAlign: TextAlign.center,
+        ),
+        content: const Text('Tem certeza que deseja excluir este evento?'),
+        actions: [
+          CustomButton(
+              text: "Excluir",
+              backgroundColor: AppColors.primary,
+              textColor: AppColors.neutral,
+              onPressed: () => Navigator.pop(context, true)),
+          const SizedBox(height: 10),
+          CustomButton(
+            text: 'Cancelar',
+            backgroundColor: AppColors.borderNavigation,
+            textColor: AppColors.titlePrimary,
+            onPressed: () => Navigator.pop(context, false),
+          ),
+        ],
+      ),
+    );
+    if (confirm == true) {
+      final plannerProvider = Provider.of<PlannerProvider>(context, listen: false);
+      final success = await plannerProvider.deleteEvent(event);
+      if (!success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Erro ao excluir evento no banco.')),
+        );
       }
-    });
+    }
   }
 }

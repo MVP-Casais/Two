@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:two/core/themes/app_colors.dart';
 import 'package:two/presentation/widgets/custom_button.dart';
 import 'package:two/presentation/widgets/custom_input.dart';
+import 'package:two/services/auth_service.dart';
+import 'package:two/providers/register_provider.dart';
 
 class UserComplete extends StatefulWidget {
   final VoidCallback onComplete;
@@ -15,11 +18,17 @@ class UserComplete extends StatefulWidget {
 class _UserCompleteState extends State<UserComplete> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
   String? selectedGender;
 
   @override
   Widget build(BuildContext context) {
+    final registerProvider = Provider.of<RegisterProvider>(context);
     final screenHeight = MediaQuery.of(context).size.height;
+
+    nameController.text = registerProvider.nome ?? '';
+    usernameController.text = registerProvider.username ?? '';
 
     return Padding(
       padding: EdgeInsets.symmetric(
@@ -41,8 +50,9 @@ class _UserCompleteState extends State<UserComplete> {
           SizedBox(height: 16),
           CustomInput(
             controller: nameController,
-              labelText: "Nome completo",
-            ),
+            labelText: "Nome completo",
+            onChanged: (value) => registerProvider.setNome(value),
+          ),
           SizedBox(height: 20),
           Text(
             "Insira o seu username",
@@ -56,8 +66,9 @@ class _UserCompleteState extends State<UserComplete> {
           SizedBox(height: 16),
           CustomInput(
             controller: usernameController,
-              labelText: "Digite seu username",
-            ),
+            labelText: "Digite seu username",
+            onChanged: (value) => registerProvider.setUsername(value),
+          ),
           SizedBox(height: 20),
           Text(
             "Selecione seu gênero",
@@ -90,6 +101,7 @@ class _UserCompleteState extends State<UserComplete> {
                   onPressed: () {
                     setState(() {
                       selectedGender = "Masculino";
+                      registerProvider.setGenero("Masculino");
                     });
                   },
                   child: Text(
@@ -121,6 +133,7 @@ class _UserCompleteState extends State<UserComplete> {
                   onPressed: () {
                     setState(() {
                       selectedGender = "Feminino";
+                      registerProvider.setGenero("Feminino");
                     });
                   },
                   child: Text(
@@ -152,6 +165,7 @@ class _UserCompleteState extends State<UserComplete> {
                   onPressed: () {
                     setState(() {
                       selectedGender = "Outro";
+                      registerProvider.setGenero("Outro");
                     });
                   },
                   child: Text(
@@ -168,17 +182,37 @@ class _UserCompleteState extends State<UserComplete> {
           ),
           SizedBox(height: 32),
           CustomButton(
-              text: "Entrar",
-              onPressed: () {
+            text: "Cadastrar",
+            onPressed: () async {
+              registerProvider.setNome(nameController.text);
+              registerProvider.setUsername(usernameController.text);
+              registerProvider.setGenero(selectedGender ?? 'Outro');
+              final result = await AuthService.register(
+                nome: registerProvider.nome ?? '',
+                username: registerProvider.username ?? '',
+                email: registerProvider.email ?? '',
+                senha: registerProvider.senha ?? '',
+                genero: (registerProvider.genero != null && registerProvider.genero!.isNotEmpty)
+                    ? registerProvider.genero!
+                    : 'Outro',
+              );
+              if (!mounted) return;
+              if (result['statusCode'] == 201) {
+                registerProvider.reset();
                 Navigator.pushNamedAndRemoveUntil(
                   context,
-                  '/pre-login',
+                  '/login',
                   (Route<dynamic> route) => false,
                 );
-              },
-              backgroundColor: AppColors.primary,
-              textColor: AppColors.neutral,
-            ),
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(result['body']['error'] ?? 'Erro ao registrar')),
+                );
+              }
+            },
+            backgroundColor: AppColors.primary,
+            textColor: AppColors.neutral,
+          ),
         ],
       ),
     );

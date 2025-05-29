@@ -4,6 +4,7 @@ import 'package:two/core/themes/app_colors.dart';
 import 'package:two/presentation/widgets/custom_button.dart';
 import 'package:two/presentation/widgets/custom_scaffold.dart';
 import 'package:two/presentation/screens/register/register_screen.dart';
+import 'package:two/services/auth_service.dart';
 
 class PreLoginPage extends StatelessWidget {
   const PreLoginPage({super.key});
@@ -42,8 +43,24 @@ class PreLoginPage extends StatelessWidget {
           Spacer(),
           CustomButton(
             text: "Entrar com Google",
-            onPressed: () {
-              // Implementar lógica de login com Google
+            onPressed: () async {
+              try {
+                final result = await AuthService.loginWithGoogle();
+                if (result['statusCode'] == 200) {
+                  Navigator.pushReplacementNamed(context, '/home');
+                } else {
+                  final msg = result['body']?['error'] ?? 'Erro ao fazer login com Google';
+                  print(msg);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(msg)),
+                  );
+                }
+              } catch (e) {
+                print('Erro GoogleSignIn: $e');
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Erro ao inicializar o Google Sign-In. Verifique a configuração do Google Services.')),
+                );
+              }
             },
             backgroundColor: AppColors.primary,
             textColor: AppColors.neutral,

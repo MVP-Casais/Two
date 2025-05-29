@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:two/core/themes/app_colors.dart';
 import 'package:two/presentation/screens/baseScreen/activities/activities_screen.dart';
 import 'package:two/presentation/screens/baseScreen/memories/memories_screen.dart';
@@ -7,6 +8,8 @@ import 'package:two/presentation/screens/baseScreen/planner/planner_screen.dart'
 import 'package:two/presentation/widgets/top_header.dart';
 import 'package:two/presentation/widgets/top_menu.dart';
 import 'package:two/presentation/widgets/navegation.dart';
+import 'package:two/providers/memories_provider.dart';
+import 'package:two/providers/connection_provider.dart';
 
 class BaseScreen extends StatefulWidget {
   final int initialPage;
@@ -57,6 +60,9 @@ class _BaseScreenState extends State<BaseScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final connectionProvider = Provider.of<ConnectionProvider>(context);
+    final isConnected = connectionProvider.isConnected;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: NestedScrollView(
@@ -79,16 +85,32 @@ class _BaseScreenState extends State<BaseScreen> {
                     TopHeader(
                       useSliver: false,
                       showAddIcon: currentIndexTop == 2 || currentIndexTop == 0,
-                      onAddEvent: () {
-                        if (currentIndexTop == 2) {
-                          plannerScreenKey.currentState?.openAddEventModal(context);
-                        } else if (currentIndexTop == 0) {
-                          openAddMemoryModal(context, (title, description, imageUrl) {
-                            setState(() {
-                            });
-                          });
-                        }
-                      },
+                      onAddEvent: isConnected
+                          ? () async {
+                              if (currentIndexTop == 2) {
+                                plannerScreenKey.currentState?.openAddEventModal(context);
+                              } else if (currentIndexTop == 0) {
+                                openAddMemoryModal(context, (title, description, imagePath) async {
+                                  final provider = Provider.of<MemoriesProvider>(context, listen: false);
+                                  final success = await provider.addMemory(
+                                    title: title,
+                                    description: description,
+                                    imagePath: imagePath,
+                                  );
+                                  if (!success) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Erro ao salvar memória.')),
+                                    );
+                                  } else {
+                                    setState(() {});
+                                  }
+                                });
+                              }
+                            }
+                          : null, // Desativa o botão se não estiver conectado
+                      addIconColor: isConnected
+                          ? AppColors.icons
+                          : AppColors.icons.withOpacity(0.4), // Mais claro se inativo
                     ),
                     TopMenu(
                       currentIndex: currentIndexTop,

@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 import 'package:two/core/themes/app_colors.dart';
 import 'package:two/presentation/widgets/navegation.dart';
+import 'package:two/providers/profile_provider.dart';
+import 'package:two/providers/ranking_provider.dart';
 
 class RankingScreen extends StatelessWidget {
   const RankingScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Stack(
@@ -36,172 +41,247 @@ class RankingScreen extends StatelessWidget {
                 // Card principal destacando o usuário
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25),
-                  child: Container(
-                    height: 130,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: AppColors.neutral,
-                      borderRadius: BorderRadius.circular(13),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.shadow.withAlpha(100),
-                          blurRadius: 2,
-                          offset: const Offset(1, 5),
-                        ),
-                      ],
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(13),
-                      child: Stack(
-                        children: [
-                          Positioned.fill(
-                            child: SvgPicture.asset(
-                              'assets/images/fundo_ranking.svg',
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          Positioned(
-                            top: 15,
-                            left: 20,
-                            child: Text(
-                              'Seu Ranking Atual',
-                              style: TextStyle(
-                                color: AppColors.titleSecondary,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
+                  child: Consumer<RankingProvider>(
+                    builder: (context, rankingProvider, _) {
+                      final ranking = rankingProvider?.ranking ?? [];
+                      Widget rankingContainer({
+                        required Widget child,
+                      }) {
+                        return Container(
+                          height: 130,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: AppColors.neutral,
+                            borderRadius: BorderRadius.circular(13),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.shadow.withAlpha(100),
+                                blurRadius: 2,
+                                offset: const Offset(1, 5),
                               ),
+                            ],
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(13),
+                            child: Stack(
+                              children: [
+                                Positioned.fill(
+                                  child: SvgPicture.asset(
+                                    'assets/images/fundo_ranking.svg',
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                child,
+                              ],
                             ),
                           ),
-                          Positioned(
-                            top: 65,
-                            left: 13,
+                        );
+                      }
+
+                      if (rankingProvider == null) {
+                        return rankingContainer(
+                          child: const Center(
+                            child: Text('Ranking não disponível'),
+                          ),
+                        );
+                      }
+                      if (rankingProvider.loading == true) {
+                        return rankingContainer(
+                          child: const Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      }
+                      if (rankingProvider.error != null) {
+                        return rankingContainer(
+                          child: Center(
                             child: Text(
-                              '#5',
-                              style: TextStyle(
-                                fontSize: 25,
+                              'Erro ao buscar ranking: ${rankingProvider.error}',
+                              style: const TextStyle(
+                                color: Colors.red,
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.titleSecondary,
                               ),
                             ),
                           ),
-                          Positioned(
-                            top: 55,
-                            left: 50,
-                            child: Row(
-                              children: [
-                                const CircleAvatar(
-                                  radius: 27,
-                                  backgroundImage: NetworkImage(
-                                    'https://i.pravatar.cc/300',
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: const [
-                                    Text(
-                                      'Usuário 5',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: AppColors.titleSecondary,
-                                      ),
-                                    ),
-                                    Text(
-                                      'Exemplo',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w300,
-                                        fontSize: 14,
-                                        color: AppColors.titleSecondary,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                        );
+                      }
+                      if (ranking.isEmpty) {
+                        Future.microtask(() => rankingProvider.fetchRanking?.call());
+                        return rankingContainer(
+                          child: const Center(
+                            child: Text('Ranking vazio'),
+                          ),
+                        );
+                      }
+                      // Encontrar o casal do usuário logado no ranking
+                      int userIndex = -1;
+                      Map? userRanking;
+                      for (int i = 0; i < ranking.length; i++) {
+                        final item = ranking[i];
+                        if ((item['email'] != null && item['email'] == profileProvider.email) ||
+                            (item['username'] != null && item['username'] == profileProvider.username)) {
+                          userIndex = i;
+                          userRanking = item;
+                          break;
+                        }
+                      }
+                      if (userRanking == null) {
+                        return rankingContainer(
+                          child: const Center(
+                            child: Text(
+                              'Você ainda não está no ranking',
+                              style: TextStyle(
+                                color: AppColors.titleSecondary,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
-                          Positioned(
-                            bottom: 35,
-                            right: 20,
-                            child: Row(
-                              children: [
-                                Text(
-                                  '462',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.titleSecondary,
-                                  ),
+                        );
+                      }
+
+                      final foto = userRanking['foto'] ?? userRanking['foto_perfil'] ?? '';
+                      final nome = userRanking['nome'] ?? userRanking['nome_casal'] ?? 'Você';
+                      final pontos = userRanking['pontos'] ?? userRanking['pontuacao'] ?? 0;
+                      final posicao = userIndex + 1;
+
+                      return rankingContainer(
+                        child: Stack(
+                          children: [
+                            Positioned(
+                              top: 15,
+                              left: 20,
+                              child: Text(
+                                'Seu Ranking Atual',
+                                style: TextStyle(
+                                  color: AppColors.titleSecondary,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
                                 ),
-                                const SizedBox(width: 3),
-                                SvgPicture.asset(
-                                  'assets/images/sinal_pontos_ranking.svg',
-                                  height: 12,
-                                  width: 12,
-                                ),
-                              ],
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
+                            Positioned(
+                              top: 65,
+                              left: 13,
+                              child: Text(
+                                '#$posicao',
+                                style: TextStyle(
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.titleSecondary,
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              top: 55,
+                              left: 50,
+                              child: Row(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 27,
+                                    backgroundImage: foto.isNotEmpty
+                                        ? NetworkImage(foto)
+                                        : const NetworkImage('https://i.pravatar.cc/300'),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        nome,
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: AppColors.titleSecondary,
+                                        ),
+                                      ),
+                                      const Text(
+                                        'Você',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w300,
+                                          fontSize: 14,
+                                          color: AppColors.titleSecondary,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Positioned(
+                              bottom: 35,
+                              right: 20,
+                              child: Row(
+                                children: [
+                                  Text(
+                                    '$pontos',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.titleSecondary,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 3),
+                                  SvgPicture.asset(
+                                    'assets/images/sinal_pontos_ranking.svg',
+                                    height: 12,
+                                    width: 12,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
                   ),
                 ),
 
                 const SizedBox(height: 30),
 
-                // Lista de ranking
+                // Lista de ranking dinâmica
                 Expanded(
-                  child: ListView(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    children: [
-                      _buildRankingItem(
-                        position: 1,
-                        name: 'Usuário 1',
-                        points: 749,
-                        medal: 'assets/images/moeda_ouro.svg',
-                        medalSize: 35,
-                      ),
-                      _buildRankingItem(
-                        position: 2,
-                        name: 'Usuário 2',
-                        points: 652,
-                        medal: 'assets/images/moeda_prata.svg',
-                        medalSize: 35,
-                      ),
-                      _buildRankingItem(
-                        position: 3,
-                        name: 'Usuário 3',
-                        points: 576,
-                        medal: 'assets/images/moeda_bronze.svg',
-                        medalSize: 35,
-                      ),
-                      _buildRankingItem(
-                        position: 4,
-                        name: 'Usuário 4',
-                        points: 494,
-                      ),
-                      _buildRankingItem(
-                        position: 5,
-                        name: 'Usuário 5',
-                        points: 462,
-                      ),
-                      _buildRankingItem(
-                        position: 6,
-                        name: 'Usuário 6',
-                        points: 311,
-                      ),
-                      _buildRankingItem(
-                        position: 7,
-                        name: 'Usuário 7',
-                        points: 250,
-                      ),
-                      _buildRankingItem(
-                        position: 8,
-                        name: 'Usuário 8',
-                        points: 200,
-                      ),                 
-                    ],
+                  child: Consumer<RankingProvider>(
+                    builder: (context, rankingProvider, _) {
+                      if (rankingProvider == null) {
+                        return const Center(child: Text('Ranking não disponível'));
+                      }
+                      if (rankingProvider.loading == true) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      if (rankingProvider.error != null) {
+                        return Center(child: Text('Erro: ${rankingProvider.error}'));
+                      }
+                      final ranking = rankingProvider.ranking ?? [];
+                      if (ranking.isEmpty) {
+                        Future.microtask(() => rankingProvider.fetchRanking?.call());
+                        return const Center(child: Text('Nenhum casal no ranking.'));
+                      }
+                      return ListView.builder(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        itemCount: ranking.length,
+                        itemBuilder: (context, index) {
+                          final item = ranking[index];
+                          final nome = item['nome'] ?? item['nome_casal'] ?? 'Casal';
+                          final pontos = item['pontos'] ?? item['pontuacao'] ?? 0;
+                          final foto = item['foto'] ?? item['foto_perfil'] ?? '';
+                          return _buildRankingItem(
+                            position: index + 1,
+                            name: nome,
+                            points: pontos,
+                            medal: index == 0
+                                ? 'assets/images/moeda_ouro.svg'
+                                : index == 1
+                                    ? 'assets/images/moeda_prata.svg'
+                                    : index == 2
+                                        ? 'assets/images/moeda_bronze.svg'
+                                        : null,
+                            medalSize: 35,
+                            imageUrl: foto,
+                          );
+                        },
+                      );
+                    },
                   ),
                 ),
 
@@ -227,6 +307,7 @@ class RankingScreen extends StatelessWidget {
     required int points,
     String? medal,
     double medalSize = 30,
+    String? imageUrl,
   }) {
     return Column(
       children: [
@@ -265,9 +346,11 @@ class RankingScreen extends StatelessWidget {
                     ),
                   ),
                 const SizedBox(width: 12),
-                const CircleAvatar(
+                CircleAvatar(
                   radius: 24,
-                  backgroundImage: NetworkImage('https://i.pravatar.cc/300'),
+                  backgroundImage: imageUrl != null && imageUrl.isNotEmpty
+                      ? NetworkImage(imageUrl)
+                      : const NetworkImage('https://i.pravatar.cc/300'),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -282,7 +365,7 @@ class RankingScreen extends StatelessWidget {
                         ),
                       ),
                       const Text(
-                        'Exemplo',
+                        'Casal',
                         style: TextStyle(
                           fontWeight: FontWeight.w300,
                           fontSize: 14,

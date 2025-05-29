@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:two/core/themes/app_colors.dart';
 import 'package:two/presentation/widgets/custom_button.dart';
 import 'package:two/presentation/widgets/custom_input.dart';
+import 'package:two/providers/register_provider.dart';
 
 class PasswordStep extends StatefulWidget {
   final VoidCallback onNext;
@@ -13,7 +15,6 @@ class PasswordStep extends StatefulWidget {
 }
 
 class _PasswordStepState extends State<PasswordStep> {
-  final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
   bool _isPasswordVisible = false;
@@ -21,6 +22,9 @@ class _PasswordStepState extends State<PasswordStep> {
 
   @override
   Widget build(BuildContext context) {
+    final registerProvider = Provider.of<RegisterProvider>(context);
+    final TextEditingController passwordController =
+        TextEditingController(text: registerProvider.senha ?? '');
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
@@ -57,6 +61,7 @@ class _PasswordStepState extends State<PasswordStep> {
                 });
               },
             ),
+            onChanged: (value) => registerProvider.setSenha(value),
           ),
           SizedBox(height: screenHeight * 0.01),
           Text(
@@ -98,7 +103,10 @@ class _PasswordStepState extends State<PasswordStep> {
           SizedBox(height: screenHeight * 0.04),
           CustomButton(
             text: "Próximo",
-            onPressed: widget.onNext,
+            onPressed: () {
+              registerProvider.setSenha(passwordController.text);
+              widget.onNext();
+            },
             backgroundColor: AppColors.primary,
             textColor: AppColors.neutral,
           ),

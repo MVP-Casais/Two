@@ -9,6 +9,7 @@ class CustomInput extends StatelessWidget {
   final Widget? prefixIcon;
   final Widget? suffixIcon;
   final bool isDropdown;
+  final String? value;
   final List<DropdownMenuItem<String>>? dropdownItems;
   final ValueChanged<String?>? onChanged;
   final int? maxLines;
@@ -25,6 +26,7 @@ class CustomInput extends StatelessWidget {
     this.dropdownItems,
     this.onChanged,
     this.maxLines = 1,
+    this.value,
   });
 
   @override
@@ -38,7 +40,8 @@ class CustomInput extends StatelessWidget {
       ),
       child: isDropdown
           ? DropdownButtonFormField<String>(
-              items: dropdownItems,
+              value: value,
+              items: dropdownItems, 
               onChanged: onChanged,
               decoration: InputDecoration(
                 floatingLabelBehavior: FloatingLabelBehavior.never,

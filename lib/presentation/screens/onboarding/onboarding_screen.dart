@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'onboarding_page.dart';
 import 'package:two/core/themes/app_colors.dart';
 import 'package:two/presentation/widgets/custom_button.dart';
@@ -16,7 +17,7 @@ class OnboardingScreen extends StatefulWidget {
 
 class OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
-  
+
   int _currentPage = 0;
 
   final List<Map<String, String>> onboardingData = [
@@ -66,7 +67,10 @@ class OnboardingScreenState extends State<OnboardingScreen> {
     }
   }
 
-  void _skipOnboarding() {
+  void _skipOnboarding() async {
+    const storage = FlutterSecureStorage();
+    await storage.write(key: 'seen_onboarding', value: 'true');
+    await Future.delayed(Duration(milliseconds: 100));
     Navigator.pushReplacementNamed(context, '/pre-login');
   }
 
@@ -146,7 +150,7 @@ class OnboardingScreenState extends State<OnboardingScreen> {
                   borderSide: BorderSide(color: AppColors.inputBorder),
                 ),
               ],
-                SizedBox(height: screenHeight * 0.03),
+              SizedBox(height: screenHeight * 0.03),
             ],
           ),
         ],

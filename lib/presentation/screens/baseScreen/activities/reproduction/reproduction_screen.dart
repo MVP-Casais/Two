@@ -1,29 +1,36 @@
-import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flip_card/flip_card.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 import 'package:two/core/themes/app_colors.dart';
 import 'package:two/presentation/widgets/custom_button.dart';
+import 'package:two/providers/atividade_provider.dart' as prov;
 
 class Atividade {
+  final String id;
   final String titulo;
   final String descricao;
   final String duracao;
   final String intensidade;
   final List<String>? tags;
+  bool isSalva;
+  bool isFeita;
 
   Atividade({
+    required this.id,
     required this.titulo,
     required this.descricao,
     required this.duracao,
     required this.intensidade,
     required this.tags,
+    this.isSalva = false,
+    this.isFeita = false,
   });
 
-  factory Atividade.fromJson(Map<String, dynamic> json) {
+  factory Atividade.fromJson(Map<String, dynamic> json, {String? id}) {
     return Atividade(
+      id: id ?? json['id'] ?? json['titulo'] ?? '',
       titulo: json['titulo'] ?? 'Sem título',
       descricao: json['descricao'] ?? '',
       duracao: json['duracao'] ?? '',
@@ -33,11 +40,14 @@ class Atividade {
   }
 
   Map<String, dynamic> toJson() => {
+        'id': id,
         'titulo': titulo,
         'descricao': descricao,
         'duracao': duracao,
         'intensidade': intensidade,
         'tags': tags ?? [],
+        'isSalva': isSalva,
+        'isFeita': isFeita,
       };
 }
 
@@ -51,59 +61,6 @@ class AtividadePage extends StatefulWidget {
 }
 
 class _AtividadePageState extends State<AtividadePage> {
-  late Future<List<Atividade>> atividades;
-  List<Atividade> salvos = [];
-  final Set<String> atividadesFeitas = {};
-
-  Future<List<Atividade>> carregarAtividades() async {
-    final String path = 'assets/data/${widget.categoria}.json';
-    try {
-      final String response = await rootBundle.loadString(path);
-      final List<dynamic> data = json.decode(response);
-      return data.map((json) => Atividade.fromJson(json)).toList();
-    } catch (e) {
-      debugPrint('Erro ao carregar atividades: $e');
-      return [];
-    }
-  }
-
-  Future<void> carregarSalvos() async {
-    final prefs = await SharedPreferences.getInstance();
-    final List<String>? salvosJson = prefs.getStringList(
-      'salvos_${widget.categoria}',
-    );
-    if (salvosJson != null) {
-      setState(() {
-        salvos =
-            salvosJson.map((e) => Atividade.fromJson(json.decode(e))).toList();
-      });
-    }
-  }
-
-  Future<void> salvarAtividade(Atividade atividade) async {
-    final prefs = await SharedPreferences.getInstance();
-    if (!salvos.contains(atividade)) {
-      salvos.add(atividade);
-      final jsonList = salvos.map((a) => json.encode(a.toJson())).toList();
-      await prefs.setStringList('salvos_${widget.categoria}', jsonList);
-      setState(() {});
-    }
-  }
-
-  Future<void> removerAtividade(Atividade atividade) async {
-    final prefs = await SharedPreferences.getInstance();
-    salvos.removeWhere((item) => item.titulo == atividade.titulo);
-    final jsonList = salvos.map((a) => json.encode(a.toJson())).toList();
-    await prefs.setStringList('salvos_${widget.categoria}', jsonList);
-    setState(() {});
-  }
-
-  void marcarComoFeito(Atividade atividade) {
-    setState(() {
-      atividadesFeitas.add(atividade.titulo);
-    });
-  }
-
   final Map<String, String> titulosBonitos = {
     'atividades_casa': 'Para Curtir em Casa',
     'atividades_externas': 'Explorando Juntos',
@@ -115,14 +72,35 @@ class _AtividadePageState extends State<AtividadePage> {
   @override
   void initState() {
     super.initState();
-    atividades = carregarAtividades();
-    carregarSalvos();
+    // Carrega as atividades do provider ao iniciar
+    Future.microtask(() {
+      Provider.of<prov.AtividadeProvider>(context, listen: false)
+          .carregarAtividades(widget.categoria);
+    });
   }
 
-  void mostrarCarta(Atividade atividade) {
+  void salvarAtividade(prov.Atividade atividade) {
+    Provider.of<prov.AtividadeProvider>(context, listen: false)
+        .salvarAtividade(widget.categoria, atividade);
+    setState(() {});
+  }
+
+  void removerAtividade(prov.Atividade atividade) {
+    Provider.of<prov.AtividadeProvider>(context, listen: false)
+        .removerAtividade(widget.categoria, atividade);
+    setState(() {});
+  }
+
+  void marcarComoFeito(prov.Atividade atividade) {
+    Provider.of<prov.AtividadeProvider>(context, listen: false)
+        .marcarComoFeita(widget.categoria, atividade);
+    setState(() {});
+  }
+
+  void mostrarCarta(prov.Atividade atividade) {
     final height = MediaQuery.of(context).size.height * 0.6;
-    final isSalvo = salvos.any((item) => item.titulo == atividade.titulo);
-    final isFeito = atividadesFeitas.contains(atividade.titulo);
+    final isSalvo = atividade.isSalva;
+    final isFeito = atividade.isFeita;
 
     showDialog(
       context: context,
@@ -196,7 +174,8 @@ class _AtividadePageState extends State<AtividadePage> {
                     top: 16,
                     right: 16,
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
                         color: Colors.green,
                         borderRadius: BorderRadius.circular(12),
@@ -330,13 +309,12 @@ class _AtividadePageState extends State<AtividadePage> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       CustomButton(
-                        onPressed: () async {
+                        onPressed: () {
                           if (isSalvo) {
-                            await removerAtividade(atividade);
+                            removerAtividade(atividade);
                           } else {
-                            await salvarAtividade(atividade);
+                            salvarAtividade(atividade);
                           }
-                          setState(() {});
                           Navigator.pop(context);
                         },
                         icon: Icon(
@@ -354,7 +332,6 @@ class _AtividadePageState extends State<AtividadePage> {
                           if (!isFeito) {
                             marcarComoFeito(atividade);
                           }
-                          setState(() {});
                           Navigator.pop(context);
                         },
                         icon: Icon(
@@ -379,7 +356,7 @@ class _AtividadePageState extends State<AtividadePage> {
     );
   }
 
-  void mostrarAleatoria(List<Atividade> lista) {
+  void mostrarAleatoria(List<prov.Atividade> lista) {
     if (lista.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Nenhuma atividade disponível para sugerir.')),
@@ -392,7 +369,10 @@ class _AtividadePageState extends State<AtividadePage> {
   }
 
   void mostrarSalvos() {
-    if (salvos.isEmpty) {
+    final salvosList =
+        Provider.of<prov.AtividadeProvider>(context, listen: false)
+            .getSalvas(widget.categoria);
+    if (salvosList.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Nenhuma atividade salva.')),
       );
@@ -425,9 +405,9 @@ class _AtividadePageState extends State<AtividadePage> {
                 width: double.maxFinite,
                 height: 300,
                 child: ListView.builder(
-                  itemCount: salvos.length,
+                  itemCount: salvosList.length,
                   itemBuilder: (context, index) {
-                    final item = salvos[index];
+                    final item = salvosList[index];
                     return GestureDetector(
                       onTap: () => mostrarCarta(item),
                       child: Container(
@@ -476,8 +456,8 @@ class _AtividadePageState extends State<AtividadePage> {
                             ),
                             IconButton(
                               icon: Icon(Icons.delete, color: Colors.red),
-                              onPressed: () async {
-                                await removerAtividade(item);
+                              onPressed: () {
+                                removerAtividade(item);
                                 Navigator.pop(context); // Fechar o diálogo
                                 mostrarSalvos(); // Reabrir com a lista atualizada
                               },
@@ -530,9 +510,11 @@ class _AtividadePageState extends State<AtividadePage> {
           PopupMenuButton<String>(
             icon: Icon(Icons.menu,
                 size: screenHeight * 0.025, color: AppColors.titlePrimary),
-            onSelected: (value) async {
-              final lista = await atividades;
-              if (value == 'aleatoria') mostrarAleatoria(lista);
+            onSelected: (value) {
+              final items =
+                  Provider.of<prov.AtividadeProvider>(context, listen: false)
+                      .getAtividades(widget.categoria);
+              if (value == 'aleatoria') mostrarAleatoria(items);
               if (value == 'salvos') mostrarSalvos();
             },
             itemBuilder: (context) => [
@@ -583,106 +565,92 @@ class _AtividadePageState extends State<AtividadePage> {
           ),
         ],
       ),
-      body: Container(
-        decoration: BoxDecoration(color: AppColors.background),
-        child: FutureBuilder<List<Atividade>>(
-          future: atividades,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
+      body: Consumer<prov.AtividadeProvider>(
+        builder: (context, atividadeProvider, _) {
+          final items = atividadeProvider.getAtividades(widget.categoria);
+          if (items.isEmpty) {
+            return const Center(child: Text('Nenhuma atividade disponível.'));
+          }
+          return GridView.builder(
+            padding: EdgeInsets.symmetric(
+              horizontal: screenWidth * 0.02,
+              vertical: screenHeight * 0.02,
+            ),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: screenWidth * 0.02,
+              mainAxisSpacing: screenHeight * 0.02,
+              childAspectRatio: 0.7,
+            ),
+            itemCount: items.length,
+            itemBuilder: (context, index) {
+              final atividade = items[index];
+              final isFeito = atividade.isFeita;
 
-            if (snapshot.hasError) {
-              return const Center(child: Text('Erro ao carregar atividades.'));
-            }
-
-            final items = snapshot.data ?? [];
-
-            if (items.isEmpty) {
-              return const Center(child: Text('Nenhuma atividade disponível.'));
-            }
-
-            return GridView.builder(
-              padding: EdgeInsets.symmetric(
-                horizontal: screenWidth * 0.02,
-                vertical: screenHeight * 0.02,
-              ),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3, 
-                crossAxisSpacing: screenWidth * 0.02,
-                mainAxisSpacing: screenHeight * 0.02,
-                childAspectRatio: 0.7, 
-              ),
-              itemCount: items.length,
-              itemBuilder: (context, index) {
-                final atividade = items[index];
-                final isFeito = atividadesFeitas.contains(atividade.titulo);
-
-                return GestureDetector(
-                  onTap: () => mostrarCarta(atividade),
-                  child: Stack(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              AppColors.terciary,
-                              AppColors.secondary,
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black26,
-                              blurRadius: 10,
-                              offset: Offset(0, 4),
-                            ),
+              return GestureDetector(
+                onTap: () => mostrarCarta(atividade),
+                child: Stack(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            AppColors.terciary,
+                            AppColors.secondary,
                           ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
                         ),
-                        child: Center(
-                          child: Icon(
-                            Icons.favorite,
-                            size: 40, // Reduzir o tamanho do ícone
-                            color: AppColors.primary,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 10,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        child: Icon(
+                          Icons.favorite,
+                          size: 40,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ),
+                    if (isFeito)
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: Container(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.green,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(Icons.check, color: Colors.white, size: 12),
+                              SizedBox(width: 4),
+                              Text(
+                                "Concluído",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                      if (isFeito)
-                        Positioned(
-                          top: 8,
-                          right: 8,
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.green,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(Icons.check, color: Colors.white, size: 12),
-                                SizedBox(width: 4),
-                                Text(
-                                  "Concluído",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                );
-              },
-            );
-          },
-        ),
+                  ],
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }

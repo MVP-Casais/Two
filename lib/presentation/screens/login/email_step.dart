@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:two/core/themes/app_colors.dart';
 import 'package:two/presentation/screens/register/register_screen.dart';
 import 'package:two/presentation/widgets/custom_button.dart';
 import 'package:two/presentation/widgets/custom_input.dart';
+import 'package:two/providers/login_provider.dart';
 
 class EmailStep extends StatelessWidget {
   final VoidCallback onNext;
@@ -12,6 +14,8 @@ class EmailStep extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+    final loginProvider = Provider.of<LoginProvider>(context);
+    final TextEditingController emailController = TextEditingController(text: loginProvider.email);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -30,11 +34,18 @@ class EmailStep extends StatelessWidget {
               textAlign: TextAlign.left,
             ),
             SizedBox(height: screenHeight * 0.03),
-            CustomInput(labelText: "Digite seu e-mail"),
+            CustomInput(
+              labelText: "Digite seu e-mail",
+              controller: emailController,
+              onChanged: (value) => loginProvider.setEmail(value),
+            ),
             SizedBox(height: screenHeight * 0.03),
             CustomButton(
               text: "Próximo",
-              onPressed: onNext,
+              onPressed: () {
+                loginProvider.setEmail(emailController.text);
+                onNext();
+              },
               backgroundColor: AppColors.primary,
               textColor: AppColors.neutral,
             ),
@@ -42,11 +53,11 @@ class EmailStep extends StatelessWidget {
             GestureDetector(
               onTap: () {
                 Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const RegisterPage(),
-                ),
-              );
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const RegisterPage(),
+                  ),
+                );
               },
               child: Text(
                 "Criar uma conta",

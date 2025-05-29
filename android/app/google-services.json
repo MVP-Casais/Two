@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "778724204921",
+    "project_id": "twomvp-bfdb7",
+    "storage_bucket": "twomvp-bfdb7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:778724204921:android:4c1ccddd0094c707db8fa8",
+        "android_client_info": {
+          "package_name": "com.company.two"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "778724204921-232983t21ftl2o5lgtud3qvb4n7sk57e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgFVWxHobcSNr-HTKkXKBXAUQ5MFL67FQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "778724204921-232983t21ftl2o5lgtud3qvb4n7sk57e.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "778724204921-o200joqrb6bai15ruciccodvvkkegac4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.two"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

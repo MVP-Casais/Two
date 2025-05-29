@@ -7,6 +7,9 @@ import 'package:two/core/themes/app_colors.dart';
 import 'package:two/presentation/screens/baseScreen/presenceMode/realPresenceMode/real_presence_mode.dart';
 import 'package:two/presentation/widgets/custom_button.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:provider/provider.dart';
+import 'package:two/providers/presence_provider.dart';
+import 'package:two/services/connection_service.dart';
 
 class PresenceModeScreen extends StatefulWidget {
   const PresenceModeScreen({super.key});
@@ -15,12 +18,12 @@ class PresenceModeScreen extends StatefulWidget {
   _PresenceModeScreenState createState() => _PresenceModeScreenState();
 }
 
-@pragma('vm:entry-point') 
+@pragma('vm:entry-point')
 class _PresenceModeScreenState extends State<PresenceModeScreen>
     with SingleTickerProviderStateMixin {
   final RealPresenceMode _realPresenceMode = RealPresenceMode();
   Timer? _timer;
-  int _selectedDuration = 30;
+  Duration _selectedDuration = const Duration(hours: 1); // Agora é Duration
   late AnimationController _animationController;
   late ConfettiController _confettiController;
   bool _isTimeSelected = false;
@@ -30,23 +33,20 @@ class _PresenceModeScreenState extends State<PresenceModeScreen>
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      duration: Duration(seconds: _selectedDuration),
+      duration: _selectedDuration,
     )..addListener(() async {
-        if (mounted) {
-          setState(() {});
-        }
+        if (mounted) setState(() {});
         if (_animationController.isCompleted && _realPresenceMode.isActive) {
-          _realPresenceMode.deactivateMode().then((_) async {
-            _confettiController.play();
-            await _showCompletionDialog(_realPresenceMode.currentPoints);
-            setState(() {
-              _isTimeSelected = false;
-            });
-          });
+          await _handleSessionComplete();
         }
       });
+
     _confettiController =
         ConfettiController(duration: const Duration(seconds: 3));
+
+    _realPresenceMode.timeTracker.onTick = () {
+      if (mounted) setState(() {});
+    };
 
     _initializeBackgroundService();
 
@@ -54,34 +54,44 @@ class _PresenceModeScreenState extends State<PresenceModeScreen>
     service.on('tick').listen((event) {
       final remaining = event?['remaining'] ?? 0;
       setState(() {
-        _realPresenceMode.timeTracker.totalSeconds = remaining;
+        _realPresenceMode.timeTracker.totalSeconds =
+            remaining + _realPresenceMode.timeTracker.elapsedSeconds;
       });
-
       if (remaining == 0 && _realPresenceMode.isActive) {
-        _realPresenceMode.deactivateMode().then((_) async {
-          _confettiController.play();
-          await _showCompletionDialog(_realPresenceMode.currentPoints);
-          setState(() {
-            _isTimeSelected = false;
-          });
-        });
+        _handleSessionComplete();
       }
     });
 
     service.on('sessionComplete').listen((event) {
-      _confettiController.play();
-      _realPresenceMode.deactivateMode().then((_) async {
-        await _showCompletionDialog(_realPresenceMode.currentPoints);
-        setState(() {
-          _isTimeSelected = false;
-        });
-      });
+      _handleSessionComplete();
     });
+
+    Future.microtask(() async {
+      final casalId = await ConnectionService.getConnectedCoupleId();
+      if (!mounted) return;
+      if (casalId != null) {
+        final presenceProvider =
+            Provider.of<PresenceProvider>(context, listen: false);
+        await presenceProvider.fetchHistory(casalId);
+        if (!mounted) return;
+      }
+    });
+  }
+
+  Future<void> _handleSessionComplete() async {
+    if (_realPresenceMode.isActive) {
+      await _realPresenceMode.deactivateMode();
+      _animationController.reset();
+      _confettiController.play();
+      await _showCompletionDialog(_realPresenceMode.currentPoints);
+      setState(() {
+        _isTimeSelected = false;
+      });
+    }
   }
 
   Future<void> _initializeBackgroundService() async {
     final service = FlutterBackgroundService();
-
     await service.configure(
       androidConfiguration: AndroidConfiguration(
         onStart: _onBackgroundServiceStart,
@@ -95,13 +105,12 @@ class _PresenceModeScreenState extends State<PresenceModeScreen>
     );
   }
 
-  Future<void> startTimerInBackground(int duration) async {
+  Future<void> startTimerInBackground(Duration duration) async {
     final service = FlutterBackgroundService();
     if (!(await service.isRunning())) {
       await service.startService();
     }
-
-    service.invoke('startSession', {'duration': duration});
+    service.invoke('startSession', {'duration': duration.inMinutes});
   }
 
   Future<void> stopTimerInBackground() async {
@@ -111,35 +120,34 @@ class _PresenceModeScreenState extends State<PresenceModeScreen>
     }
   }
 
-  @pragma('vm:entry-point') // Adicionado para permitir acesso do código nativo
+  @pragma('vm:entry-point')
   static void _onBackgroundServiceStart(ServiceInstance service) {
-        DartPluginRegistrant.ensureInitialized();
+    DartPluginRegistrant.ensureInitialized();
 
-    int remainingSeconds = 0;
+    int remainingMinutes = 0;
     bool isSessionActive = false;
 
     service.on('startSession').listen((event) {
-      remainingSeconds = event?['duration'] ?? 0;
+      remainingMinutes = event?['duration'] ?? 0;
       isSessionActive = true;
     });
 
     service.on('stopSession').listen((event) {
       isSessionActive = false;
-      remainingSeconds = 0;
+      remainingMinutes = 0;
       service.invoke('stopped');
     });
 
-    Timer.periodic(const Duration(seconds: 1), (timer) async {
-      if (!isSessionActive || remainingSeconds <= 0) {
-        if (remainingSeconds <= 0 && isSessionActive) {
+    Timer.periodic(const Duration(minutes: 1), (timer) async {
+      if (!isSessionActive || remainingMinutes <= 0) {
+        if (remainingMinutes <= 0 && isSessionActive) {
           isSessionActive = false;
           service.invoke('sessionComplete');
         }
         return;
       }
-
-      remainingSeconds--;
-      service.invoke('tick', {'remaining': remainingSeconds});
+      remainingMinutes--;
+      service.invoke('tick', {'remaining': remainingMinutes});
     });
   }
 
@@ -202,6 +210,14 @@ class _PresenceModeScreenState extends State<PresenceModeScreen>
 
   Widget _buildProgressCircle(double screenHeight) {
     final double circleSize = MediaQuery.of(context).size.width * 0.8;
+    int remaining = _realPresenceMode.timeTracker.totalSeconds -
+        _realPresenceMode.timeTracker.elapsedSeconds;
+    if (remaining < 0) remaining = 0;
+    int hours = remaining ~/ 60;
+    int minutes = remaining % 60;
+
+    String timeText = '${hours.toString().padLeft(2, '0')}:'
+        '${minutes.toString().padLeft(2, '0')}';
 
     return Container(
       height: circleSize,
@@ -224,17 +240,22 @@ class _PresenceModeScreenState extends State<PresenceModeScreen>
             height: circleSize,
             width: circleSize,
             child: CircularProgressIndicator(
-              value: 1.0 - _animationController.value,
+              value: 1.0 -
+                  (_realPresenceMode.timeTracker.elapsedSeconds /
+                      (_realPresenceMode.timeTracker.totalSeconds == 0
+                          ? 1
+                          : _realPresenceMode.timeTracker.totalSeconds)),
               strokeWidth: 16.0,
               backgroundColor: AppColors.neutral.withAlpha(50),
-              valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+              valueColor:
+                  AlwaysStoppedAnimation<Color>(AppColors.primary),
             ),
           ),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                _realPresenceMode.timeTracker.formattedTime,
+                timeText,
                 style: const TextStyle(
                   fontSize: 52,
                   fontWeight: FontWeight.bold,
@@ -258,14 +279,17 @@ class _PresenceModeScreenState extends State<PresenceModeScreen>
 
   Widget _buildTimePicker() {
     return CupertinoTimerPicker(
-      mode: CupertinoTimerPickerMode.ms,
-      initialTimerDuration: Duration(seconds: _selectedDuration),
+      mode: CupertinoTimerPickerMode.hm,
+      initialTimerDuration: _selectedDuration,
       onTimerDurationChanged: (Duration newDuration) {
         setState(() {
-          _selectedDuration = newDuration.inSeconds;
-          _realPresenceMode.setSessionDuration(newDuration.inSeconds);
-          _animationController.duration = newDuration;
-          _animationController.reset();
+          _selectedDuration = newDuration;
+          if (!_realPresenceMode.isActive) {
+            _realPresenceMode
+                .setSessionDuration(newDuration.inMinutes);
+            _animationController.duration = newDuration;
+            _animationController.reset();
+          }
         });
       },
     );
@@ -283,21 +307,18 @@ class _PresenceModeScreenState extends State<PresenceModeScreen>
                   if (!_isTimeSelected) {
                     setState(() {
                       _isTimeSelected = true;
-                      _realPresenceMode.setSessionDuration(_selectedDuration);
-                      _animationController.duration = Duration(
-                        seconds: _selectedDuration,
-                      );
+                      _realPresenceMode
+                          .setSessionDuration(_selectedDuration.inMinutes);
+                      _animationController.duration = _selectedDuration;
                       _animationController.reset();
                     });
                   }
-
                   await _showDndSuggestionDialog();
                   await _realPresenceMode.activateMode();
                   await startTimerInBackground(_selectedDuration);
-
                   if (mounted) {
                     _animationController.reset();
-                    _animationController.forward(); // Inicia a animação
+                    _animationController.forward();
                   }
                 }
               : null,
@@ -326,7 +347,8 @@ class _PresenceModeScreenState extends State<PresenceModeScreen>
                     _isTimeSelected = false;
                   });
                   _confettiController.play();
-                  await _showCompletionDialog(_realPresenceMode.currentPoints);
+                  await _showCompletionDialog(
+                      _realPresenceMode.currentPoints);
                   await stopTimerInBackground();
                 }
               : null,
@@ -351,6 +373,8 @@ class _PresenceModeScreenState extends State<PresenceModeScreen>
   }
 
   Widget _buildSessionHistory() {
+    final presenceProvider = Provider.of<PresenceProvider>(context);
+    final history = presenceProvider.realPresenceMode.history;
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -369,7 +393,7 @@ class _PresenceModeScreenState extends State<PresenceModeScreen>
               GestureDetector(
                 onTap: () {
                   setState(() {
-                    _realPresenceMode.history.clear(); // Limpa o histórico
+                    _realPresenceMode.history.clear();
                   });
                 },
                 child: const Text(
@@ -386,9 +410,9 @@ class _PresenceModeScreenState extends State<PresenceModeScreen>
           const SizedBox(height: 8),
           Expanded(
             child: ListView.builder(
-              itemCount: _realPresenceMode.history.length,
+              itemCount: history.length,
               itemBuilder: (context, index) {
-                final entry = _realPresenceMode.history[index];
+                final entry = history[index];
                 final String formattedDate =
                     "${entry.date.day.toString().padLeft(2, '0')}/${entry.date.month.toString().padLeft(2, '0')}/${entry.date.year}";
                 return Card(
@@ -516,15 +540,11 @@ class _PresenceModeScreenState extends State<PresenceModeScreen>
                   ),
                 ),
                 const SizedBox(height: 12),
-                Icon(
-                  Icons.notifications_off,
-                  color: AppColors.primary,
-                  size: 48,
-                ),
+                Icon(Icons.notifications_off,
+                    color: AppColors.primary, size: 48),
                 const SizedBox(height: 12),
                 const Text(
-                  'Para aproveitar melhor o momento, ative o modo "Não Perturbe" no seu celular. '
-                  'Isso ajuda a evitar interrupções e focar totalmente na experiência.',
+                  'Para aproveitar melhor o momento, ative o modo "Não Perturbe" no seu celular. Isso ajuda a evitar interrupções e focar totalmente na experiência.',
                   style: TextStyle(
                     fontSize: 16,
                     color: AppColors.textSecondarylight,
