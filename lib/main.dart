@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/date_symbol_data_local.dart'; // ADICIONADO: para Locale
 import 'package:provider/provider.dart';
-import 'package:two/firebase_options.dart';
 import 'package:two/presentation/screens/profile/connection_information/connection_information_screen.dart';
 import 'package:two/providers/atividade_provider.dart';
 import 'package:two/providers/memories_provider.dart';
@@ -29,16 +28,12 @@ import 'presentation/screens/login/login.dart';
 import 'presentation/screens/pre_login/pre_login.dart';
 import 'presentation/screens/login/help_page.dart';
 import 'presentation/screens/baseScreen/home/home_screen.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:two/providers/casais_provider.dart';
 import 'package:two/providers/ranking_provider.dart';
 import 'package:two/providers/app_usage_provider.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
   await initializeDateFormatting('pt_BR', null); 
   runApp(
@@ -71,7 +66,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: '/home', 
+      initialRoute: '/onboarding', 
       routes: {
         '/onboarding': (context) => const OnboardingScreen(),
         '/pre-login': (context) => const PreLoginPage(),

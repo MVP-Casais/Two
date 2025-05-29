@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:io';
 
 class HttpService {
-  static const Duration timeoutDuration = Duration(seconds: 30);
+  static const Duration timeoutDuration = Duration(seconds: 30); // aumente para 30 segundos
 
   static Future<Map<String, dynamic>> post({
     required String url,

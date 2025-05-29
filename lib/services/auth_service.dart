@@ -50,6 +50,7 @@ class AuthService {
     try {
       final GoogleSignIn googleSignIn = GoogleSignIn(
         scopes: ['email', 'profile'],
+        serverClientId: dotenv.env['GOOGLE_CLIENT_ID'],
       );
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
       if (googleUser == null) {
@@ -64,7 +65,7 @@ class AuthService {
       if (idToken == null) {
         return {
           'statusCode': 400,
-          'body': {'error': 'Token do Google não encontrado.'},
+          'body': {'error': 'Token do Google não encontrado. Verifique o clientId e a configuração do OAuth no Google Cloud.'},
         };
       }
 
