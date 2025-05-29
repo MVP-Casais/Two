@@ -18,11 +18,11 @@ class PlannerProvider extends ChangeNotifier {
   }
 
   Future<void> fetchEvents() async {
-    // Sempre busque o coupleId do backend para garantir que está correto
     final realCoupleId = await ConnectionService.getConnectedCoupleId();
     if (realCoupleId == null) {
       print('Erro: Não foi possível obter o id do casal conectado.');
       eventsByDate = {};
+      // Adicione aqui: notifique o usuário se necessário
       safeNotifyListeners();
       return;
     }

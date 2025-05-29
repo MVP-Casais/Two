@@ -23,6 +23,12 @@ class MemoriesProvider extends ChangeNotifier {
   List<MemoryPost> memories = [];
 
   Future<void> fetchMemories() async {
+    final coupleId = await ConnectionService.getConnectedCoupleId();
+    if (coupleId == null) {
+      memories = [];
+      notifyListeners();
+      return;
+    }
     final result = await MemoriesService.fetchMemories();
     memories = result;
     notifyListeners();
@@ -33,12 +39,10 @@ class MemoriesProvider extends ChangeNotifier {
     required String description,
     required String imagePath,
   }) async {
-    final coupleId = await ConnectionService.getConnectedCoupleId();
     final result = await MemoriesService.addMemory(
       title: title,
       description: description,
       imageFile: File(imagePath),
-      coupleId: coupleId,
     );
     if (result != null) {
       memories.insert(0, result);
@@ -53,12 +57,11 @@ class MemoriesProvider extends ChangeNotifier {
     required String title,
     required String description,
   }) async {
-    final coupleId = await ConnectionService.getConnectedCoupleId();
+    // O coupleId agora é buscado dentro do MemoriesService.editMemory
     final result = await MemoriesService.editMemory(
       id: post.id,
       title: title,
       description: description,
-      coupleId: coupleId,
     );
     if (result != null) {
       final index = memories.indexWhere((m) => m.id == post.id);

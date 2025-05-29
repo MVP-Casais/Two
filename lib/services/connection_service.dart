@@ -47,50 +47,11 @@ class ConnectionService {
     return false;
   }
 
-  static Future<Partner?> sendConnectionRequest(String username) async {
+  // Novo: gerar código de conexão
+  static Future<String?> generateConnectionCode() async {
     final token = await TokenService().getToken();
     final response = await http.post(
-      Uri.parse('$baseUrl/request'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-      body: jsonEncode({
-        "username": username
-      }),
-    );
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      final data = jsonDecode(response.body);
-      // Corrija para aceitar tanto 'username' quanto 'name' e 'avatarUrl'
-      if (data is Map && data['username'] != null) {
-        return Partner(
-          name: data['name'] ?? "Parceiro",
-          username: data['username'],
-          avatarUrl: data['avatarUrl'] ?? '',
-          coupleId: data['coupleId'],
-        );
-      }
-      // Caso backend retorne erro, mostre mensagem
-      if (data is Map && data['error'] != null) {
-        throw Exception(data['error']);
-      }
-      return null;
-    } else {
-      // Mostra mensagem de erro detalhada do backend
-      try {
-        final data = jsonDecode(response.body);
-        if (data is Map && data['error'] != null) {
-          throw Exception(data['error']);
-        }
-      } catch (_) {}
-      throw Exception('Erro ao enviar convite: ${response.statusCode}');
-    }
-  }
-
-  static Future<List<String>> searchUsernames(String query) async {
-    final token = await TokenService().getToken();
-    final response = await http.get(
-      Uri.parse('$baseUrl/search?username=$query'),
+      Uri.parse('$baseUrl/generate-code'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
@@ -98,11 +59,32 @@ class ConnectionService {
     );
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      if (data is List) {
-        return data.map<String>((e) => e.toString()).toList();
-      }
+      return data['code']?.toString();
     }
-    return [];
+    return null;
+  }
+
+  // Novo: conectar usando código
+  static Future<String?> connectWithCode(String code) async {
+    final token = await TokenService().getToken();
+    final response = await http.post(
+      Uri.parse('$baseUrl/connect-with-code'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({"code": code}),
+    );
+    if (response.statusCode == 200) {
+      return null; // sucesso
+    }
+    try {
+      final data = jsonDecode(response.body);
+      if (data is Map && data['error'] != null) {
+        return data['error'];
+      }
+    } catch (_) {}
+    return 'Erro ao conectar com código.';
   }
 
   static Future<int?> getConnectedCoupleId() async {
@@ -116,12 +98,12 @@ class ConnectionService {
     );
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
+      // O campo retornado é coupleId (id da tabela couples)
       return data['coupleId'];
     }
     return null;
   }
 
-  // Novo: busca o parceiro conectado do backend ao iniciar o app
   static Future<Partner?> getCurrentPartner() async {
     final token = await TokenService().getToken();
     final response = await http.get(
@@ -133,7 +115,6 @@ class ConnectionService {
     );
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      // Você pode retornar mais dados do parceiro se o backend fornecer
       if (data['partner'] != null) {
         return Partner(
           name: data['partner']['name'] ?? '',
@@ -142,7 +123,6 @@ class ConnectionService {
           coupleId: data['coupleId'],
         );
       }
-      // Caso só venha o coupleId, busque o parceiro pelo username se necessário
     }
     return null;
   }

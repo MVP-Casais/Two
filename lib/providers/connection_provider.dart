@@ -133,22 +133,18 @@ class ConnectionProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<String?> sendConnectionRequest(String username) async {
+  // Novo: conectar usando código
+  Future<String?> connectWithCode(String code) async {
     try {
-      final result = await ConnectionService.sendConnectionRequest(username);
-      if (_isValidPartner(result)) {
-        partner = result;
-        isConnected = true;
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('partner', jsonEncode(partner!.toMap()));
-        await prefs.setBool('isConnected', true);
+      final error = await ConnectionService.connectWithCode(code);
+      if (error == null) {
+        await restoreConnection();
         notifyListeners();
         return null;
-      } else {
-        return "Usuário não encontrado ou erro ao enviar convite.";
       }
+      return error;
     } catch (e) {
-      return "Erro ao enviar convite.";
+      return 'Erro ao conectar: $e';
     }
   }
 

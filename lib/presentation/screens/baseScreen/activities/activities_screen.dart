@@ -47,7 +47,7 @@ class ActivitiesScreen extends StatelessWidget {
                         top: screenHeight * 0.02,
                         left: screenWidth * 0.05,
                         child: Text(
-                          'Ótimo progresso!',
+                          'Venha se divertir',
                           style: TextStyle(
                             color: AppColors.titleSecondary,
                             fontSize: screenHeight * 0.029,
@@ -70,7 +70,7 @@ class ActivitiesScreen extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Text(
-                                'Top 5',
+                                'Two',
                                 style: TextStyle(
                                   color: AppColors.titleSecondary,
                                   fontSize: screenHeight * 0.016,
@@ -98,7 +98,7 @@ class ActivitiesScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Faltam 200 pontos para subir de nível!',
+                                'Descubra novas atividades',
                                 style: TextStyle(
                                   color: AppColors.titleTerciary,
                                   fontSize: screenHeight * 0.02,
@@ -120,7 +120,7 @@ class ActivitiesScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '+3 desafios concluídos esta semana!',
+                                'Conclua mais atividades esta semana!',
                                 style: TextStyle(
                                   color: AppColors.titleTerciary,
                                   fontSize: screenHeight * 0.018,

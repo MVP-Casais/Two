@@ -85,11 +85,9 @@ class PlannerService {
     required DateTime date,
     required int coupleId,
   }) async {
-    final token = await _tokenService.getToken();
-    final url = Uri.parse(baseUrl);
-    final String dataEvento = "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+    final token = await TokenService().getToken();
     final response = await http.post(
-      url,
+      Uri.parse('$baseUrl'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -97,18 +95,14 @@ class PlannerService {
       body: jsonEncode({
         "nomeEvento": title,
         "descricao": description,
-        "dataEvento": dataEvento,
+        "dataEvento": date.toIso8601String().substring(0, 10),
         "horaInicio": startTime,
         "horaTermino": endTime,
         "categoria": category,
-        "coupleId": coupleId,
+        "coupleId": coupleId, // Alinhe com o backend
       }),
     );
-    if (response.statusCode != 201) {
-      print('Erro ao criar evento: ${response.body}');
-      return false;
-    }
-    return true;
+    return response.statusCode == 201;
   }
 
   static Future<bool> updateEvent({

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:two/core/themes/app_colors.dart';
 import 'package:two/presentation/widgets/custom_button.dart';
 import 'package:two/providers/connection_provider.dart';
+import 'package:two/providers/ranking_provider.dart';
 import 'package:two/services/connection_service.dart';
 
 // Componente extra: Toggle Switch
@@ -196,20 +197,50 @@ class _ConnectionInformationScreenState
 
   Widget _buildDisconnected(BuildContext context, ConnectionProvider provider) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final TextEditingController usernameController = TextEditingController();
+    final TextEditingController codeController = TextEditingController();
     ValueNotifier<bool> isLoading = ValueNotifier(false);
     ValueNotifier<String?> errorMessage = ValueNotifier(null);
-    ValueNotifier<List<String>> suggestions = ValueNotifier([]);
+    ValueNotifier<String?> generatedCode = ValueNotifier(null);
 
-    Future<void> fetchSuggestions(String query) async {
-      if (query.isEmpty) {
-        suggestions.value = [];
+    Future<void> generateCode() async {
+      isLoading.value = true;
+      errorMessage.value = null;
+      // Chame o backend para gerar um código de conexão (implemente no backend)
+      final code = await ConnectionService.generateConnectionCode();
+      if (code != null) {
+        generatedCode.value = code;
+
+        try {
+          await Provider.of<RankingProvider>(context, listen: false).fetchRanking();
+        } catch (_) {}
+      } else {
+        errorMessage.value = "Erro ao gerar código.";
+      }
+      isLoading.value = false;
+    }
+
+    Future<void> connectWithCode() async {
+      final code = codeController.text.trim();
+      if (code.length != 4) {
+        errorMessage.value = "Digite o código de 4 dígitos.";
         return;
       }
       isLoading.value = true;
-      final result = await ConnectionService.searchUsernames(query);
-      suggestions.value = result;
+      errorMessage.value = null;
+      final result = await provider.connectWithCode(code);
       isLoading.value = false;
+      if (result != null) {
+        errorMessage.value = result;
+      } else {
+        // NOVO: Atualiza ranking automaticamente após conectar
+        try {
+          await Provider.of<RankingProvider>(context, listen: false).fetchRanking();
+        } catch (_) {}
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Conexão realizada com sucesso!')),
+        );
+        codeController.clear();
+      }
     }
 
     return Column(
@@ -241,8 +272,52 @@ class _ConnectionInformationScreenState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              // Opção 1: Gerar código
+              CustomButton(
+                backgroundColor: AppColors.primary,
+                textColor: AppColors.neutral,
+                text: isLoading.value ? 'Gerando...' : 'Gerar código para compartilhar',
+                onPressed: isLoading.value
+                    ? null
+                    : () async {
+                        await generateCode();
+                      },
+              ),
+              ValueListenableBuilder<String?>(
+                valueListenable: generatedCode,
+                builder: (context, code, _) {
+                  if (code == null) return SizedBox.shrink();
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 12.0),
+                    child: Column(
+                      children: [
+                        Text(
+                          "Compartilhe este código com seu parceiro:",
+                          style: TextStyle(
+                            color: AppColors.titlePrimary,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        SelectableText(
+                          code,
+                          style: TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.primary,
+                            letterSpacing: 8,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+              SizedBox(height: 32),
+              // Opção 2: Inserir código recebido
               Text(
-                "Pesquisar parceiro pelo username",
+                "Ou insira o código de 4 dígitos recebido do parceiro",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: AppColors.titlePrimary,
@@ -251,56 +326,17 @@ class _ConnectionInformationScreenState
               ),
               SizedBox(height: 8),
               TextField(
-                controller: usernameController,
+                controller: codeController,
+                maxLength: 4,
+                keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                  hintText: "Digite o username do parceiro",
+                  hintText: "Digite o código de 4 dígitos",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                  suffixIcon: isLoading.value
-                      ? Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: SizedBox(
-                            width: 18,
-                            height: 18,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          ),
-                        )
-                      : Icon(Icons.search, color: AppColors.icons),
+                  counterText: "",
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 ),
-                onChanged: (value) {
-                  fetchSuggestions(value.trim());
-                },
-              ),
-              ValueListenableBuilder<List<String>>(
-                valueListenable: suggestions,
-                builder: (context, list, _) {
-                  if (list.isEmpty) return SizedBox.shrink();
-                  return Container(
-                    margin: const EdgeInsets.only(top: 4),
-                    decoration: BoxDecoration(
-                      color: AppColors.neutral,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: AppColors.inputBorder),
-                    ),
-                    child: ListView.separated(
-                      shrinkWrap: true,
-                      itemCount: list.length,
-                      separatorBuilder: (_, __) => Divider(height: 1),
-                      itemBuilder: (context, idx) {
-                        return ListTile(
-                          title: Text(list[idx]),
-                          onTap: () {
-                            usernameController.text = list[idx];
-                            suggestions.value = [];
-                          },
-                        );
-                      },
-                    ),
-                  );
-                },
               ),
               SizedBox(height: 12),
               ValueListenableBuilder<bool>(
@@ -312,31 +348,11 @@ class _ConnectionInformationScreenState
                       return CustomButton(
                         backgroundColor: AppColors.primary,
                         textColor: AppColors.neutral,
-                        text: loading ? 'Enviando...' : 'Conectar Parceiro',
+                        text: loading ? 'Conectando...' : 'Conectar com código',
                         onPressed: loading
                             ? null
                             : () async {
-                                final username = usernameController.text.trim();
-                                if (username.isEmpty) {
-                                  errorMessage.value =
-                                      "Digite o username do parceiro.";
-                                  return;
-                                }
-                                errorMessage.value = null;
-                                isLoading.value = true;
-                                final result = await provider
-                                    .sendConnectionRequest(username);
-                                isLoading.value = false;
-                                if (result != null) {
-                                  errorMessage.value = result;
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content: Text(
-                                            'Convite enviado com sucesso!')),
-                                  );
-                                  usernameController.clear();
-                                }
+                                await connectWithCode();
                               },
                       );
                     },

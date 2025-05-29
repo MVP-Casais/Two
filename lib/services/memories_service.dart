@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:two/providers/memories_provider.dart';
 import 'package:two/services/token_service.dart';
+import 'package:two/services/connection_service.dart'; // Importante para pegar o coupleId correto
 
 class MemoriesService {
   static final String baseUrl = dotenv.env['API_MEMORIES_URL']!;
@@ -35,9 +36,15 @@ class MemoriesService {
     required String title,
     required String description,
     required File imageFile,
-    int? coupleId,
   }) async {
     final token = await _tokenService.getToken();
+    // Busque o coupleId correto do backend antes de enviar a memória
+    final coupleId = await ConnectionService.getConnectedCoupleId();
+    if (coupleId == null) {
+      print('Erro: Não foi possível obter o coupleId do casal conectado.');
+      return null;
+    }
+
     final uri = Uri.parse(baseUrl);
     final request = http.MultipartRequest('POST', uri);
 
@@ -45,9 +52,7 @@ class MemoriesService {
 
     request.fields['titulo'] = title;
     request.fields['descricao'] = description;
-    if (coupleId != null) {
-      request.fields['casal_id'] = coupleId.toString();
-    }
+    request.fields['coupleId'] = coupleId.toString(); // Sempre envie o coupleId correto
 
     request.files.add(
       await http.MultipartFile.fromPath(
@@ -84,9 +89,14 @@ class MemoriesService {
     required int id,
     required String title,
     required String description,
-    int? coupleId,
   }) async {
     final token = await _tokenService.getToken();
+    // Busque o coupleId correto do backend antes de editar a memória
+    final coupleId = await ConnectionService.getConnectedCoupleId();
+    if (coupleId == null) {
+      print('Erro: Não foi possível obter o coupleId do casal conectado.');
+      return null;
+    }
     final uri = Uri.parse('$baseUrl/$id');
     final response = await http.put(
       uri,
@@ -97,7 +107,7 @@ class MemoriesService {
       body: jsonEncode({
         "titulo": title,
         "descricao": description,
-        if (coupleId != null) "casal_id": coupleId,
+        "coupleId": coupleId, // Sempre envie o coupleId correto
       }),
     );
     if (response.statusCode == 200) {
